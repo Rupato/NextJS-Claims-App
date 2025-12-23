@@ -1,19 +1,20 @@
 # Code Owners for Pull Request Reviews
 # This file defines who should review code changes
 
+# Temporarily disabled for testing - uncomment when team grows
 # Global owners - require review from these users for all changes
-* @Rupato
+# * @Rupato
 
-# Specific file/directory owners
+# Specific file/directory owners - disabled for solo development
 # Frontend components
-src/ @Rupato
+# src/ @Rupato
 
 # CI/CD and configuration
-.github/ @Rupato
+# .github/ @Rupato
 
 # Package and dependency management
-package.json @Rupato
-pnpm-lock.yaml @Rupato
+# package.json @Rupato
+# pnpm-lock.yaml @Rupato
 
 # Documentation
-README.md @Rupato
+# README.md @Rupato

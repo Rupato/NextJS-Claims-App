@@ -5,7 +5,9 @@ describe('Page', () => {
   it('renders the main heading', () => {
     render(<Page />);
     expect(
-      screen.getByText('To get started, edit the page.tsx file.')
+      screen.getByText(
+        'Testing CI pipeline failure - this will break Prettier formatting'
+      )
     ).toBeInTheDocument();
   });
 });
