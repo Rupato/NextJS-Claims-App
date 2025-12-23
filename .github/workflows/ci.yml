@@ -2,9 +2,9 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
     types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
@@ -57,8 +57,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm test --run
+      - name: Run tests with coverage
+        run: pnpm test --run --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   # 🔴 MANDATORY: Production Build
   build:
@@ -139,6 +147,14 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test --run --coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
   # ⚠️ RECOMMENDED: Code Formatting Check
   format:
     name: '6️⃣ CI / format'
@@ -165,11 +181,10 @@ jobs:
       - name: Check code formatting
         run: pnpm exec prettier --check .
 
-  # ⭐ ADVANCED: Coverage Threshold (Optional - Will be enabled later)
+  # ⭐ ADVANCED: Coverage Threshold
   coverage:
     name: '7️⃣ CI / coverage'
     runs-on: ubuntu-latest
-    if: false # Disabled for now - will enable when dashboard development starts
 
     steps:
       - name: Checkout code
@@ -191,6 +206,14 @@ jobs:
 
       - name: Run tests with coverage
         run: pnpm test --run --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   # ⭐ ADVANCED: Security & Dependencies
   security:
