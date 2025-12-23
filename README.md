@@ -15,6 +15,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 ## Setup and Installation
 
 1. Ensure you have pnpm installed:
+
    ```bash
    npm install -g pnpm
    ```
@@ -27,6 +28,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 ## Development
 
 Start the development server:
+
 ```bash
 pnpm dev
 ```
@@ -36,6 +38,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 ## Building
 
 Build the application for production:
+
 ```bash
 pnpm build
 ```
@@ -43,6 +46,7 @@ pnpm build
 ## Preview Production Build
 
 Start the production server:
+
 ```bash
 pnpm start
 ```
@@ -50,11 +54,13 @@ pnpm start
 ## Linting
 
 Run ESLint:
+
 ```bash
 pnpm lint
 ```
 
 Fix ESLint issues automatically:
+
 ```bash
 pnpm lint:fix
 ```
@@ -71,11 +77,13 @@ The hooks are configured in `.git/hooks/pre-commit` and will prevent commits if 
 ## Testing
 
 Run tests:
+
 ```bash
 pnpm test
 ```
 
 Run tests with UI:
+
 ```bash
 pnpm test:ui
 ```
@@ -92,6 +100,7 @@ This project follows **GitHub Flow** for branching:
 - **Pre-commit Hooks**: Local quality checks prevent bad commits
 
 ### Workflow:
+
 1. Create feature branch: `git checkout -b feature/new-feature`
 2. Make changes and commit: `git commit -m "Add new feature"`
 3. Push branch: `git push origin feature/new-feature`
@@ -101,24 +110,28 @@ This project follows **GitHub Flow** for branching:
 ## Benefits of This Approach
 
 ### pnpm
+
 - **Fast Installation**: Uses hard links and symlinks for efficient disk usage
 - **Strict Dependency Resolution**: Prevents dependency confusion issues
 - **Workspace Support**: Excellent for monorepo setups
 - **Smaller node_modules**: Shares dependencies across projects
 
 ### Rsbuild
+
 - **Lightning Fast Builds**: Based on Rspack (Rust-powered webpack alternative)
 - **Optimized for Modern Web**: Built-in support for latest JavaScript features
 - **Plugin Ecosystem**: Extensible with plugins for various needs
 - **Better Performance**: Faster than traditional webpack in most cases
 
 ### Next.js
+
 - **Full-Stack Framework**: Server-side rendering, API routes, and static generation
 - **App Router**: Modern routing with layouts and nested routes
 - **Built-in Optimizations**: Automatic code splitting, image optimization, and more
 - **TypeScript Support**: First-class TypeScript integration
 
 ### Combined Benefits
+
 - **Rapid Development**: Hot reloading with Rsbuild's fast dev server
 - **Efficient Builds**: Rsbuild provides significantly faster build times compared to Next.js's default webpack
 - **Scalable Architecture**: Next.js's features combined with Rsbuild's performance

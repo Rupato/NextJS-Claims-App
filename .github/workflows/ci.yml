@@ -10,7 +10,7 @@ on:
 jobs:
   # 🔴 MANDATORY: Code Quality & Linting
   lint:
-    name: "1️⃣ CI / lint"
+    name: '1️⃣ CI / lint'
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
 
   # 🔴 MANDATORY: Unit + Component Tests
   test:
-    name: "2️⃣ CI / test"
+    name: '2️⃣ CI / test'
     runs-on: ubuntu-latest
 
     steps:
@@ -62,7 +62,7 @@ jobs:
 
   # 🔴 MANDATORY: Production Build
   build:
-    name: "3️⃣ CI / build"
+    name: '3️⃣ CI / build'
     runs-on: ubuntu-latest
 
     steps:
@@ -88,7 +88,7 @@ jobs:
 
   # 🔴 MANDATORY: TypeScript Type Checking
   typecheck:
-    name: "4️⃣ CI / typecheck"
+    name: '4️⃣ CI / typecheck'
     runs-on: ubuntu-latest
 
     steps:
@@ -114,7 +114,7 @@ jobs:
 
   # ⚠️ RECOMMENDED: Tests on Push
   test-push:
-    name: "5️⃣ CI / test (push)"
+    name: '5️⃣ CI / test (push)'
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
@@ -141,7 +141,7 @@ jobs:
 
   # ⚠️ RECOMMENDED: Code Formatting Check
   format:
-    name: "6️⃣ CI / format"
+    name: '6️⃣ CI / format'
     runs-on: ubuntu-latest
 
     steps:
@@ -189,18 +189,22 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests with coverage
-        run: pnpm test --run --coverage --coverage.reporter=json
+        run: pnpm test --run --coverage
 
       - name: Check coverage threshold
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage/coverage-final.json
-          fail_ci_if_error: true
-          threshold: 60%
+        run: |
+          COVERAGE=$(jq '.total.lines.pct' coverage/coverage-final.json)
+          echo "Coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+            echo "❌ Coverage $COVERAGE% is below 60% threshold"
+            exit 1
+          else
+            echo "✅ Coverage $COVERAGE% meets 60% threshold"
+          fi
 
   # ⭐ ADVANCED: Security & Dependencies
   security:
-    name: "8️⃣ CI / security"
+    name: '8️⃣ CI / security'
     runs-on: ubuntu-latest
 
     steps:
@@ -229,7 +233,7 @@ jobs:
 
   # ⭐ ADVANCED: Bundle Size Check
   bundle-size:
-    name: "9️⃣ CI / bundle-size"
+    name: '9️⃣ CI / bundle-size'
     runs-on: ubuntu-latest
 
     steps:
@@ -256,5 +260,5 @@ jobs:
       - name: Check bundle size
         uses: preactjs/compressed-size-action@v2
         with:
-          pattern: "./dist/**/*.{js,css,html}"
+          pattern: './dist/**/*.{js,css,html}'
           minimum-change-threshold: 500 # bytes
