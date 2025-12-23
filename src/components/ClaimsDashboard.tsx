@@ -121,7 +121,9 @@ const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => (
   </article>
 );
 
-const CARDS_PER_PAGE = 12; // Show 12 cards per page for better performance
+const CARDS_PER_ROW = 3; // Assuming 3 cards per row on large screens
+const CARD_HEIGHT = 280; // Approximate height of each card in pixels
+const CARD_BUFFER_SIZE = 6; // Number of cards to keep as buffer above/below visible area
 
 const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
@@ -134,10 +136,43 @@ const ClaimsDashboard: React.FC = () => {
   const [endIndex, setEndIndex] = useState(20); // Show 20 rows initially
   const [scrollTop, setScrollTop] = useState(0);
 
-  // Cards pagination state
-  const [currentCardPage, setCurrentCardPage] = useState(1);
+  // Cards virtualization state (scroll-based like table)
+  const [cardStartIndex, setCardStartIndex] = useState(0);
+  const [cardEndIndex, setCardEndIndex] = useState(12); // Show 12 cards initially
+  const [cardScrollTop, setCardScrollTop] = useState(0);
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  const cardsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Calculate visible cards range based on scroll position
+  const updateVisibleCardsRange = useCallback((scrollTop: number) => {
+    const visibleStart = Math.floor(scrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
+    const visibleEnd = Math.min(
+      visibleStart + Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) * CARDS_PER_ROW + CARD_BUFFER_SIZE,
+      claims.length
+    );
+
+    // Add buffer zones
+    const bufferedStart = Math.max(0, visibleStart - CARD_BUFFER_SIZE);
+    const bufferedEnd = Math.min(claims.length, visibleEnd + CARD_BUFFER_SIZE);
+
+    setCardStartIndex(bufferedStart);
+    setCardEndIndex(bufferedEnd);
+    setCardScrollTop(scrollTop);
+  }, [claims.length]);
+
+  // Handle cards scroll events
+  const handleCardsScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    updateVisibleCardsRange(scrollTop);
+  }, [updateVisibleCardsRange]);
+
+  // Initialize cards visible range
+  useEffect(() => {
+    if (claims.length > 0 && viewMode === 'cards') {
+      updateVisibleCardsRange(0);
+    }
+  }, [claims.length, viewMode, updateVisibleCardsRange]);
 
   // Calculate visible range based on scroll position
   const updateVisibleRange = useCallback((scrollTop: number) => {
@@ -213,20 +248,6 @@ const ClaimsDashboard: React.FC = () => {
       };
     });
   }, [claims]);
-
-  // Calculate pagination for cards (after formattedClaims is defined)
-  const totalCardPages = Math.ceil(formattedClaims.length / CARDS_PER_PAGE);
-  const startCardIndex = (currentCardPage - 1) * CARDS_PER_PAGE;
-  const endCardIndex = startCardIndex + CARDS_PER_PAGE;
-  const currentCards = formattedClaims.slice(startCardIndex, endCardIndex);
-
-  // Pagination handlers
-  const goToCardPage = (page: number) => {
-    setCurrentCardPage(Math.max(1, Math.min(page, totalCardPages)));
-  };
-
-  const nextCardPage = () => goToCardPage(currentCardPage + 1);
-  const prevCardPage = () => goToCardPage(currentCardPage - 1);
 
   if (loading) {
     return (
@@ -480,56 +501,42 @@ const ClaimsDashboard: React.FC = () => {
               </div>
             </>
           ) : (
-            /* Cards View with Pagination */
+            /* Cards View with Scroll-Based Virtualization */
             <>
-              <div className="p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="claims-cards">
-                  {currentCards.map((claim) => (
-                    <ClaimCard key={claim.id} claim={claim} />
-                  ))}
+              <div
+                ref={cardsContainerRef}
+                className="overflow-auto focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+                style={{ height: CONTAINER_HEIGHT }}
+                onScroll={handleCardsScroll}
+                role="region"
+                aria-labelledby="claims-cards"
+                aria-describedby="claims-cards-desc"
+                tabIndex={0}
+                aria-label="Virtualized claims cards - scroll to load more data"
+              >
+                {/* Top spacer for cards virtualization */}
+                <div style={{ height: Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT }} />
+
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="claims-cards">
+                    {formattedClaims.slice(cardStartIndex, cardEndIndex).map((claim) => (
+                      <ClaimCard key={claim.id} claim={claim} />
+                    ))}
+                  </div>
                 </div>
 
-                {/* Pagination Controls */}
-                {totalCardPages > 1 && (
-                  <div className="mt-8 flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={prevCardPage}
-                        disabled={currentCardPage === 1}
-                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Previous page"
-                      >
-                        ← Previous
-                      </button>
-
-                      <span className="text-sm text-gray-700">
-                        Page {currentCardPage} of {totalCardPages}
-                      </span>
-
-                      <button
-                        onClick={nextCardPage}
-                        disabled={currentCardPage === totalCardPages}
-                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        aria-label="Next page"
-                      >
-                        Next →
-                      </button>
-                    </div>
-
-                    <div className="text-sm text-gray-500">
-                      Showing {startCardIndex + 1}-{Math.min(endCardIndex, formattedClaims.length)} of {formattedClaims.length} claims
-                    </div>
-                  </div>
-                )}
+                {/* Bottom spacer for cards virtualization */}
+                <div style={{ height: Math.floor((claims.length - cardEndIndex) / CARDS_PER_ROW) * CARD_HEIGHT }} />
               </div>
 
               <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-cards-desc">
                 <div>
                   <p className="text-sm text-gray-500">
-                    Card view: Paginated display with {CARDS_PER_PAGE} cards per page for optimal performance.
+                    Virtualized cards: Showing {cardEndIndex - cardStartIndex} rendered cards of {claims.length} total claims.
+                    Scroll to dynamically load/unload data for optimal performance.
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Total claims: {claims.length} | Current page: {currentCardPage} of {totalCardPages} | Last updated: {new Date().toLocaleString()}
+                    Rendered range: {cardStartIndex + 1}-{Math.min(cardEndIndex, claims.length)} | Last updated: {new Date().toLocaleString()}
                   </p>
                 </div>
               </div>
