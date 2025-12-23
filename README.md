@@ -54,6 +54,40 @@ Run ESLint:
 pnpm lint
 ```
 
+Fix ESLint issues automatically:
+```bash
+pnpm lint:fix
+```
+
+## Testing
+
+Run tests:
+```bash
+pnpm test
+```
+
+Run tests with UI:
+```bash
+pnpm test:ui
+```
+
+## Branching Strategy
+
+This project follows **GitHub Flow** for branching:
+
+- **`main`**: Production-ready code, always deployable
+- **Feature branches**: Created from `main` for new features/fixes
+  - Naming: `feature/description` or `fix/description`
+- **Pull Requests**: All changes merged via PRs to `main`
+- **CI Checks**: Automated linting and testing run on every push/PR
+
+### Workflow:
+1. Create feature branch: `git checkout -b feature/new-feature`
+2. Make changes and commit: `git commit -m "Add new feature"`
+3. Push branch: `git push origin feature/new-feature`
+4. Create Pull Request on GitHub
+5. CI checks pass, get review, merge to `main`
+
 ## Benefits of This Approach
 
 ### pnpm
