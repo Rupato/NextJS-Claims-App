@@ -10,18 +10,21 @@ interface TableViewProps {
   formattedClaims: FormattedClaim[];
   startIndex: number;
   endIndex: number;
-  claimsLength: number;
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
+  hasActiveFilters: boolean;
 }
 
 export const TableView: React.FC<TableViewProps> = ({
   formattedClaims,
   startIndex,
   endIndex,
-  claimsLength,
   onScroll,
+  hasActiveFilters,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Use smaller row height when filters are active to show more data
+  const rowHeight = hasActiveFilters ? 48 : ROW_HEIGHT;
 
   return (
     <>
@@ -46,11 +49,15 @@ export const TableView: React.FC<TableViewProps> = ({
           {/* Top spacer for virtualization */}
           <TableHeader />
           <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
-            <tr style={{ height: startIndex * ROW_HEIGHT }} />
+            <tr style={{ height: startIndex * rowHeight }} />
             {formattedClaims.slice(startIndex, endIndex).map((claim) => (
               <TableRow key={claim.id} claim={claim} />
             ))}
-            <tr style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
+            <tr
+              style={{
+                height: (formattedClaims.length - endIndex) * rowHeight,
+              }}
+            />
           </tbody>
           {/* Bottom spacer for virtualization */}
         </table>
@@ -63,12 +70,13 @@ export const TableView: React.FC<TableViewProps> = ({
         <div>
           <p className="text-sm text-gray-500">
             Virtualized table: Showing {endIndex - startIndex} rendered rows of{' '}
-            {claimsLength} total claims. Scroll to dynamically load/unload data
-            for optimal performance.
+            {formattedClaims.length} total claims. Scroll to dynamically
+            load/unload data for optimal performance.
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Rendered range: {startIndex + 1}-{Math.min(endIndex, claimsLength)}{' '}
-            | Last updated: {new Date().toLocaleString()}
+            Rendered range: {startIndex + 1}-
+            {Math.min(endIndex, formattedClaims.length)} | Last updated:{' '}
+            {new Date().toLocaleString()}
           </p>
         </div>
       </div>

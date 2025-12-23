@@ -9,20 +9,23 @@ interface CardsViewProps {
   formattedClaims: FormattedClaim[];
   cardStartIndex: number;
   cardEndIndex: number;
-  claimsLength: number;
   cardsPerRow: number;
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
+  hasActiveFilters: boolean;
 }
 
 export const CardsView: React.FC<CardsViewProps> = ({
   formattedClaims,
   cardStartIndex,
   cardEndIndex,
-  claimsLength,
   cardsPerRow,
   onScroll,
+  hasActiveFilters,
 }) => {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Use smaller card height when filters are active to show more cards
+  const cardHeight = hasActiveFilters ? 200 : CARD_HEIGHT;
 
   return (
     <>
@@ -41,7 +44,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
           {/* Top spacer for cards virtualization */}
           <div
             style={{
-              height: Math.floor(cardStartIndex / cardsPerRow) * CARD_HEIGHT,
+              height: Math.floor(cardStartIndex / cardsPerRow) * cardHeight,
             }}
           />
           <div
@@ -59,8 +62,9 @@ export const CardsView: React.FC<CardsViewProps> = ({
           <div
             style={{
               height:
-                Math.floor((claimsLength - cardEndIndex) / cardsPerRow) *
-                CARD_HEIGHT,
+                Math.floor(
+                  (formattedClaims.length - cardEndIndex) / cardsPerRow
+                ) * cardHeight,
             }}
           />
         </div>
@@ -73,12 +77,12 @@ export const CardsView: React.FC<CardsViewProps> = ({
         <div>
           <p className="text-sm text-gray-500">
             Virtualized cards: Showing {cardEndIndex - cardStartIndex} rendered
-            cards of {claimsLength} total claims. Scroll to dynamically
-            load/unload data for optimal performance.
+            cards of {formattedClaims.length} total claims. Scroll to
+            dynamically load/unload data for optimal performance.
           </p>
           <p className="text-xs text-gray-400 mt-1">
             Rendered range: {cardStartIndex + 1}-
-            {Math.min(cardEndIndex, claimsLength)} | Last updated:{' '}
+            {Math.min(cardEndIndex, formattedClaims.length)} | Last updated:{' '}
             {new Date().toLocaleString()}
           </p>
         </div>

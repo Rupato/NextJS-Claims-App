@@ -9,6 +9,7 @@ import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
 import { useSearch } from '../hooks/useSearch';
 import { ViewModeTabs } from './ViewModeTabs';
 import { SearchInput } from './SearchInput';
+import StatusFilter from './StatusFilter';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
 
@@ -18,18 +19,41 @@ const ClaimsDashboard: React.FC = () => {
     'claims-dashboard-view-mode',
     'table'
   );
+  const [selectedStatuses, setSelectedStatuses] = usePersistedState<string[]>(
+    'claims-dashboard-selected-statuses',
+    []
+  );
 
-  // Search functionality
+  // Get available statuses from claims data
+  const availableStatuses = React.useMemo(() => {
+    const statusSet = new Set(claims.map((claim) => claim.status));
+    return Array.from(statusSet).sort();
+  }, [claims]);
+
+  // Filter claims by selected statuses first
+  const statusFilteredClaims = React.useMemo(() => {
+    if (selectedStatuses.length === 0) {
+      return claims;
+    }
+    return claims.filter((claim) => selectedStatuses.includes(claim.status));
+  }, [claims, selectedStatuses]);
+
+  // Search functionality (applied after status filtering)
   const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
-    useSearch(claims);
+    useSearch(statusFilteredClaims);
+
+  // Determine row/card height based on active filters
+  const rowHeight = selectedStatuses.length > 0 || !!searchTerm ? 48 : 64;
+  const cardHeight = selectedStatuses.length > 0 || !!searchTerm ? 200 : 240;
 
   // Always call hooks in same order (Rules of Hooks)
   const formattedClaims = useFormattedClaims(filteredClaims);
   const { startIndex, endIndex, handleScroll } = useTableVirtualization(
-    filteredClaims.length
+    filteredClaims.length,
+    rowHeight
   );
   const { cardStartIndex, cardEndIndex, handleCardsScroll, cardsPerRow } =
-    useCardsVirtualization(filteredClaims.length, viewMode);
+    useCardsVirtualization(filteredClaims.length, viewMode, cardHeight);
 
   // Loading skeleton component
   if (loading) {
@@ -119,6 +143,15 @@ const ClaimsDashboard: React.FC = () => {
           </div>
         </header>
 
+        {/* Status Filter */}
+        <div className="mt-4">
+          <StatusFilter
+            selectedStatuses={selectedStatuses}
+            onStatusChange={setSelectedStatuses}
+            availableStatuses={availableStatuses}
+          />
+        </div>
+
         {/* Screen Reader Navigation Instructions */}
         <nav aria-label="Dashboard actions" className="sr-only">
           <p>
@@ -165,7 +198,8 @@ const ClaimsDashboard: React.FC = () => {
             </div>
           </div>
 
-          {filteredClaims.length === 0 && searchTerm ? (
+          {filteredClaims.length === 0 &&
+          (searchTerm || selectedStatuses.length > 0) ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
@@ -185,8 +219,11 @@ const ClaimsDashboard: React.FC = () => {
                 Nothing found
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                No claims match &quot;{searchTerm}&quot;. Try adjusting your
-                search.
+                {searchTerm && selectedStatuses.length > 0
+                  ? `No claims match "${searchTerm}" with the selected status filters.`
+                  : searchTerm
+                    ? `No claims match "${searchTerm}". Try adjusting your search.`
+                    : `No claims found with the selected status filters. Try adjusting your filters.`}
               </p>
             </div>
           ) : (
@@ -201,6 +238,7 @@ const ClaimsDashboard: React.FC = () => {
               cardsPerRow={cardsPerRow}
               onTableScroll={handleScroll}
               onCardsScroll={handleCardsScroll}
+              hasActiveFilters={selectedStatuses.length > 0 || !!searchTerm}
             />
           )}
         </section>

@@ -5,7 +5,8 @@ import { CONTAINER_HEIGHT, CARD_HEIGHT } from '../constants/virtualization';
 
 export const useCardsVirtualization = (
   claimsLength: number,
-  viewMode: 'table' | 'cards'
+  viewMode: 'table' | 'cards',
+  cardHeight: number = CARD_HEIGHT
 ) => {
   const [cardScrollTop, setCardScrollTop] = useState(0);
   const [cardsPerRow, setCardsPerRow] = useState(1); // Default to mobile
@@ -40,11 +41,11 @@ export const useCardsVirtualization = (
     }
 
     // Calculate which card we're scrolled to
-    const currentCard = Math.floor(cardScrollTop / CARD_HEIGHT) * cardsPerRow;
+    const currentCard = Math.floor(cardScrollTop / cardHeight) * cardsPerRow;
 
     // Calculate visible cards (show current cards and buffer)
     const visibleCards =
-      Math.ceil((CONTAINER_HEIGHT / CARD_HEIGHT) * cardsPerRow) +
+      Math.ceil((CONTAINER_HEIGHT / cardHeight) * cardsPerRow) +
       cardsPerRow * 2; // +2 rows for buffer
     const startCard = Math.max(0, currentCard - cardsPerRow); // -1 row for buffer
     const endCard = Math.min(startCard + visibleCards, claimsLength);
@@ -53,7 +54,7 @@ export const useCardsVirtualization = (
       cardStartIndex: startCard,
       cardEndIndex: endCard,
     };
-  }, [cardScrollTop, claimsLength, viewMode, cardsPerRow]);
+  }, [cardScrollTop, claimsLength, viewMode, cardsPerRow, cardHeight]);
 
   // Handle cards scroll events
   const handleCardsScroll = useCallback(

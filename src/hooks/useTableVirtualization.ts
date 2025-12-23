@@ -3,14 +3,17 @@
 import { useState, useMemo, useCallback } from 'react';
 import { ROW_HEIGHT, BUFFER_SIZE } from '../constants/virtualization';
 
-export const useTableVirtualization = (claimsLength: number) => {
+export const useTableVirtualization = (
+  claimsLength: number,
+  rowHeight: number = ROW_HEIGHT
+) => {
   const [scrollTop, setScrollTop] = useState(0);
 
   // Calculate visible range based on claimsLength and scrollTop
   const { startIndex, endIndex } = useMemo(() => {
-    const visibleStart = Math.floor(scrollTop / ROW_HEIGHT);
+    const visibleStart = Math.floor(scrollTop / rowHeight);
     const visibleEnd = Math.min(
-      visibleStart + Math.ceil(600 / ROW_HEIGHT) + BUFFER_SIZE, // 600 is CONTAINER_HEIGHT
+      visibleStart + Math.ceil(600 / rowHeight) + BUFFER_SIZE, // 600 is CONTAINER_HEIGHT
       claimsLength
     );
 
@@ -22,7 +25,7 @@ export const useTableVirtualization = (claimsLength: number) => {
       startIndex: bufferedStart,
       endIndex: bufferedEnd,
     };
-  }, [scrollTop, claimsLength]);
+  }, [scrollTop, claimsLength, rowHeight]);
 
   // Handle scroll events
   const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {

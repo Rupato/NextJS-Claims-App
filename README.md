@@ -21,6 +21,8 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 
 - **Claims Display**: Table and card view modes with comprehensive claim information
 - **Advanced Search**: Real-time search across claim ID, holder name, and policy number with 300ms debouncing
+- **Status Filtering**: Multi-select dropdown filter with active filter chips and clear all option
+- **Dynamic UI Adaptation**: Table rows and cards automatically reduce height when filters are active, showing more data in the same viewport
 - **Responsive Design**: Mobile-first approach with adaptive layouts for all screen sizes
 - **Virtual Scrolling**: Handles 1000+ claims efficiently with zero performance degradation
 - **Accessibility**: Full WCAG compliance with ARIA labels, keyboard navigation, and screen reader support
@@ -53,6 +55,14 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 - 300ms debouncing prevents excessive API calls
 - Client-side filtering with instant visual feedback
 - Loading states and accessibility announcements
+
+### StatusFilter Component Architecture
+
+- Multi-select dropdown with checkbox interface for status filtering
+- Active filter chips with individual remove buttons and "clear all" functionality
+- Click-outside-to-close behavior with proper focus management
+- Accessibility-first design with ARIA labels and keyboard navigation
+- 20 comprehensive unit tests covering all user interactions and edge cases
 
 ### Responsive Design Strategy
 
@@ -143,12 +153,14 @@ pnpm test:ui
 - **Unit tests** for components and hooks
 - **Integration tests** for user workflows
 - **Accessibility tests** for ARIA compliance
+- **StatusFilter Component**: 20 comprehensive tests covering all functionality including dropdown behavior, multi-select filtering, chip management, and edge cases
 
 ## Branching Strategy
 
 This project follows **GitHub Flow** for branching:
 
 - **`main`**: Production-ready code, always deployable
+- **`feature/status-filter-functionality`**: Current feature branch implementing status filtering with dynamic UI adaptation
 - **Feature branches**: Created from `main` for new features/fixes
   - Naming: `feature/description` or `fix/description`
 - **Pull Requests**: All changes merged via PRs to `main`
