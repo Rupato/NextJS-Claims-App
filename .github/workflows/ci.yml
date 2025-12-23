@@ -60,6 +60,14 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test --run --coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
   # 🔴 MANDATORY: Production Build
   build:
     name: '3️⃣ CI / build'
@@ -139,6 +147,14 @@ jobs:
       - name: Run tests with coverage
         run: pnpm test --run --coverage
 
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+
   # ⚠️ RECOMMENDED: Code Formatting Check
   format:
     name: '6️⃣ CI / format'
@@ -190,6 +206,14 @@ jobs:
 
       - name: Run tests with coverage
         run: pnpm test --run --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
 
   # ⭐ ADVANCED: Security & Dependencies
   security:
