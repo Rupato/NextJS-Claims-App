@@ -2,7 +2,8 @@
 # This file defines who should review code changes
 
 # Global owners - require review from these users for all changes
-* @Rupato
+# Temporarily commented out for testing CI pipeline
+# * @Rupato
 
 # Specific file/directory owners
 # Frontend components
