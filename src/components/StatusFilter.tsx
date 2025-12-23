@@ -7,7 +7,7 @@ interface StatusFilterProps {
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({
-  selectedStatuses,
+  selectedStatuses = [],
   onStatusChange,
   availableStatuses,
 }) => {
@@ -44,6 +44,9 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
     onStatusChange(selectedStatuses.filter((s) => s !== statusToRemove));
   };
 
+  // Remove duplicates from availableStatuses
+  const uniqueAvailableStatuses = [...new Set(availableStatuses)];
+
   return (
     <div className="relative" ref={dropdownRef}>
       <div className="flex items-center gap-4">
@@ -78,7 +81,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             <div className="absolute z-50 mt-1 w-56 bg-white border border-gray-200 rounded-lg shadow-lg">
               <div className="p-2">
                 <div className="space-y-1">
-                  {availableStatuses.map((status) => (
+                  {uniqueAvailableStatuses.map((status) => (
                     <label
                       key={status}
                       className="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer"

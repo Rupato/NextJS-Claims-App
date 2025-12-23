@@ -141,7 +141,9 @@ describe('ClaimsDashboard', () => {
       isSearching: false,
     });
 
-    mockUsePersistedState.mockReturnValue(['table', vi.fn()]);
+    mockUsePersistedState
+      .mockReturnValueOnce(['table', vi.fn()]) // viewMode
+      .mockReturnValueOnce([[], vi.fn()]); // selectedStatuses
   });
 
   it('renders loading skeleton when loading', () => {
@@ -231,10 +233,14 @@ describe('ClaimsDashboard', () => {
     expect(mockUseClaims).toHaveBeenCalledTimes(1);
     expect(mockUseSearch).toHaveBeenCalledWith(mockClaims);
     expect(mockUseFormattedClaims).toHaveBeenCalledWith(mockClaims);
-    expect(mockUseTableVirtualization).toHaveBeenCalledWith(mockClaims.length);
+    expect(mockUseTableVirtualization).toHaveBeenCalledWith(
+      mockClaims.length,
+      64
+    );
     expect(mockUseCardsVirtualization).toHaveBeenCalledWith(
       mockClaims.length,
-      'table'
+      'table',
+      240
     );
     expect(mockUsePersistedState).toHaveBeenCalledWith(
       'claims-dashboard-view-mode',

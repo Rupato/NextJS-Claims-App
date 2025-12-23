@@ -265,18 +265,10 @@ describe('StatusFilter', () => {
     fireEvent.click(button);
 
     await waitFor(() => {
-      const dropdown = screen.getByText('Approved').closest('div');
-      expect(dropdown).toHaveClass(
-        'absolute',
-        'z-50',
-        'mt-1',
-        'w-56',
-        'bg-white',
-        'border',
-        'border-gray-200',
-        'rounded-lg',
-        'shadow-lg'
+      const dropdown = document.querySelector(
+        '.absolute.z-50.mt-1.w-56.bg-white.border.border-gray-200.rounded-lg.shadow-lg'
       );
+      expect(dropdown).toBeInTheDocument();
     });
   });
 });

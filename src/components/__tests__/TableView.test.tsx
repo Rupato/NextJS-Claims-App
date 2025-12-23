@@ -61,8 +61,8 @@ const mockProps = {
   formattedClaims: mockClaims,
   startIndex: 0,
   endIndex: 2,
-  claimsLength: 10,
   onScroll: vi.fn(),
+  hasActiveFilters: false,
 };
 
 describe('TableView', () => {
@@ -133,7 +133,7 @@ describe('TableView', () => {
     expect(footerDiv).toBeInTheDocument();
     expect(footerDiv).toHaveTextContent('Virtualized table');
     expect(footerDiv).toHaveTextContent(
-      'Showing 2 rendered rows of 10 total claims'
+      'Showing 2 rendered rows of 2 total claims'
     );
     expect(footerDiv).toHaveTextContent('Rendered range: 1-2');
   });
