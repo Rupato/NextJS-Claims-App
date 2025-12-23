@@ -6,7 +6,9 @@ import { useClaims } from '../hooks/useClaims';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
+import { useSearch } from '../hooks/useSearch';
 import { ViewModeTabs } from './ViewModeTabs';
+import { SearchInput } from './SearchInput';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
 
@@ -17,13 +19,16 @@ const ClaimsDashboard: React.FC = () => {
     'table'
   );
 
+  // Search functionality
+  const { searchTerm, setSearchTerm, filteredClaims, isSearching } = useSearch(claims);
+
   // Always call hooks in same order (Rules of Hooks)
-  const formattedClaims = useFormattedClaims(claims);
+  const formattedClaims = useFormattedClaims(filteredClaims);
   const { startIndex, endIndex, handleScroll } = useTableVirtualization(
-    claims.length
+    filteredClaims.length
   );
   const { cardStartIndex, cardEndIndex, handleCardsScroll } =
-    useCardsVirtualization(claims.length, viewMode);
+    useCardsVirtualization(filteredClaims.length, viewMode);
 
   // Loading skeleton component
   if (loading) {
@@ -98,10 +103,17 @@ const ClaimsDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <ViewModeTabs
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-              />
+              <div className="flex items-center space-x-4">
+                <SearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  isSearching={isSearching}
+                />
+                <ViewModeTabs
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -122,8 +134,8 @@ const ClaimsDashboard: React.FC = () => {
           className="sr-only"
           id="dashboard-status"
         >
-          {claims.length > 0 &&
-            `Displaying ${claims.length} insurance claims in ${viewMode} view`}
+          {filteredClaims.length > 0 &&
+            `Displaying ${filteredClaims.length} of ${claims.length} insurance claims in ${viewMode} view${searchTerm ? ` matching "${searchTerm}"` : ''}`}
         </div>
 
         <section
@@ -140,12 +152,11 @@ const ClaimsDashboard: React.FC = () => {
             <h2 id="claims-section-title">Insurance Claims Data</h2>
             <div id="claims-table-instructions">
               Table view: Use arrow keys to navigate cells, Enter to interact
-              with rows. Virtualized for performance with {claims.length} total
-              claims.
+              with rows. Virtualized for performance with {filteredClaims.length} of {claims.length} claims shown{searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
             <div id="claims-cards-instructions">
               Cards view: Use Tab to navigate between cards, Enter to expand
-              details. Virtualized grid with {claims.length} total claims.
+              details. Virtualized grid with {filteredClaims.length} of {claims.length} claims shown{searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
           </div>
 
@@ -165,7 +176,7 @@ const ClaimsDashboard: React.FC = () => {
         {/* Screen Reader Summary */}
         <div className="sr-only" aria-live="off" aria-label="Dashboard summary">
           <p>
-            Claims Dashboard contains {claims.length} insurance claims.
+            Claims Dashboard contains {claims.length} insurance claims{searchTerm ? `, showing ${filteredClaims.length} matching "${searchTerm}"` : ''}.
             Currently viewing in {viewMode} mode. Last updated:{' '}
             {new Date().toLocaleString()}.
           </p>
