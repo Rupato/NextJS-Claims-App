@@ -4,21 +4,15 @@ import { Claim } from '../types/claims';
 export const useSearch = (claims: Claim[], delay: number = 300) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
 
   // Debounce the search term
   useEffect(() => {
-    if (searchTerm !== debouncedSearchTerm) {
-      setIsSearching(true);
-    }
-
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
-      setIsSearching(false);
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [searchTerm, delay, debouncedSearchTerm]);
+  }, [searchTerm, delay]);
 
   // Filter claims based on search term
   const filteredClaims = useMemo(() => {
@@ -34,6 +28,9 @@ export const useSearch = (claims: Claim[], delay: number = 300) => {
       claim.policyNumber.toLowerCase().includes(searchLower)
     );
   }, [claims, debouncedSearchTerm]);
+
+  // Show loading when search term has changed but debounced value hasn't caught up
+  const isSearching = searchTerm !== debouncedSearchTerm;
 
   return {
     searchTerm,

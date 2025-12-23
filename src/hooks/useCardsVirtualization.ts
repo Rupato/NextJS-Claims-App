@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   CONTAINER_HEIGHT,
-  CARDS_PER_ROW,
   CARD_HEIGHT,
 } from '../constants/virtualization';
 
@@ -12,30 +11,47 @@ export const useCardsVirtualization = (
   viewMode: 'table' | 'cards'
 ) => {
   const [cardScrollTop, setCardScrollTop] = useState(0);
+  const [cardsPerRow, setCardsPerRow] = useState(1); // Default to mobile
 
-  // Calculate visible cards range using row-based approach for cards
+  // Update cards per row based on screen size
+  useEffect(() => {
+    const updateCardsPerRow = () => {
+      if (typeof window === 'undefined') return;
+
+      const width = window.innerWidth;
+      if (width >= 1024) { // lg breakpoint
+        setCardsPerRow(3);
+      } else if (width >= 768) { // md breakpoint
+        setCardsPerRow(2);
+      } else { // mobile
+        setCardsPerRow(1);
+      }
+    };
+
+    updateCardsPerRow();
+    window.addEventListener('resize', updateCardsPerRow);
+    return () => window.removeEventListener('resize', updateCardsPerRow);
+  }, []);
+
+  // Calculate visible cards range using responsive approach
   const { cardStartIndex, cardEndIndex } = useMemo(() => {
     if (viewMode !== 'cards' || claimsLength === 0) {
       return { cardStartIndex: 0, cardEndIndex: 0 };
     }
 
-    // Calculate which row we're scrolled to
-    const currentRow = Math.floor(cardScrollTop / CARD_HEIGHT);
+    // Calculate which card we're scrolled to
+    const currentCard = Math.floor(cardScrollTop / CARD_HEIGHT) * cardsPerRow;
 
-    // Calculate visible rows (show current row and buffer)
-    const visibleRows = Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) + 2; // +2 for buffer
-    const startRow = Math.max(0, currentRow - 1); // -1 for buffer
-    const endRow = startRow + visibleRows;
-
-    // Convert rows to card indices
-    const visibleStart = startRow * CARDS_PER_ROW;
-    const visibleEnd = Math.min(endRow * CARDS_PER_ROW, claimsLength);
+    // Calculate visible cards (show current cards and buffer)
+    const visibleCards = Math.ceil((CONTAINER_HEIGHT / CARD_HEIGHT) * cardsPerRow) + cardsPerRow * 2; // +2 rows for buffer
+    const startCard = Math.max(0, currentCard - cardsPerRow); // -1 row for buffer
+    const endCard = Math.min(startCard + visibleCards, claimsLength);
 
     return {
-      cardStartIndex: visibleStart,
-      cardEndIndex: visibleEnd,
+      cardStartIndex: startCard,
+      cardEndIndex: endCard,
     };
-  }, [cardScrollTop, claimsLength, viewMode]);
+  }, [cardScrollTop, claimsLength, viewMode, cardsPerRow]);
 
   // Handle cards scroll events
   const handleCardsScroll = useCallback(
@@ -51,5 +67,6 @@ export const useCardsVirtualization = (
     cardEndIndex,
     cardScrollTop,
     handleCardsScroll,
+    cardsPerRow,
   };
 };

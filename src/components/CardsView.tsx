@@ -5,7 +5,6 @@ import { FormattedClaim } from '../types/claims';
 import { ClaimCard } from './ClaimCard';
 import {
   CONTAINER_HEIGHT,
-  CARDS_PER_ROW,
   CARD_HEIGHT,
 } from '../constants/virtualization';
 
@@ -14,6 +13,7 @@ interface CardsViewProps {
   cardStartIndex: number;
   cardEndIndex: number;
   claimsLength: number;
+  cardsPerRow: number;
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
 }
 
@@ -22,6 +22,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
   cardStartIndex,
   cardEndIndex,
   claimsLength,
+  cardsPerRow,
   onScroll,
 }) => {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
@@ -43,7 +44,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
           {/* Top spacer for cards virtualization */}
           <div
             style={{
-              height: Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT,
+              height: Math.floor(cardStartIndex / cardsPerRow) * CARD_HEIGHT,
             }}
           />
           <div
@@ -61,7 +62,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
           <div
             style={{
               height:
-                Math.floor((claimsLength - cardEndIndex) / CARDS_PER_ROW) *
+                Math.floor((claimsLength - cardEndIndex) / cardsPerRow) *
                 CARD_HEIGHT,
             }}
           />

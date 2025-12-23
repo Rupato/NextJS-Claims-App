@@ -4,7 +4,6 @@ import { useState, useMemo, useCallback } from 'react';
 import {
   ROW_HEIGHT,
   BUFFER_SIZE,
-  CONTAINER_HEIGHT,
 } from '../constants/virtualization';
 
 export const useTableVirtualization = (claimsLength: number) => {

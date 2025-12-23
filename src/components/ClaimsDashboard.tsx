@@ -27,7 +27,7 @@ const ClaimsDashboard: React.FC = () => {
   const { startIndex, endIndex, handleScroll } = useTableVirtualization(
     filteredClaims.length
   );
-  const { cardStartIndex, cardEndIndex, handleCardsScroll } =
+  const { cardStartIndex, cardEndIndex, handleCardsScroll, cardsPerRow } =
     useCardsVirtualization(filteredClaims.length, viewMode);
 
   // Loading skeleton component
@@ -168,6 +168,7 @@ const ClaimsDashboard: React.FC = () => {
             cardStartIndex={cardStartIndex}
             cardEndIndex={cardEndIndex}
             claimsLength={claims.length}
+            cardsPerRow={cardsPerRow}
             onTableScroll={handleScroll}
             onCardsScroll={handleCardsScroll}
           />
