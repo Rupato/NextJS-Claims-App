@@ -22,6 +22,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 - **Claims Display**: Table and card view modes with comprehensive claim information
 - **Advanced Search**: Real-time search across claim ID, holder name, and policy number with 300ms debouncing
 - **Status Filtering**: Multi-select dropdown filter with active filter chips and clear all option
+- **Advanced Sorting**: Dropdown with 6 sorting options (created date, claim amount, total amount) with visual indicators for active sort
 - **Dynamic UI Adaptation**: Table rows and cards automatically reduce height when filters are active, showing more data in the same viewport
 - **Responsive Design**: Mobile-first approach with adaptive layouts for all screen sizes
 - **Virtual Scrolling**: Handles 1000+ claims efficiently with zero performance degradation
@@ -32,7 +33,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 - **TypeScript**: Strict mode enabled throughout with comprehensive type safety
 - **Modern React**: Hooks, functional components, and optimized re-renders
 - **Performance**: Virtual scrolling, memoization, and efficient state management
-- **Testing**: 137 comprehensive tests covering all critical functionality
+- **Testing**: 170 comprehensive tests covering all critical functionality
 - **Code Quality**: ESLint compliant with clean, maintainable architecture
 
 ### Performance Optimizations
@@ -148,19 +149,21 @@ pnpm test:ui
 
 **Test Coverage:**
 
-- **137 tests** across 17 test files
+- **170 tests** across 19 test files
 - **100% pass rate** on all functionality
 - **Unit tests** for components and hooks
 - **Integration tests** for user workflows
 - **Accessibility tests** for ARIA compliance
 - **StatusFilter Component**: 20 comprehensive tests covering all functionality including dropdown behavior, multi-select filtering, chip management, and edge cases
+- **SortDropdown Component**: 12 comprehensive tests covering dropdown behavior, sorting logic, visual indicators, and accessibility
 
 ## Branching Strategy
 
 This project follows **GitHub Flow** for branching:
 
 - **`main`**: Production-ready code, always deployable
-- **`feature/status-filter-functionality`**: Current feature branch implementing status filtering with dynamic UI adaptation
+- **`feature/status-filter-functionality`**: Feature branch implementing status filtering with dynamic UI adaptation
+- **`feature-sort`**: Feature branch implementing advanced sorting functionality with 6 sorting options
 - **Feature branches**: Created from `main` for new features/fixes
   - Naming: `feature/description` or `fix/description`
 - **Pull Requests**: All changes merged via PRs to `main`
