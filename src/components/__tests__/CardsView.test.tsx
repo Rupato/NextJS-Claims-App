@@ -54,6 +54,7 @@ const mockProps = {
   claimsLength: 10,
   cardsPerRow: 3,
   onScroll: vi.fn(),
+  hasActiveFilters: false,
 };
 
 describe('CardsView', () => {
@@ -108,7 +109,7 @@ describe('CardsView', () => {
     expect(footerDiv).toBeInTheDocument();
     expect(footerDiv).toHaveTextContent('Virtualized cards');
     expect(footerDiv).toHaveTextContent(
-      'Showing 2 rendered cards of 10 total claims'
+      'Showing 2 rendered cards of 2 total claims'
     );
     expect(footerDiv).toHaveTextContent('Rendered range: 1-2');
   });
