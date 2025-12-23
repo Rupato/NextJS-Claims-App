@@ -1,3 +1,5 @@
+'use client';
+
 import React, {
   useState,
   useEffect,
@@ -5,36 +7,21 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
+import { Claim, FormattedClaim, ViewMode } from '../types/claims';
+import { formatCurrency } from '../utils/formatters';
+import { usePersistedState } from '../utils/storage';
+import { TableView } from './TableView';
+import { CardsView } from './CardsView';
+import { ClaimCard } from './ClaimCard';
+import {
+  ROW_HEIGHT,
+  BUFFER_SIZE,
+  CONTAINER_HEIGHT,
+  CARDS_PER_ROW,
+  CARD_HEIGHT,
+  CARD_BUFFER_SIZE,
+} from '../constants/virtualization';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-
-interface Claim {
-  id: number;
-  number: string;
-  incidentDate: string;
-  createdAt: string;
-  amount: string;
-  holder: string;
-  policyNumber: string;
-  processingFee: string;
-  status: string;
-}
-
-interface FormattedClaim extends Claim {
-  formattedClaimAmount: string;
-  formattedProcessingFee: string;
-  formattedTotalAmount: string;
-  formattedIncidentDate: string;
-  formattedCreatedDate: string;
-}
-
-// Memoized currency formatter for performance
-const formatCurrency = (amount: string): string => {
-  const numAmount = parseFloat(amount);
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  }).format(numAmount);
-};
 
 // Loading skeleton component
 const LoadingSkeleton = () => (
@@ -56,133 +43,6 @@ const LoadingSkeleton = () => (
     </div>
   </div>
 );
-
-const ROW_HEIGHT = 64; // Approximate height of each table row in pixels
-const BUFFER_SIZE = 10; // Number of rows to keep as buffer above/below visible area
-const CONTAINER_HEIGHT = 600; // Fixed height of scrollable container
-
-// Individual claim card component
-const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => {
-  return (
-    <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-      <header className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900">
-            {claim.number}
-          </h3>
-          <p className="text-sm text-gray-600">{claim.holder}</p>
-        </div>
-        <span
-          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-            claim.status === 'Approved'
-              ? 'bg-green-100 text-green-800'
-              : claim.status === 'Rejected'
-                ? 'bg-red-100 text-red-800'
-                : claim.status === 'Submitted'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : claim.status === 'Processed'
-                    ? 'bg-blue-100 text-blue-800'
-                    : claim.status === 'Completed'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-gray-100 text-gray-800'
-          }`}
-          aria-label={`Status: ${claim.status}`}
-        >
-          {claim.status}
-        </span>
-      </header>
-
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div>
-          <dt className="text-xs font-medium text-gray-500 uppercase">
-            Policy Number
-          </dt>
-          <dd className="text-sm text-gray-900 mt-1">{claim.policyNumber}</dd>
-        </div>
-        <div>
-          <dt className="text-xs font-medium text-gray-500 uppercase">
-            Claim Amount
-          </dt>
-          <dd className="text-sm font-medium text-gray-900 mt-1">
-            {claim.formattedClaimAmount}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-medium text-gray-500 uppercase">
-            Processing Fee
-          </dt>
-          <dd className="text-sm text-gray-900 mt-1">
-            {claim.formattedProcessingFee}
-          </dd>
-        </div>
-        <div>
-          <dt className="text-xs font-medium text-gray-500 uppercase">
-            Total Amount
-          </dt>
-          <dd className="text-lg font-bold text-gray-900 mt-1">
-            {claim.formattedTotalAmount}
-          </dd>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-200 pt-4">
-        <div className="flex justify-between text-sm text-gray-500">
-          <div>
-            <span className="font-medium">Incident:</span>
-            <time dateTime={claim.incidentDate} className="ml-1">
-              {claim.formattedIncidentDate}
-            </time>
-          </div>
-          <div>
-            <span className="font-medium">Created:</span>
-            <time dateTime={claim.createdAt} className="ml-1">
-              {claim.formattedCreatedDate}
-            </time>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-};
-
-ClaimCard.displayName = 'ClaimCard';
-
-const CARDS_PER_ROW = 3; // Assuming 3 cards per row on large screens
-const CARD_HEIGHT = 280; // Approximate height of each card in pixels
-const CARD_BUFFER_SIZE = 6; // Number of cards to keep as buffer above/below visible area
-
-// Custom hook for persisted state
-const usePersistedState = <T,>(key: string, defaultValue: T) => {
-  const [state, setState] = useState<T>(() => {
-    try {
-      if (typeof window !== 'undefined' && window.localStorage) {
-        const stored = localStorage.getItem(key);
-        return stored ? JSON.parse(stored) : defaultValue;
-      }
-    } catch (error) {
-      // localStorage not available (test environment, SSR, etc.)
-      console.warn('localStorage not available, using default value');
-    }
-    return defaultValue;
-  });
-
-  const setPersistedState = (value: T | ((prev: T) => T)) => {
-    setState(prev => {
-      const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prev) : value;
-      try {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem(key, JSON.stringify(newValue));
-        }
-      } catch (error) {
-        // localStorage not available, silently continue
-        console.warn('localStorage not available, state not persisted');
-      }
-      return newValue;
-    });
-  };
-
-  return [state, setPersistedState] as const;
-};
 
 const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
