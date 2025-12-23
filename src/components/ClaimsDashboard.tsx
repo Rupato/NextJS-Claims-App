@@ -185,7 +185,8 @@ const ClaimsDashboard: React.FC = () => {
                 Nothing found
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                No claims match &quot;{searchTerm}&quot;. Try adjusting your search.
+                No claims match &quot;{searchTerm}&quot;. Try adjusting your
+                search.
               </p>
             </div>
           ) : (
