@@ -89,6 +89,7 @@ This project follows **GitHub Flow** for branching:
   - Naming: `feature/description` or `fix/description`
 - **Pull Requests**: All changes merged via PRs to `main`
 - **CI Checks**: Automated linting and testing run on every push/PR
+- **Pre-commit Hooks**: Local quality checks prevent bad commits
 
 ### Workflow:
 1. Create feature branch: `git checkout -b feature/new-feature`
