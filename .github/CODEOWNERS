@@ -1,8 +1,7 @@
 # Code Owners for Pull Request Reviews
 # This file defines who should review code changes
 
-# Temporarily disabled for testing CI pipeline
-# Uncomment when team grows for proper code reviews
+# Temporarily disabled for testing - uncomment when team grows
 # Global owners - require review from these users for all changes
 # * @Rupato
 

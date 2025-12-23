@@ -98,6 +98,7 @@ This project follows **GitHub Flow** for branching:
 - **Pull Requests**: All changes merged via PRs to `main`
 - **CI Checks**: Automated linting and testing run on every push/PR
 - **Pre-commit Hooks**: Local quality checks prevent bad commits
+- **Merge Blocking**: PRs cannot merge when CI checks fail
 
 ### Workflow:
 
