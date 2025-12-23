@@ -121,12 +121,15 @@ describe('ViewModeTabs', () => {
     const buttons = screen.getAllByRole('button');
     buttons.forEach((button) => {
       expect(button).toHaveClass(
-        'px-4',
+        'px-6',
+        'md:px-8',
         'py-2',
         'text-sm',
         'font-medium',
         'rounded-md',
-        'transition-colors'
+        'transition-colors',
+        'whitespace-nowrap',
+        'min-w-[100px]'
       );
     });
   });

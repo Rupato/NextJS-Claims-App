@@ -6,7 +6,9 @@ import { useClaims } from '../hooks/useClaims';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
+import { useSearch } from '../hooks/useSearch';
 import { ViewModeTabs } from './ViewModeTabs';
+import { SearchInput } from './SearchInput';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
 
@@ -17,13 +19,17 @@ const ClaimsDashboard: React.FC = () => {
     'table'
   );
 
+  // Search functionality
+  const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
+    useSearch(claims);
+
   // Always call hooks in same order (Rules of Hooks)
-  const formattedClaims = useFormattedClaims(claims);
+  const formattedClaims = useFormattedClaims(filteredClaims);
   const { startIndex, endIndex, handleScroll } = useTableVirtualization(
-    claims.length
+    filteredClaims.length
   );
-  const { cardStartIndex, cardEndIndex, handleCardsScroll } =
-    useCardsVirtualization(claims.length, viewMode);
+  const { cardStartIndex, cardEndIndex, handleCardsScroll, cardsPerRow } =
+    useCardsVirtualization(filteredClaims.length, viewMode);
 
   // Loading skeleton component
   if (loading) {
@@ -82,7 +88,7 @@ const ClaimsDashboard: React.FC = () => {
           role="banner"
         >
           <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div>
                 <h1
                   id="dashboard-title"
@@ -98,10 +104,17 @@ const ClaimsDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <ViewModeTabs
-                viewMode={viewMode}
-                onViewModeChange={setViewMode}
-              />
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+                <SearchInput
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  isSearching={isSearching}
+                />
+                <ViewModeTabs
+                  viewMode={viewMode}
+                  onViewModeChange={setViewMode}
+                />
+              </div>
             </div>
           </div>
         </header>
@@ -122,8 +135,8 @@ const ClaimsDashboard: React.FC = () => {
           className="sr-only"
           id="dashboard-status"
         >
-          {claims.length > 0 &&
-            `Displaying ${claims.length} insurance claims in ${viewMode} view`}
+          {filteredClaims.length > 0 &&
+            `Displaying ${filteredClaims.length} of ${claims.length} insurance claims in ${viewMode} view${searchTerm ? ` matching "${searchTerm}"` : ''}`}
         </div>
 
         <section
@@ -140,33 +153,66 @@ const ClaimsDashboard: React.FC = () => {
             <h2 id="claims-section-title">Insurance Claims Data</h2>
             <div id="claims-table-instructions">
               Table view: Use arrow keys to navigate cells, Enter to interact
-              with rows. Virtualized for performance with {claims.length} total
-              claims.
+              with rows. Virtualized for performance with{' '}
+              {filteredClaims.length} of {claims.length} claims shown
+              {searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
             <div id="claims-cards-instructions">
               Cards view: Use Tab to navigate between cards, Enter to expand
-              details. Virtualized grid with {claims.length} total claims.
+              details. Virtualized grid with {filteredClaims.length} of{' '}
+              {claims.length} claims shown
+              {searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
           </div>
 
-          <ClaimsView
-            viewMode={viewMode}
-            formattedClaims={formattedClaims}
-            startIndex={startIndex}
-            endIndex={endIndex}
-            cardStartIndex={cardStartIndex}
-            cardEndIndex={cardEndIndex}
-            claimsLength={claims.length}
-            onTableScroll={handleScroll}
-            onCardsScroll={handleCardsScroll}
-          />
+          {filteredClaims.length === 0 && searchTerm ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <h3 className="mt-2 text-sm font-medium text-gray-900">
+                Nothing found
+              </h3>
+              <p className="mt-1 text-sm text-gray-500">
+                No claims match &quot;{searchTerm}&quot;. Try adjusting your
+                search.
+              </p>
+            </div>
+          ) : (
+            <ClaimsView
+              viewMode={viewMode}
+              formattedClaims={formattedClaims}
+              startIndex={startIndex}
+              endIndex={endIndex}
+              cardStartIndex={cardStartIndex}
+              cardEndIndex={cardEndIndex}
+              claimsLength={claims.length}
+              cardsPerRow={cardsPerRow}
+              onTableScroll={handleScroll}
+              onCardsScroll={handleCardsScroll}
+            />
+          )}
         </section>
 
         {/* Screen Reader Summary */}
         <div className="sr-only" aria-live="off" aria-label="Dashboard summary">
           <p>
-            Claims Dashboard contains {claims.length} insurance claims.
-            Currently viewing in {viewMode} mode. Last updated:{' '}
+            Claims Dashboard contains {claims.length} insurance claims
+            {searchTerm
+              ? `, showing ${filteredClaims.length} matching "${searchTerm}"`
+              : ''}
+            . Currently viewing in {viewMode} mode. Last updated:{' '}
             {new Date().toLocaleString()}.
           </p>
         </div>

@@ -20,6 +20,10 @@ vi.mock('../../hooks/useCardsVirtualization', () => ({
   useCardsVirtualization: vi.fn(),
 }));
 
+vi.mock('../../hooks/useSearch', () => ({
+  useSearch: vi.fn(),
+}));
+
 vi.mock('../../utils/storage', () => ({
   usePersistedState: vi.fn(),
 }));
@@ -73,12 +77,14 @@ import { useClaims } from '../../hooks/useClaims';
 import { useFormattedClaims } from '../../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../../hooks/useCardsVirtualization';
+import { useSearch } from '../../hooks/useSearch';
 import { usePersistedState } from '../../utils/storage';
 
 const mockUseClaims = vi.mocked(useClaims);
 const mockUseFormattedClaims = vi.mocked(useFormattedClaims);
 const mockUseTableVirtualization = vi.mocked(useTableVirtualization);
 const mockUseCardsVirtualization = vi.mocked(useCardsVirtualization);
+const mockUseSearch = vi.mocked(useSearch);
 const mockUsePersistedState = vi.mocked(usePersistedState);
 
 const mockClaims: FormattedClaim[] = [
@@ -125,6 +131,14 @@ describe('ClaimsDashboard', () => {
       cardEndIndex: 12,
       cardScrollTop: 0,
       handleCardsScroll: vi.fn(),
+      cardsPerRow: 3,
+    });
+
+    mockUseSearch.mockReturnValue({
+      searchTerm: '',
+      setSearchTerm: vi.fn(),
+      filteredClaims: mockClaims,
+      isSearching: false,
     });
 
     mockUsePersistedState.mockReturnValue(['table', vi.fn()]);
@@ -193,7 +207,7 @@ describe('ClaimsDashboard', () => {
     render(<ClaimsDashboard />);
 
     const liveRegion = screen.getByText(
-      'Displaying 1 insurance claims in table view'
+      'Displaying 1 of 1 insurance claims in table view'
     );
     expect(liveRegion).toBeInTheDocument();
     expect(liveRegion).toHaveAttribute('aria-live', 'polite');
@@ -215,6 +229,7 @@ describe('ClaimsDashboard', () => {
     render(<ClaimsDashboard />);
 
     expect(mockUseClaims).toHaveBeenCalledTimes(1);
+    expect(mockUseSearch).toHaveBeenCalledWith(mockClaims);
     expect(mockUseFormattedClaims).toHaveBeenCalledWith(mockClaims);
     expect(mockUseTableVirtualization).toHaveBeenCalledWith(mockClaims.length);
     expect(mockUseCardsVirtualization).toHaveBeenCalledWith(
@@ -274,5 +289,26 @@ describe('ClaimsDashboard', () => {
 
     const title = screen.getByRole('heading', { name: 'Claims Dashboard' });
     expect(title).toHaveAttribute('id', 'dashboard-title');
+  });
+
+  it('renders nothing found message when search has no results', () => {
+    mockUseSearch.mockReturnValue({
+      searchTerm: 'nonexistent',
+      setSearchTerm: vi.fn(),
+      filteredClaims: [],
+      isSearching: false,
+    });
+
+    render(<ClaimsDashboard />);
+
+    expect(screen.getByText('Nothing found')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'No claims match "nonexistent". Try adjusting your search.'
+      )
+    ).toBeInTheDocument();
+
+    // Should not render ClaimsView when no results
+    expect(screen.queryByTestId('claims-view')).not.toBeInTheDocument();
   });
 });

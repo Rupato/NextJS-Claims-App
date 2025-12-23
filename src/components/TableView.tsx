@@ -44,15 +44,15 @@ export const TableView: React.FC<TableViewProps> = ({
           aria-colcount={9}
         >
           {/* Top spacer for virtualization */}
-          <div style={{ height: startIndex * ROW_HEIGHT }} />
           <TableHeader />
           <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
+            <tr style={{ height: startIndex * ROW_HEIGHT }} />
             {formattedClaims.slice(startIndex, endIndex).map((claim) => (
               <TableRow key={claim.id} claim={claim} />
             ))}
+            <tr style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
           </tbody>
           {/* Bottom spacer for virtualization */}
-          <div style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
         </table>
       </div>
 
