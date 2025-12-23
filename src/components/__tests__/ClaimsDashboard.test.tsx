@@ -131,6 +131,7 @@ describe('ClaimsDashboard', () => {
       cardEndIndex: 12,
       cardScrollTop: 0,
       handleCardsScroll: vi.fn(),
+      cardsPerRow: 3,
     });
 
     mockUseSearch.mockReturnValue({

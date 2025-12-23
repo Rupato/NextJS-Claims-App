@@ -75,6 +75,7 @@ const mockProps = {
   cardStartIndex: 0,
   cardEndIndex: 12,
   claimsLength: 100,
+  cardsPerRow: 3,
   onTableScroll: vi.fn(),
   onCardsScroll: vi.fn(),
 };
