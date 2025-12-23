@@ -51,23 +51,21 @@ export const CardsView: React.FC<CardsViewProps> = ({
             role="grid"
             aria-labelledby="claims-cards"
           >
-
             {formattedClaims
               .slice(cardStartIndex, cardEndIndex)
               .map((claim) => (
                 <ClaimCard key={claim.id} claim={claim} />
               ))}
             {/* Bottom spacer for cards virtualization */}
-
           </div>
           <div
             style={{
-              height: Math.floor((claimsLength - cardEndIndex) / CARDS_PER_ROW) * CARD_HEIGHT,
+              height:
+                Math.floor((claimsLength - cardEndIndex) / CARDS_PER_ROW) *
+                CARD_HEIGHT,
             }}
           />
         </div>
-
-
       </div>
 
       <div

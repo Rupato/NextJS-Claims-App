@@ -1,7 +1,11 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import { CONTAINER_HEIGHT, CARDS_PER_ROW, CARD_HEIGHT } from '../constants/virtualization';
+import {
+  CONTAINER_HEIGHT,
+  CARDS_PER_ROW,
+  CARD_HEIGHT,
+} from '../constants/virtualization';
 
 export const useCardsVirtualization = (
   claimsLength: number,
