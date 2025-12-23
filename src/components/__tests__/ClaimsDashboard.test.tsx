@@ -290,4 +290,25 @@ describe('ClaimsDashboard', () => {
     const title = screen.getByRole('heading', { name: 'Claims Dashboard' });
     expect(title).toHaveAttribute('id', 'dashboard-title');
   });
+
+  it('renders nothing found message when search has no results', () => {
+    mockUseSearch.mockReturnValue({
+      searchTerm: 'nonexistent',
+      setSearchTerm: vi.fn(),
+      filteredClaims: [],
+      isSearching: false,
+    });
+
+    render(<ClaimsDashboard />);
+
+    expect(screen.getByText('Nothing found')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'No claims match "nonexistent". Try adjusting your search.'
+      )
+    ).toBeInTheDocument();
+
+    // Should not render ClaimsView when no results
+    expect(screen.queryByTestId('claims-view')).not.toBeInTheDocument();
+  });
 });
