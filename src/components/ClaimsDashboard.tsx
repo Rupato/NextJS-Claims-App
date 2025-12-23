@@ -47,6 +47,7 @@ const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [visibleRows, setVisibleRows] = useState(50); // Start with 50 rows for performance
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -138,11 +139,19 @@ const ClaimsDashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="overflow-x-auto" role="region" aria-labelledby="claims-table" aria-describedby="claims-table-desc">
+          <div
+          className="overflow-x-auto"
+          role="region"
+          aria-labelledby="claims-table"
+          aria-describedby="claims-table-desc"
+          tabIndex={0}
+        >
             <table
               className="min-w-full divide-y divide-gray-200"
               role="table"
-              aria-label="Insurance claims data table"
+              aria-label="Insurance claims data table showing claim ID, status, holder name, policy number, claim amount, processing fee, total amount, and dates"
+              aria-rowcount={formattedClaims.length + 1}
+              aria-colcount={9}
               id="claims-table"
             >
               <thead className="bg-gray-50">
@@ -213,7 +222,7 @@ const ClaimsDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
-                {formattedClaims.map((claim) => (
+                {formattedClaims.slice(0, visibleRows).map((claim) => (
                   <tr key={claim.id} className="hover:bg-gray-50" role="row">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
                       {claim.number}

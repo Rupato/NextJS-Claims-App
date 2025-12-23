@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import SkipLink from '../components/SkipLink';
 
 export const metadata: Metadata = {
   title: 'Insurance Claims Dashboard',
@@ -32,10 +33,18 @@ export default function RootLayout({
       <head>
         <meta name="theme-color" content="#ffffff" />
         <meta name="color-scheme" content="light dark" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta httpEquiv="x-ua-compatible" content="IE=edge" />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="dns-prefetch" href="//localhost:8001" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
       </head>
       <body className="antialiased bg-gray-50 text-gray-900">
-        {children}
+        <SkipLink />
+        <main id="main-content" tabIndex={-1}>
+          {children}
+        </main>
       </body>
     </html>
   );
