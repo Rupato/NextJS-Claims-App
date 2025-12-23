@@ -16,7 +16,7 @@ export const ViewModeTabs: React.FC<ViewModeTabsProps> = ({
     <nav aria-label="View mode selection" className="flex space-x-1">
       <button
         onClick={() => onViewModeChange('table')}
-        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`px-6 md:px-8 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap min-w-[100px] ${
           viewMode === 'table'
             ? 'bg-blue-100 text-blue-700 border-blue-200'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
@@ -28,7 +28,7 @@ export const ViewModeTabs: React.FC<ViewModeTabsProps> = ({
       </button>
       <button
         onClick={() => onViewModeChange('cards')}
-        className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+        className={`px-6 md:px-8 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap min-w-[100px] ${
           viewMode === 'cards'
             ? 'bg-blue-100 text-blue-700 border-blue-200'
             : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
