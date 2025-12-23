@@ -3,10 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "rsbuild dev",
+    "build": "rsbuild build",
+    "start": "rsbuild preview",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest",
+    "test:ui": "vitest --ui"
   },
   "dependencies": {
     "next": "16.1.1",
@@ -14,14 +17,22 @@
     "react-dom": "19.2.3"
   },
   "devDependencies": {
+    "@rsbuild/core": "^1.6.15",
+    "@rsbuild/plugin-react": "^1.4.2",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/ui": "^4.0.16",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "jsdom": "^27.3.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.0.16"
   }
 }

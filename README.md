@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Claim App
 
-## Getting Started
+This project is a Next.js application configured to use Rsbuild for building, managed with pnpm. It combines the full-stack capabilities of Next.js with the fast bundling performance of Rsbuild and efficient package management of pnpm.
 
-First, run the development server:
+## Tech Stack
 
+- **Next.js**: React framework for building full-stack web applications
+- **Rsbuild**: Fast bundler based on Rspack for optimized builds
+- **pnpm**: Efficient package manager
+- **React**: UI library
+- **TypeScript**: Type-safe JavaScript
+- **Tailwind CSS**: Utility-first CSS framework
+- **ESLint**: Code linting
+
+## Setup and Installation
+
+1. Ensure you have pnpm installed:
+   ```bash
+   npm install -g pnpm
+   ```
+
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+## Development
+
+Start the development server:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Building
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build the application for production:
+```bash
+pnpm build
+```
 
-## Learn More
+## Preview Production Build
 
-To learn more about Next.js, take a look at the following resources:
+Start the production server:
+```bash
+pnpm start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Linting
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run ESLint:
+```bash
+pnpm lint
+```
 
-## Deploy on Vercel
+## Benefits of This Approach
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### pnpm
+- **Fast Installation**: Uses hard links and symlinks for efficient disk usage
+- **Strict Dependency Resolution**: Prevents dependency confusion issues
+- **Workspace Support**: Excellent for monorepo setups
+- **Smaller node_modules**: Shares dependencies across projects
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Rsbuild
+- **Lightning Fast Builds**: Based on Rspack (Rust-powered webpack alternative)
+- **Optimized for Modern Web**: Built-in support for latest JavaScript features
+- **Plugin Ecosystem**: Extensible with plugins for various needs
+- **Better Performance**: Faster than traditional webpack in most cases
+
+### Next.js
+- **Full-Stack Framework**: Server-side rendering, API routes, and static generation
+- **App Router**: Modern routing with layouts and nested routes
+- **Built-in Optimizations**: Automatic code splitting, image optimization, and more
+- **TypeScript Support**: First-class TypeScript integration
+
+### Combined Benefits
+- **Rapid Development**: Hot reloading with Rsbuild's fast dev server
+- **Efficient Builds**: Rsbuild provides significantly faster build times compared to Next.js's default webpack
+- **Scalable Architecture**: Next.js's features combined with Rsbuild's performance
+- **Modern Tooling**: Leverages the latest in build tools and package management
+
+This setup provides a modern, performant development experience while maintaining the powerful features of Next.js for building complex web applications.
