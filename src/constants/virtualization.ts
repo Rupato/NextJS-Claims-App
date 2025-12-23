@@ -4,4 +4,4 @@ export const CONTAINER_HEIGHT = 600; // Fixed height of scrollable container
 
 export const CARDS_PER_ROW = 3; // Assuming 3 cards per row on large screens
 export const CARD_HEIGHT = 240; // Reduced height for better performance
-export const CARD_BUFFER_SIZE = 4; // Reduced buffer for better performance
+export const CARD_BUFFER_SIZE = 3; // Reduced buffer for better performance

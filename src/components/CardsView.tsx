@@ -36,38 +36,38 @@ export const CardsView: React.FC<CardsViewProps> = ({
         role="region"
         aria-labelledby="claims-cards"
       >
-        {/* Top spacer for cards virtualization */}
-        <div
-          style={{
-            height: Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT,
-          }}
-        />
-
         <div className="p-6">
           <h3 id="claims-cards" className="sr-only">
             Insurance Claims Cards
           </h3>
+          {/* Top spacer for cards virtualization */}
+          <div
+            style={{
+              height: Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT,
+            }}
+          />
           <div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             role="grid"
             aria-labelledby="claims-cards"
           >
+
             {formattedClaims
               .slice(cardStartIndex, cardEndIndex)
               .map((claim) => (
                 <ClaimCard key={claim.id} claim={claim} />
               ))}
+            {/* Bottom spacer for cards virtualization */}
+
           </div>
+          <div
+            style={{
+              height: Math.floor((claimsLength - cardEndIndex) / CARDS_PER_ROW) * CARD_HEIGHT,
+            }}
+          />
         </div>
 
-        {/* Bottom spacer for cards virtualization */}
-        <div
-          style={{
-            height:
-              Math.floor((claimsLength - cardEndIndex) / CARDS_PER_ROW) *
-              CARD_HEIGHT,
-          }}
-        />
+
       </div>
 
       <div

@@ -1,12 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback } from 'react';
-import {
-  CONTAINER_HEIGHT,
-  CARDS_PER_ROW,
-  CARD_HEIGHT,
-  CARD_BUFFER_SIZE,
-} from '../constants/virtualization';
+import { CONTAINER_HEIGHT, CARDS_PER_ROW, CARD_HEIGHT } from '../constants/virtualization';
 
 export const useCardsVirtualization = (
   claimsLength: number,
@@ -14,28 +9,27 @@ export const useCardsVirtualization = (
 ) => {
   const [cardScrollTop, setCardScrollTop] = useState(0);
 
-  // Calculate visible cards range based on claimsLength, viewMode and scrollTop
+  // Calculate visible cards range using row-based approach for cards
   const { cardStartIndex, cardEndIndex } = useMemo(() => {
     if (viewMode !== 'cards' || claimsLength === 0) {
       return { cardStartIndex: 0, cardEndIndex: 0 };
     }
 
-    const visibleStart =
-      Math.floor(cardScrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
-    const visibleEnd = Math.min(
-      visibleStart +
-        Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) * CARDS_PER_ROW +
-        CARD_BUFFER_SIZE,
-      claimsLength
-    );
+    // Calculate which row we're scrolled to
+    const currentRow = Math.floor(cardScrollTop / CARD_HEIGHT);
 
-    // Add buffer zones
-    const bufferedStart = Math.max(0, visibleStart - CARD_BUFFER_SIZE);
-    const bufferedEnd = Math.min(claimsLength, visibleEnd + CARD_BUFFER_SIZE);
+    // Calculate visible rows (show current row and buffer)
+    const visibleRows = Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) + 2; // +2 for buffer
+    const startRow = Math.max(0, currentRow - 1); // -1 for buffer
+    const endRow = startRow + visibleRows;
+
+    // Convert rows to card indices
+    const visibleStart = startRow * CARDS_PER_ROW;
+    const visibleEnd = Math.min(endRow * CARDS_PER_ROW, claimsLength);
 
     return {
-      cardStartIndex: bufferedStart,
-      cardEndIndex: bufferedEnd,
+      cardStartIndex: visibleStart,
+      cardEndIndex: visibleEnd,
     };
   }, [cardScrollTop, claimsLength, viewMode]);
 

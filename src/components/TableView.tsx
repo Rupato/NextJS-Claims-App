@@ -33,8 +33,7 @@ export const TableView: React.FC<TableViewProps> = ({
         role="region"
         aria-labelledby="claims-table"
       >
-        {/* Top spacer for virtualization */}
-        <div style={{ height: startIndex * ROW_HEIGHT }} />
+       
 
         <h3 id="claims-table" className="sr-only">
           Insurance Claims Data Table
@@ -46,16 +45,19 @@ export const TableView: React.FC<TableViewProps> = ({
           aria-rowcount={formattedClaims.length + 1}
           aria-colcount={9}
         >
+           {/* Top spacer for virtualization */}
+        <div style={{ height: startIndex * ROW_HEIGHT }} />
           <TableHeader />
           <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
             {formattedClaims.slice(startIndex, endIndex).map((claim) => (
               <TableRow key={claim.id} claim={claim} />
             ))}
           </tbody>
+           {/* Bottom spacer for virtualization */}
+        <div style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
         </table>
 
-        {/* Bottom spacer for virtualization */}
-        <div style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
+       
       </div>
 
       <div
