@@ -22,10 +22,11 @@ export const useSearch = (claims: Claim[], delay: number = 300) => {
 
     const searchLower = debouncedSearchTerm.toLowerCase();
 
-    return claims.filter((claim) =>
-      claim.number.toLowerCase().includes(searchLower) ||
-      claim.holder.toLowerCase().includes(searchLower) ||
-      claim.policyNumber.toLowerCase().includes(searchLower)
+    return claims.filter(
+      (claim) =>
+        claim.number.toLowerCase().includes(searchLower) ||
+        claim.holder.toLowerCase().includes(searchLower) ||
+        claim.policyNumber.toLowerCase().includes(searchLower)
     );
   }, [claims, debouncedSearchTerm]);
 

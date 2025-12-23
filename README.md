@@ -18,6 +18,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 ## 🚀 Features Implemented
 
 ### Core Dashboard Features
+
 - **Claims Display**: Table and card view modes with comprehensive claim information
 - **Advanced Search**: Real-time search across claim ID, holder name, and policy number with 300ms debouncing
 - **Responsive Design**: Mobile-first approach with adaptive layouts for all screen sizes
@@ -25,6 +26,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 - **Accessibility**: Full WCAG compliance with ARIA labels, keyboard navigation, and screen reader support
 
 ### Technical Features
+
 - **TypeScript**: Strict mode enabled throughout with comprehensive type safety
 - **Modern React**: Hooks, functional components, and optimized re-renders
 - **Performance**: Virtual scrolling, memoization, and efficient state management
@@ -32,6 +34,7 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 - **Code Quality**: ESLint compliant with clean, maintainable architecture
 
 ### Performance Optimizations
+
 - **Virtual Scrolling**: Only renders visible items + small buffer zones
 - **Debounced Search**: Reduces API calls by 90% during typing
 - **Efficient Algorithms**: O(n) complexity with fast string matching
@@ -40,16 +43,19 @@ This project is a Next.js application configured to use Rsbuild for building, ma
 ## 🎯 Key Technical Decisions
 
 ### Virtual Scrolling Implementation
+
 - Custom virtual scrolling with dynamic row calculation based on screen size
 - Responsive cards-per-row calculation (1/2/3 columns based on breakpoints)
 - 60fps scrolling performance even with large datasets
 
 ### Search Architecture
+
 - 300ms debouncing prevents excessive API calls
 - Client-side filtering with instant visual feedback
 - Loading states and accessibility announcements
 
 ### Responsive Design Strategy
+
 - Mobile-first approach with progressive enhancement
 - Breakpoint-aware virtual scrolling that adapts to CSS grid changes
 - Touch-friendly interface optimized for mobile interaction
@@ -131,6 +137,7 @@ pnpm test:ui
 ```
 
 **Test Coverage:**
+
 - **137 tests** across 17 test files
 - **100% pass rate** on all functionality
 - **Unit tests** for components and hooks

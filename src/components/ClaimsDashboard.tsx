@@ -20,7 +20,8 @@ const ClaimsDashboard: React.FC = () => {
   );
 
   // Search functionality
-  const { searchTerm, setSearchTerm, filteredClaims, isSearching } = useSearch(claims);
+  const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
+    useSearch(claims);
 
   // Always call hooks in same order (Rules of Hooks)
   const formattedClaims = useFormattedClaims(filteredClaims);
@@ -152,11 +153,15 @@ const ClaimsDashboard: React.FC = () => {
             <h2 id="claims-section-title">Insurance Claims Data</h2>
             <div id="claims-table-instructions">
               Table view: Use arrow keys to navigate cells, Enter to interact
-              with rows. Virtualized for performance with {filteredClaims.length} of {claims.length} claims shown{searchTerm ? ` matching "${searchTerm}"` : ''}.
+              with rows. Virtualized for performance with{' '}
+              {filteredClaims.length} of {claims.length} claims shown
+              {searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
             <div id="claims-cards-instructions">
               Cards view: Use Tab to navigate between cards, Enter to expand
-              details. Virtualized grid with {filteredClaims.length} of {claims.length} claims shown{searchTerm ? ` matching "${searchTerm}"` : ''}.
+              details. Virtualized grid with {filteredClaims.length} of{' '}
+              {claims.length} claims shown
+              {searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
           </div>
 
@@ -177,8 +182,11 @@ const ClaimsDashboard: React.FC = () => {
         {/* Screen Reader Summary */}
         <div className="sr-only" aria-live="off" aria-label="Dashboard summary">
           <p>
-            Claims Dashboard contains {claims.length} insurance claims{searchTerm ? `, showing ${filteredClaims.length} matching "${searchTerm}"` : ''}.
-            Currently viewing in {viewMode} mode. Last updated:{' '}
+            Claims Dashboard contains {claims.length} insurance claims
+            {searchTerm
+              ? `, showing ${filteredClaims.length} matching "${searchTerm}"`
+              : ''}
+            . Currently viewing in {viewMode} mode. Last updated:{' '}
             {new Date().toLocaleString()}.
           </p>
         </div>

@@ -3,10 +3,7 @@
 import React, { useRef } from 'react';
 import { FormattedClaim } from '../types/claims';
 import { ClaimCard } from './ClaimCard';
-import {
-  CONTAINER_HEIGHT,
-  CARD_HEIGHT,
-} from '../constants/virtualization';
+import { CONTAINER_HEIGHT, CARD_HEIGHT } from '../constants/virtualization';
 
 interface CardsViewProps {
   formattedClaims: FormattedClaim[];

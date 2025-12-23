@@ -1,10 +1,7 @@
 'use client';
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import {
-  CONTAINER_HEIGHT,
-  CARD_HEIGHT,
-} from '../constants/virtualization';
+import { CONTAINER_HEIGHT, CARD_HEIGHT } from '../constants/virtualization';
 
 export const useCardsVirtualization = (
   claimsLength: number,
@@ -19,11 +16,14 @@ export const useCardsVirtualization = (
       if (typeof window === 'undefined') return;
 
       const width = window.innerWidth;
-      if (width >= 1024) { // lg breakpoint
+      if (width >= 1024) {
+        // lg breakpoint
         setCardsPerRow(3);
-      } else if (width >= 768) { // md breakpoint
+      } else if (width >= 768) {
+        // md breakpoint
         setCardsPerRow(2);
-      } else { // mobile
+      } else {
+        // mobile
         setCardsPerRow(1);
       }
     };
@@ -43,7 +43,9 @@ export const useCardsVirtualization = (
     const currentCard = Math.floor(cardScrollTop / CARD_HEIGHT) * cardsPerRow;
 
     // Calculate visible cards (show current cards and buffer)
-    const visibleCards = Math.ceil((CONTAINER_HEIGHT / CARD_HEIGHT) * cardsPerRow) + cardsPerRow * 2; // +2 rows for buffer
+    const visibleCards =
+      Math.ceil((CONTAINER_HEIGHT / CARD_HEIGHT) * cardsPerRow) +
+      cardsPerRow * 2; // +2 rows for buffer
     const startCard = Math.max(0, currentCard - cardsPerRow); // -1 row for buffer
     const endCard = Math.min(startCard + visibleCards, claimsLength);
 

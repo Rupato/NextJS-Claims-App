@@ -63,7 +63,9 @@ describe('SearchInput', () => {
 
   it('calls onChange with empty string when clear button is clicked', () => {
     const onChange = vi.fn();
-    render(<SearchInput {...defaultProps} value="search text" onChange={onChange} />);
+    render(
+      <SearchInput {...defaultProps} value="search text" onChange={onChange} />
+    );
 
     const clearButton = screen.getByLabelText('Clear search');
     fireEvent.click(clearButton);
