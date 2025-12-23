@@ -38,7 +38,6 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
         formattedClaims={formattedClaims}
         startIndex={startIndex}
         endIndex={endIndex}
-        claimsLength={claimsLength}
         onScroll={onTableScroll}
         hasActiveFilters={hasActiveFilters}
       />
@@ -50,7 +49,6 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
       formattedClaims={formattedClaims}
       cardStartIndex={cardStartIndex}
       cardEndIndex={cardEndIndex}
-      claimsLength={claimsLength}
       cardsPerRow={cardsPerRow}
       onScroll={onCardsScroll}
       hasActiveFilters={hasActiveFilters}

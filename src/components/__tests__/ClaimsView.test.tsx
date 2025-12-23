@@ -22,15 +22,9 @@ interface CardsViewProps {
 
 // Mock the child components
 vi.mock('../TableView', () => ({
-  TableView: ({
-    formattedClaims,
-    startIndex,
-    endIndex,
-    claimsLength,
-  }: TableViewProps) => (
+  TableView: ({ formattedClaims, startIndex, endIndex }: TableViewProps) => (
     <div data-testid="table-view">
-      TableView: {formattedClaims.length} claims, {startIndex}-{endIndex},
-      total: {claimsLength}
+      TableView: {formattedClaims.length} claims, {startIndex}-{endIndex}
     </div>
   ),
 }));
@@ -40,11 +34,10 @@ vi.mock('../CardsView', () => ({
     formattedClaims,
     cardStartIndex,
     cardEndIndex,
-    claimsLength,
   }: CardsViewProps) => (
     <div data-testid="cards-view">
       CardsView: {formattedClaims.length} claims, {cardStartIndex}-
-      {cardEndIndex}, total: {claimsLength}
+      {cardEndIndex}
     </div>
   ),
 }));
@@ -71,13 +64,14 @@ const mockClaims: FormattedClaim[] = [
 const mockProps = {
   formattedClaims: mockClaims,
   startIndex: 0,
-  endIndex: 10,
+  endIndex: 2,
   cardStartIndex: 0,
-  cardEndIndex: 12,
-  claimsLength: 100,
+  cardEndIndex: 3,
+  claimsLength: 10,
   cardsPerRow: 3,
   onTableScroll: vi.fn(),
   onCardsScroll: vi.fn(),
+  hasActiveFilters: false,
 };
 
 describe('ClaimsView', () => {
@@ -99,18 +93,14 @@ describe('ClaimsView', () => {
     render(<ClaimsView {...mockProps} viewMode="table" />);
 
     const tableView = screen.getByTestId('table-view');
-    expect(tableView).toHaveTextContent(
-      'TableView: 1 claims, 0-10, total: 100'
-    );
+    expect(tableView).toHaveTextContent('TableView: 1 claims, 0-2');
   });
 
   it('passes correct props to CardsView', () => {
     render(<ClaimsView {...mockProps} viewMode="cards" />);
 
     const cardsView = screen.getByTestId('cards-view');
-    expect(cardsView).toHaveTextContent(
-      'CardsView: 1 claims, 0-12, total: 100'
-    );
+    expect(cardsView).toHaveTextContent('CardsView: 1 claims, 0-3');
   });
 
   it('switches between views when viewMode changes', () => {
