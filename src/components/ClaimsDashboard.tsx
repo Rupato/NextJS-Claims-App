@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 
 interface Claim {
@@ -43,22 +43,51 @@ const LoadingSkeleton = () => (
   </div>
 );
 
+const ROW_HEIGHT = 64; // Approximate height of each table row in pixels
+const BUFFER_SIZE = 10; // Number of rows to keep as buffer above/below visible area
+const CONTAINER_HEIGHT = 600; // Fixed height of scrollable container
+
 const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [visibleRows, setVisibleRows] = useState(20); // Start with 20 rows for better performance
-  const [loadingMore, setLoadingMore] = useState(false);
 
-  // Load more rows function
-  const loadMoreRows = () => {
-    setLoadingMore(true);
-    // Simulate loading delay for better UX
-    setTimeout(() => {
-      setVisibleRows(prev => Math.min(prev + 20, claims.length));
-      setLoadingMore(false);
-    }, 300);
-  };
+  // Virtualization state
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(20); // Show 20 rows initially
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Calculate visible range based on scroll position
+  const updateVisibleRange = useCallback((scrollTop: number) => {
+    const visibleStart = Math.floor(scrollTop / ROW_HEIGHT);
+    const visibleEnd = Math.min(
+      visibleStart + Math.ceil(CONTAINER_HEIGHT / ROW_HEIGHT) + BUFFER_SIZE,
+      claims.length
+    );
+
+    // Add buffer zones
+    const bufferedStart = Math.max(0, visibleStart - BUFFER_SIZE);
+    const bufferedEnd = Math.min(claims.length, visibleEnd + BUFFER_SIZE);
+
+    setStartIndex(bufferedStart);
+    setEndIndex(bufferedEnd);
+    setScrollTop(scrollTop);
+  }, [claims.length]);
+
+  // Handle scroll events
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    updateVisibleRange(scrollTop);
+  }, [updateVisibleRange]);
+
+  // Initialize visible range
+  useEffect(() => {
+    if (claims.length > 0) {
+      updateVisibleRange(0);
+    }
+  }, [claims.length, updateVisibleRange]);
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -160,14 +189,21 @@ const ClaimsDashboard: React.FC = () => {
             <h2 id="claims-section-title">Insurance Claims Data</h2>
           </div>
 
+          {/* Virtualized scroll container */}
           <div
-            className="overflow-x-auto focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-md"
+            ref={containerRef}
+            className="overflow-auto focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
+            style={{ height: CONTAINER_HEIGHT }}
+            onScroll={handleScroll}
             role="region"
             aria-labelledby="claims-table"
             aria-describedby="claims-table-desc"
             tabIndex={0}
-            aria-label="Claims data table container - use arrow keys to navigate"
+            aria-label="Virtualized claims data table - scroll to load more data"
           >
+            {/* Top spacer for virtualization */}
+            <div style={{ height: startIndex * ROW_HEIGHT }} />
+
             <table
               className="min-w-full divide-y divide-gray-200"
               role="table"
@@ -244,7 +280,7 @@ const ClaimsDashboard: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
-                {formattedClaims.slice(0, visibleRows).map((claim) => (
+                {formattedClaims.slice(startIndex, endIndex).map((claim, index) => (
                   <tr key={claim.id} className="hover:bg-gray-50" role="row">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
                       {claim.number}
@@ -298,38 +334,20 @@ const ClaimsDashboard: React.FC = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Bottom spacer for virtualization */}
+            <div style={{ height: (claims.length - endIndex) * ROW_HEIGHT }} />
           </div>
 
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-table-desc">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">
-                  Showing {visibleRows} of {claims.length} insurance claims with status, amounts, and dates.
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Last updated: {new Date().toLocaleString()}
-                </p>
-              </div>
-              {visibleRows < claims.length && (
-                <button
-                  onClick={loadMoreRows}
-                  disabled={loadingMore}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label={`Load ${Math.min(20, claims.length - visibleRows)} more claims`}
-                >
-                  {loadingMore ? (
-                    <>
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Loading...
-                    </>
-                  ) : (
-                    `Load ${Math.min(20, claims.length - visibleRows)} More`
-                  )}
-                </button>
-              )}
+            <div>
+              <p className="text-sm text-gray-500">
+                Virtualized table: Showing {endIndex - startIndex} rendered rows of {claims.length} total claims.
+                Scroll to dynamically load/unload data for optimal performance.
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                Rendered range: {startIndex + 1}-{Math.min(endIndex, claims.length)} | Last updated: {new Date().toLocaleString()}
+              </p>
             </div>
           </div>
         </section>
