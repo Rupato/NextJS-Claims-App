@@ -11,7 +11,9 @@ const ClaimCard: React.FC<ClaimCardProps> = ({ claim }) => {
     <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
       <header className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{claim.number}</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {claim.number}
+          </h3>
           <p className="text-sm text-gray-600">{claim.holder}</p>
         </div>
         <span

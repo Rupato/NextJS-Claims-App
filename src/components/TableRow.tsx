@@ -8,7 +8,10 @@ interface TableRowProps {
 
 export const TableRow: React.FC<TableRowProps> = ({ claim }) => (
   <tr className="hover:bg-gray-50" role="row">
-    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+      role="cell"
+    >
       {claim.number}
     </td>
     <td className="px-6 py-4 whitespace-nowrap" role="cell">
@@ -21,25 +24,46 @@ export const TableRow: React.FC<TableRowProps> = ({ claim }) => (
         {claim.status}
       </span>
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+      role="cell"
+    >
       {claim.holder}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+      role="cell"
+    >
       {claim.policyNumber}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+      role="cell"
+    >
       {claim.formattedClaimAmount}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+      role="cell"
+    >
       {claim.formattedProcessingFee}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+      role="cell"
+    >
       {claim.formattedTotalAmount}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+      role="cell"
+    >
       <time dateTime={claim.incidentDate}>{claim.formattedIncidentDate}</time>
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" role="cell">
+    <td
+      className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+      role="cell"
+    >
       <time dateTime={claim.createdAt}>{claim.formattedCreatedDate}</time>
     </td>
   </tr>

@@ -25,13 +25,10 @@ export const useTableVirtualization = (claimsLength: number) => {
   }, [scrollTop, claimsLength]);
 
   // Handle scroll events
-  const handleScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      const scrollTop = event.currentTarget.scrollTop;
-      setScrollTop(scrollTop);
-    },
-    []
-  );
+  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = event.currentTarget.scrollTop;
+    setScrollTop(scrollTop);
+  }, []);
 
   return {
     startIndex,

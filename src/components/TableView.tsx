@@ -63,16 +63,19 @@ export const TableView: React.FC<TableViewProps> = ({
         <div style={{ height: (claimsLength - endIndex) * ROW_HEIGHT }} />
       </div>
 
-      <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-table-desc">
+      <div
+        className="px-6 py-4 border-t border-gray-200 bg-gray-50"
+        id="claims-table-desc"
+      >
         <div>
           <p className="text-sm text-gray-500">
             Virtualized table: Showing {endIndex - startIndex} rendered rows of{' '}
-            {claimsLength} total claims. Scroll to dynamically load/unload data for
-            optimal performance.
+            {claimsLength} total claims. Scroll to dynamically load/unload data
+            for optimal performance.
           </p>
           <p className="text-xs text-gray-400 mt-1">
-            Rendered range: {startIndex + 1}-{Math.min(endIndex, claimsLength)} | Last
-            updated: {new Date().toLocaleString()}
+            Rendered range: {startIndex + 1}-{Math.min(endIndex, claimsLength)}{' '}
+            | Last updated: {new Date().toLocaleString()}
           </p>
         </div>
       </div>

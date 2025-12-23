@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const usePersistedState = <T,>(key: string, defaultValue: T) => {
+export const usePersistedState = <T>(key: string, defaultValue: T) => {
   const [state, setState] = useState<T>(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
@@ -15,8 +15,9 @@ export const usePersistedState = <T,>(key: string, defaultValue: T) => {
   });
 
   const setPersistedState = (value: T | ((prev: T) => T)) => {
-    setState(prev => {
-      const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prev) : value;
+    setState((prev) => {
+      const newValue =
+        typeof value === 'function' ? (value as (prev: T) => T)(prev) : value;
       try {
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem(key, JSON.stringify(newValue));

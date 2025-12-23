@@ -8,7 +8,10 @@ import {
   CARD_BUFFER_SIZE,
 } from '../constants/virtualization';
 
-export const useCardsVirtualization = (claimsLength: number, viewMode: 'table' | 'cards') => {
+export const useCardsVirtualization = (
+  claimsLength: number,
+  viewMode: 'table' | 'cards'
+) => {
   const [cardScrollTop, setCardScrollTop] = useState(0);
 
   // Calculate visible cards range based on claimsLength, viewMode and scrollTop
@@ -17,7 +20,8 @@ export const useCardsVirtualization = (claimsLength: number, viewMode: 'table' |
       return { cardStartIndex: 0, cardEndIndex: 0 };
     }
 
-    const visibleStart = Math.floor(cardScrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
+    const visibleStart =
+      Math.floor(cardScrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
     const visibleEnd = Math.min(
       visibleStart +
         Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) * CARDS_PER_ROW +
@@ -27,10 +31,7 @@ export const useCardsVirtualization = (claimsLength: number, viewMode: 'table' |
 
     // Add buffer zones
     const bufferedStart = Math.max(0, visibleStart - CARD_BUFFER_SIZE);
-    const bufferedEnd = Math.min(
-      claimsLength,
-      visibleEnd + CARD_BUFFER_SIZE
-    );
+    const bufferedEnd = Math.min(claimsLength, visibleEnd + CARD_BUFFER_SIZE);
 
     return {
       cardStartIndex: bufferedStart,
