@@ -56,7 +56,8 @@ const BUFFER_SIZE = 10; // Number of rows to keep as buffer above/below visible 
 const CONTAINER_HEIGHT = 600; // Fixed height of scrollable container
 
 // Individual claim card component
-const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => (
+const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => {
+  return (
   <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
     <header className="flex items-start justify-between mb-4">
       <div>
@@ -119,7 +120,10 @@ const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => (
       </div>
     </div>
   </article>
-);
+  );
+};
+
+ClaimCard.displayName = 'ClaimCard';
 
 const CARDS_PER_ROW = 3; // Assuming 3 cards per row on large screens
 const CARD_HEIGHT = 280; // Approximate height of each card in pixels
@@ -340,7 +344,7 @@ const ClaimsDashboard: React.FC = () => {
             /* Table View with Virtualization */
             <>
               <div
-                ref={containerRef}
+                ref={tableContainerRef}
                 className="overflow-auto focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset"
                 style={{ height: CONTAINER_HEIGHT }}
                 onScroll={handleScroll}
