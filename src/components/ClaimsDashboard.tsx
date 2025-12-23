@@ -87,7 +87,7 @@ const ClaimsDashboard: React.FC = () => {
           role="banner"
         >
           <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
               <div>
                 <h1
                   id="dashboard-title"
@@ -103,7 +103,7 @@ const ClaimsDashboard: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
                 <SearchInput
                   value={searchTerm}
                   onChange={setSearchTerm}
