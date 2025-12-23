@@ -47,7 +47,18 @@ const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [visibleRows, setVisibleRows] = useState(50); // Start with 50 rows for performance
+  const [visibleRows, setVisibleRows] = useState(20); // Start with 20 rows for better performance
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  // Load more rows function
+  const loadMoreRows = () => {
+    setLoadingMore(true);
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setVisibleRows(prev => Math.min(prev + 20, claims.length));
+      setLoadingMore(false);
+    }, 300);
+  };
 
   useEffect(() => {
     const fetchClaims = async () => {
@@ -290,12 +301,36 @@ const ClaimsDashboard: React.FC = () => {
           </div>
 
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-table-desc">
-            <p className="text-sm text-gray-500">
-              Showing {claims.length} insurance claims with status, amounts, and dates.
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              Last updated: {new Date().toLocaleString()}
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-500">
+                  Showing {visibleRows} of {claims.length} insurance claims with status, amounts, and dates.
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Last updated: {new Date().toLocaleString()}
+                </p>
+              </div>
+              {visibleRows < claims.length && (
+                <button
+                  onClick={loadMoreRows}
+                  disabled={loadingMore}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label={`Load ${Math.min(20, claims.length - visibleRows)} more claims`}
+                >
+                  {loadingMore ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Loading...
+                    </>
+                  ) : (
+                    `Load ${Math.min(20, claims.length - visibleRows)} More`
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </section>
       </div>
