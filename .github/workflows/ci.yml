@@ -167,9 +167,9 @@ jobs:
 
   # ⭐ ADVANCED: Coverage Threshold (Optional - Will be enabled later)
   coverage:
-    name: "7️⃣ CI / coverage"
+    name: '7️⃣ CI / coverage'
     runs-on: ubuntu-latest
-    if: false  # Disabled for now - will enable when dashboard development starts
+    if: false # Disabled for now - will enable when dashboard development starts
 
     steps:
       - name: Checkout code
