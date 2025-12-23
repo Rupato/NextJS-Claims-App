@@ -129,23 +129,34 @@ const ClaimsDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <main className="min-h-screen bg-gray-50 py-8" role="main" aria-labelledby="dashboard-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+        <header className="bg-white shadow-sm rounded-lg overflow-hidden" role="banner">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-2xl font-bold text-gray-900">Claims Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-600">
+            <h1 id="dashboard-title" className="text-2xl font-bold text-gray-900">Claims Dashboard</h1>
+            <p className="mt-1 text-sm text-gray-600" id="dashboard-description">
               View and manage all insurance claims
             </p>
           </div>
+        </header>
+
+        <nav aria-label="Dashboard actions" className="sr-only">
+          <p>Use Tab to navigate through the claims table. Use Enter or Space to interact with focusable elements.</p>
+        </nav>
+
+        <section className="mt-6 bg-white shadow-sm rounded-lg overflow-hidden" aria-labelledby="claims-section-title" aria-describedby="claims-table-desc">
+          <div className="sr-only">
+            <h2 id="claims-section-title">Insurance Claims Data</h2>
+          </div>
 
           <div
-          className="overflow-x-auto"
-          role="region"
-          aria-labelledby="claims-table"
-          aria-describedby="claims-table-desc"
-          tabIndex={0}
-        >
+            className="overflow-x-auto focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rounded-md"
+            role="region"
+            aria-labelledby="claims-table"
+            aria-describedby="claims-table-desc"
+            tabIndex={0}
+            aria-label="Claims data table container - use arrow keys to navigate"
+          >
             <table
               className="min-w-full divide-y divide-gray-200"
               role="table"
@@ -286,9 +297,9 @@ const ClaimsDashboard: React.FC = () => {
               Last updated: {new Date().toLocaleString()}
             </p>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 
