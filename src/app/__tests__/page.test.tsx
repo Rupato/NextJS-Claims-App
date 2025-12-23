@@ -5,7 +5,9 @@ describe('Page', () => {
   it('renders the main heading', () => {
     render(<Page />);
     expect(
-      screen.getByText('Testing CI pipeline failure - this will break Prettier formatting')
+      screen.getByText(
+        'Testing CI pipeline failure - this will break Prettier formatting'
+      )
     ).toBeInTheDocument();
   });
 });

@@ -17,7 +17,8 @@ export default function Home() {
             Testing CI pipeline failure - this will break Prettier formatting
           </h1>
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            This change intentionally breaks code formatting to test CI pipeline failure
+            This change intentionally breaks code formatting to test CI pipeline
+            failure
           </p>
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
@@ -47,5 +48,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  )
+  );
 }
