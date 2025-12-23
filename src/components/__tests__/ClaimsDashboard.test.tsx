@@ -143,7 +143,8 @@ describe('ClaimsDashboard', () => {
 
     mockUsePersistedState
       .mockReturnValueOnce(['table', vi.fn()]) // viewMode
-      .mockReturnValueOnce([[], vi.fn()]); // selectedStatuses
+      .mockReturnValueOnce([[], vi.fn()]) // selectedStatuses
+      .mockReturnValueOnce(['created-newest', vi.fn()]); // sortOption
   });
 
   it('renders loading skeleton when loading', () => {
