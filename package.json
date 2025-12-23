@@ -2,6 +2,7 @@
   "name": "nextjs-claim-app",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "rsbuild dev",
     "build": "rsbuild build",
@@ -18,6 +19,7 @@
   },
   "devDependencies": {
     "@rsbuild/core": "^1.6.15",
+    "@rsbuild/plugin-node-polyfill": "^1.4.2",
     "@rsbuild/plugin-react": "^1.4.2",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
