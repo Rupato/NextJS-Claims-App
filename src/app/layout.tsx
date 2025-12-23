@@ -4,13 +4,16 @@ import SkipLink from '../components/SkipLink';
 
 export const metadata: Metadata = {
   title: 'Insurance Claims Dashboard',
-  description: 'Professional insurance claims management dashboard with real-time data visualization, status tracking, and comprehensive claim information.',
-  keywords: 'insurance, claims, dashboard, management, policy, claims processing',
+  description:
+    'Professional insurance claims management dashboard with real-time data visualization, status tracking, and comprehensive claim information.',
+  keywords:
+    'insurance, claims, dashboard, management, policy, claims processing',
   authors: [{ name: 'Claims Management Team' }],
   robots: 'index, follow',
   openGraph: {
     title: 'Insurance Claims Dashboard',
-    description: 'Manage insurance claims with real-time status tracking and comprehensive data visualization.',
+    description:
+      'Manage insurance claims with real-time status tracking and comprehensive data visualization.',
     type: 'website',
   },
 };
@@ -38,7 +41,11 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="dns-prefetch" href="//localhost:8001" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
       </head>
       <body className="antialiased bg-gray-50 text-gray-900">
         <SkipLink />

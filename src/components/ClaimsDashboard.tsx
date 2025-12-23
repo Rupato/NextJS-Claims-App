@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from 'react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 
 interface Claim {
@@ -58,68 +64,84 @@ const CONTAINER_HEIGHT = 600; // Fixed height of scrollable container
 // Individual claim card component
 const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => {
   return (
-  <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-    <header className="flex items-start justify-between mb-4">
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900">{claim.number}</h3>
-        <p className="text-sm text-gray-600">{claim.holder}</p>
-      </div>
-      <span
-        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-          claim.status === 'Approved'
-            ? 'bg-green-100 text-green-800'
-            : claim.status === 'Rejected'
-            ? 'bg-red-100 text-red-800'
-            : claim.status === 'Submitted'
-            ? 'bg-yellow-100 text-yellow-800'
-            : claim.status === 'Processed'
-            ? 'bg-blue-100 text-blue-800'
-            : claim.status === 'Completed'
-            ? 'bg-purple-100 text-purple-800'
-            : 'bg-gray-100 text-gray-800'
-        }`}
-        aria-label={`Status: ${claim.status}`}
-      >
-        {claim.status}
-      </span>
-    </header>
-
-    <div className="grid grid-cols-2 gap-4 mb-4">
-      <div>
-        <dt className="text-xs font-medium text-gray-500 uppercase">Policy Number</dt>
-        <dd className="text-sm text-gray-900 mt-1">{claim.policyNumber}</dd>
-      </div>
-      <div>
-        <dt className="text-xs font-medium text-gray-500 uppercase">Claim Amount</dt>
-        <dd className="text-sm font-medium text-gray-900 mt-1">{claim.formattedClaimAmount}</dd>
-      </div>
-      <div>
-        <dt className="text-xs font-medium text-gray-500 uppercase">Processing Fee</dt>
-        <dd className="text-sm text-gray-900 mt-1">{claim.formattedProcessingFee}</dd>
-      </div>
-      <div>
-        <dt className="text-xs font-medium text-gray-500 uppercase">Total Amount</dt>
-        <dd className="text-lg font-bold text-gray-900 mt-1">{claim.formattedTotalAmount}</dd>
-      </div>
-    </div>
-
-    <div className="border-t border-gray-200 pt-4">
-      <div className="flex justify-between text-sm text-gray-500">
+    <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+      <header className="flex items-start justify-between mb-4">
         <div>
-          <span className="font-medium">Incident:</span>
-          <time dateTime={claim.incidentDate} className="ml-1">
-            {claim.formattedIncidentDate}
-          </time>
+          <h3 className="text-lg font-semibold text-gray-900">
+            {claim.number}
+          </h3>
+          <p className="text-sm text-gray-600">{claim.holder}</p>
+        </div>
+        <span
+          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+            claim.status === 'Approved'
+              ? 'bg-green-100 text-green-800'
+              : claim.status === 'Rejected'
+                ? 'bg-red-100 text-red-800'
+                : claim.status === 'Submitted'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : claim.status === 'Processed'
+                    ? 'bg-blue-100 text-blue-800'
+                    : claim.status === 'Completed'
+                      ? 'bg-purple-100 text-purple-800'
+                      : 'bg-gray-100 text-gray-800'
+          }`}
+          aria-label={`Status: ${claim.status}`}
+        >
+          {claim.status}
+        </span>
+      </header>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <dt className="text-xs font-medium text-gray-500 uppercase">
+            Policy Number
+          </dt>
+          <dd className="text-sm text-gray-900 mt-1">{claim.policyNumber}</dd>
         </div>
         <div>
-          <span className="font-medium">Created:</span>
-          <time dateTime={claim.createdAt} className="ml-1">
-            {claim.formattedCreatedDate}
-          </time>
+          <dt className="text-xs font-medium text-gray-500 uppercase">
+            Claim Amount
+          </dt>
+          <dd className="text-sm font-medium text-gray-900 mt-1">
+            {claim.formattedClaimAmount}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium text-gray-500 uppercase">
+            Processing Fee
+          </dt>
+          <dd className="text-sm text-gray-900 mt-1">
+            {claim.formattedProcessingFee}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium text-gray-500 uppercase">
+            Total Amount
+          </dt>
+          <dd className="text-lg font-bold text-gray-900 mt-1">
+            {claim.formattedTotalAmount}
+          </dd>
         </div>
       </div>
-    </div>
-  </article>
+
+      <div className="border-t border-gray-200 pt-4">
+        <div className="flex justify-between text-sm text-gray-500">
+          <div>
+            <span className="font-medium">Incident:</span>
+            <time dateTime={claim.incidentDate} className="ml-1">
+              {claim.formattedIncidentDate}
+            </time>
+          </div>
+          <div>
+            <span className="font-medium">Created:</span>
+            <time dateTime={claim.createdAt} className="ml-1">
+              {claim.formattedCreatedDate}
+            </time>
+          </div>
+        </div>
+      </div>
+    </article>
   );
 };
 
@@ -149,27 +171,38 @@ const ClaimsDashboard: React.FC = () => {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   // Calculate visible cards range based on scroll position
-  const updateVisibleCardsRange = useCallback((scrollTop: number) => {
-    const visibleStart = Math.floor(scrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
-    const visibleEnd = Math.min(
-      visibleStart + Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) * CARDS_PER_ROW + CARD_BUFFER_SIZE,
-      claims.length
-    );
+  const updateVisibleCardsRange = useCallback(
+    (scrollTop: number) => {
+      const visibleStart = Math.floor(scrollTop / CARD_HEIGHT) * CARDS_PER_ROW;
+      const visibleEnd = Math.min(
+        visibleStart +
+          Math.ceil(CONTAINER_HEIGHT / CARD_HEIGHT) * CARDS_PER_ROW +
+          CARD_BUFFER_SIZE,
+        claims.length
+      );
 
-    // Add buffer zones
-    const bufferedStart = Math.max(0, visibleStart - CARD_BUFFER_SIZE);
-    const bufferedEnd = Math.min(claims.length, visibleEnd + CARD_BUFFER_SIZE);
+      // Add buffer zones
+      const bufferedStart = Math.max(0, visibleStart - CARD_BUFFER_SIZE);
+      const bufferedEnd = Math.min(
+        claims.length,
+        visibleEnd + CARD_BUFFER_SIZE
+      );
 
-    setCardStartIndex(bufferedStart);
-    setCardEndIndex(bufferedEnd);
-    setCardScrollTop(scrollTop);
-  }, [claims.length]);
+      setCardStartIndex(bufferedStart);
+      setCardEndIndex(bufferedEnd);
+      setCardScrollTop(scrollTop);
+    },
+    [claims.length]
+  );
 
   // Handle cards scroll events
-  const handleCardsScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    const scrollTop = event.currentTarget.scrollTop;
-    updateVisibleCardsRange(scrollTop);
-  }, [updateVisibleCardsRange]);
+  const handleCardsScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const scrollTop = event.currentTarget.scrollTop;
+      updateVisibleCardsRange(scrollTop);
+    },
+    [updateVisibleCardsRange]
+  );
 
   // Initialize cards visible range
   useEffect(() => {
@@ -179,27 +212,33 @@ const ClaimsDashboard: React.FC = () => {
   }, [claims.length, viewMode, updateVisibleCardsRange]);
 
   // Calculate visible range based on scroll position
-  const updateVisibleRange = useCallback((scrollTop: number) => {
-    const visibleStart = Math.floor(scrollTop / ROW_HEIGHT);
-    const visibleEnd = Math.min(
-      visibleStart + Math.ceil(CONTAINER_HEIGHT / ROW_HEIGHT) + BUFFER_SIZE,
-      claims.length
-    );
+  const updateVisibleRange = useCallback(
+    (scrollTop: number) => {
+      const visibleStart = Math.floor(scrollTop / ROW_HEIGHT);
+      const visibleEnd = Math.min(
+        visibleStart + Math.ceil(CONTAINER_HEIGHT / ROW_HEIGHT) + BUFFER_SIZE,
+        claims.length
+      );
 
-    // Add buffer zones
-    const bufferedStart = Math.max(0, visibleStart - BUFFER_SIZE);
-    const bufferedEnd = Math.min(claims.length, visibleEnd + BUFFER_SIZE);
+      // Add buffer zones
+      const bufferedStart = Math.max(0, visibleStart - BUFFER_SIZE);
+      const bufferedEnd = Math.min(claims.length, visibleEnd + BUFFER_SIZE);
 
-    setStartIndex(bufferedStart);
-    setEndIndex(bufferedEnd);
-    setScrollTop(scrollTop);
-  }, [claims.length]);
+      setStartIndex(bufferedStart);
+      setEndIndex(bufferedEnd);
+      setScrollTop(scrollTop);
+    },
+    [claims.length]
+  );
 
   // Handle scroll events
-  const handleScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
-    const scrollTop = event.currentTarget.scrollTop;
-    updateVisibleRange(scrollTop);
-  }, [updateVisibleRange]);
+  const handleScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      const scrollTop = event.currentTarget.scrollTop;
+      updateVisibleRange(scrollTop);
+    },
+    [updateVisibleRange]
+  );
 
   // Initialize visible range
   useEffect(() => {
@@ -247,8 +286,13 @@ const ClaimsDashboard: React.FC = () => {
         formattedClaimAmount: formatCurrency(claim.amount),
         formattedProcessingFee: formatCurrency(claim.processingFee),
         formattedTotalAmount: formatCurrency(totalAmount.toString()),
-        formattedIncidentDate: formatDistanceToNow(parseISO(claim.incidentDate), { addSuffix: true }),
-        formattedCreatedDate: formatDistanceToNow(parseISO(claim.createdAt), { addSuffix: true }),
+        formattedIncidentDate: formatDistanceToNow(
+          parseISO(claim.incidentDate),
+          { addSuffix: true }
+        ),
+        formattedCreatedDate: formatDistanceToNow(parseISO(claim.createdAt), {
+          addSuffix: true,
+        }),
       };
     });
   }, [claims]);
@@ -259,7 +303,9 @@ const ClaimsDashboard: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow-sm rounded-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h1 className="text-2xl font-bold text-gray-900">Claims Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Claims Dashboard
+              </h1>
               <p className="mt-1 text-sm text-gray-600">
                 View and manage all insurance claims
               </p>
@@ -288,14 +334,29 @@ const ClaimsDashboard: React.FC = () => {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 py-8" role="main" aria-labelledby="dashboard-title">
+    <main
+      className="min-h-screen bg-gray-50 py-8"
+      role="main"
+      aria-labelledby="dashboard-title"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <header className="bg-white shadow-sm rounded-lg overflow-hidden" role="banner">
+        <header
+          className="bg-white shadow-sm rounded-lg overflow-hidden"
+          role="banner"
+        >
           <div className="px-6 py-4 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div>
-                <h1 id="dashboard-title" className="text-2xl font-bold text-gray-900">Claims Dashboard</h1>
-                <p className="mt-1 text-sm text-gray-600" id="dashboard-description">
+                <h1
+                  id="dashboard-title"
+                  className="text-2xl font-bold text-gray-900"
+                >
+                  Claims Dashboard
+                </h1>
+                <p
+                  className="mt-1 text-sm text-gray-600"
+                  id="dashboard-description"
+                >
                   View and manage all insurance claims
                 </p>
               </div>
@@ -332,10 +393,19 @@ const ClaimsDashboard: React.FC = () => {
         </header>
 
         <nav aria-label="Dashboard actions" className="sr-only">
-          <p>Use Tab to navigate through the claims table. Use Enter or Space to interact with focusable elements.</p>
+          <p>
+            Use Tab to navigate through the claims table. Use Enter or Space to
+            interact with focusable elements.
+          </p>
         </nav>
 
-        <section className="mt-6 bg-white shadow-sm rounded-lg overflow-hidden" aria-labelledby="claims-section-title" aria-describedby={viewMode === 'table' ? 'claims-table-desc' : 'claims-cards-desc'}>
+        <section
+          className="mt-6 bg-white shadow-sm rounded-lg overflow-hidden"
+          aria-labelledby="claims-section-title"
+          aria-describedby={
+            viewMode === 'table' ? 'claims-table-desc' : 'claims-cards-desc'
+          }
+        >
           <div className="sr-only">
             <h2 id="claims-section-title">Insurance Claims Data</h2>
           </div>
@@ -432,74 +502,118 @@ const ClaimsDashboard: React.FC = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
-                    {formattedClaims.slice(startIndex, endIndex).map((claim, index) => (
-                      <tr key={claim.id} className="hover:bg-gray-50" role="row">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
-                          {claim.number}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap" role="cell">
-                          <span
-                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                              claim.status === 'Approved'
-                                ? 'bg-green-100 text-green-800'
-                                : claim.status === 'Rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : claim.status === 'Submitted'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : claim.status === 'Processed'
-                                ? 'bg-blue-100 text-blue-800'
-                                : claim.status === 'Completed'
-                                ? 'bg-purple-100 text-purple-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                            aria-label={`Status: ${claim.status}`}
+                  <tbody
+                    className="bg-white divide-y divide-gray-200"
+                    role="rowgroup"
+                  >
+                    {formattedClaims
+                      .slice(startIndex, endIndex)
+                      .map((claim, index) => (
+                        <tr
+                          key={claim.id}
+                          className="hover:bg-gray-50"
+                          role="row"
+                        >
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                            role="cell"
                           >
-                            {claim.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
-                          {claim.holder}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
-                          {claim.policyNumber}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
-                          {claim.formattedClaimAmount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900" role="cell">
-                          {claim.formattedProcessingFee}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" role="cell">
-                          {claim.formattedTotalAmount}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" role="cell">
-                          <time dateTime={claim.incidentDate}>
-                            {claim.formattedIncidentDate}
-                          </time>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500" role="cell">
-                          <time dateTime={claim.createdAt}>
-                            {claim.formattedCreatedDate}
-                          </time>
-                        </td>
-                      </tr>
-                    ))}
+                            {claim.number}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap"
+                            role="cell"
+                          >
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                claim.status === 'Approved'
+                                  ? 'bg-green-100 text-green-800'
+                                  : claim.status === 'Rejected'
+                                    ? 'bg-red-100 text-red-800'
+                                    : claim.status === 'Submitted'
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : claim.status === 'Processed'
+                                        ? 'bg-blue-100 text-blue-800'
+                                        : claim.status === 'Completed'
+                                          ? 'bg-purple-100 text-purple-800'
+                                          : 'bg-gray-100 text-gray-800'
+                              }`}
+                              aria-label={`Status: ${claim.status}`}
+                            >
+                              {claim.status}
+                            </span>
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            role="cell"
+                          >
+                            {claim.holder}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            role="cell"
+                          >
+                            {claim.policyNumber}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            role="cell"
+                          >
+                            {claim.formattedClaimAmount}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                            role="cell"
+                          >
+                            {claim.formattedProcessingFee}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                            role="cell"
+                          >
+                            {claim.formattedTotalAmount}
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                            role="cell"
+                          >
+                            <time dateTime={claim.incidentDate}>
+                              {claim.formattedIncidentDate}
+                            </time>
+                          </td>
+                          <td
+                            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+                            role="cell"
+                          >
+                            <time dateTime={claim.createdAt}>
+                              {claim.formattedCreatedDate}
+                            </time>
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
 
                 {/* Bottom spacer for virtualization */}
-                <div style={{ height: (claims.length - endIndex) * ROW_HEIGHT }} />
+                <div
+                  style={{ height: (claims.length - endIndex) * ROW_HEIGHT }}
+                />
               </div>
 
-              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-table-desc">
+              <div
+                className="px-6 py-4 border-t border-gray-200 bg-gray-50"
+                id="claims-table-desc"
+              >
                 <div>
                   <p className="text-sm text-gray-500">
-                    Virtualized table: Showing {endIndex - startIndex} rendered rows of {claims.length} total claims.
-                    Scroll to dynamically load/unload data for optimal performance.
+                    Virtualized table: Showing {endIndex - startIndex} rendered
+                    rows of {claims.length} total claims. Scroll to dynamically
+                    load/unload data for optimal performance.
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Rendered range: {startIndex + 1}-{Math.min(endIndex, claims.length)} | Last updated: {new Date().toLocaleString()}
+                    Rendered range: {startIndex + 1}-
+                    {Math.min(endIndex, claims.length)} | Last updated:{' '}
+                    {new Date().toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -519,28 +633,51 @@ const ClaimsDashboard: React.FC = () => {
                 aria-label="Virtualized claims cards - scroll to load more data"
               >
                 {/* Top spacer for cards virtualization */}
-                <div style={{ height: Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT }} />
+                <div
+                  style={{
+                    height:
+                      Math.floor(cardStartIndex / CARDS_PER_ROW) * CARD_HEIGHT,
+                  }}
+                />
 
                 <div className="p-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="claims-cards">
-                    {formattedClaims.slice(cardStartIndex, cardEndIndex).map((claim) => (
-                      <ClaimCard key={claim.id} claim={claim} />
-                    ))}
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                    id="claims-cards"
+                  >
+                    {formattedClaims
+                      .slice(cardStartIndex, cardEndIndex)
+                      .map((claim) => (
+                        <ClaimCard key={claim.id} claim={claim} />
+                      ))}
                   </div>
                 </div>
 
                 {/* Bottom spacer for cards virtualization */}
-                <div style={{ height: Math.floor((claims.length - cardEndIndex) / CARDS_PER_ROW) * CARD_HEIGHT }} />
+                <div
+                  style={{
+                    height:
+                      Math.floor(
+                        (claims.length - cardEndIndex) / CARDS_PER_ROW
+                      ) * CARD_HEIGHT,
+                  }}
+                />
               </div>
 
-              <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-cards-desc">
+              <div
+                className="px-6 py-4 border-t border-gray-200 bg-gray-50"
+                id="claims-cards-desc"
+              >
                 <div>
                   <p className="text-sm text-gray-500">
-                    Virtualized cards: Showing {cardEndIndex - cardStartIndex} rendered cards of {claims.length} total claims.
-                    Scroll to dynamically load/unload data for optimal performance.
+                    Virtualized cards: Showing {cardEndIndex - cardStartIndex}{' '}
+                    rendered cards of {claims.length} total claims. Scroll to
+                    dynamically load/unload data for optimal performance.
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Rendered range: {cardStartIndex + 1}-{Math.min(cardEndIndex, claims.length)} | Last updated: {new Date().toLocaleString()}
+                    Rendered range: {cardStartIndex + 1}-
+                    {Math.min(cardEndIndex, claims.length)} | Last updated:{' '}
+                    {new Date().toLocaleString()}
                   </p>
                 </div>
               </div>

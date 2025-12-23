@@ -13,8 +13,6 @@ global.fetch = vi.fn(() =>
 describe('Page', () => {
   it('renders the claims dashboard', () => {
     render(<Page />);
-    expect(
-      screen.getByText('Claims Dashboard')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Claims Dashboard')).toBeInTheDocument();
   });
 });
