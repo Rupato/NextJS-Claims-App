@@ -18,7 +18,7 @@ describe('TableHeader', () => {
       'Created Date',
     ];
 
-    headers.forEach(header => {
+    headers.forEach((header) => {
       expect(screen.getByText(header)).toBeInTheDocument();
     });
   });
@@ -37,7 +37,7 @@ describe('TableHeader', () => {
     const columnHeaders = screen.getAllByRole('columnheader');
     expect(columnHeaders).toHaveLength(9);
 
-    columnHeaders.forEach(header => {
+    columnHeaders.forEach((header) => {
       expect(header).toHaveAttribute('scope', 'col');
       expect(header.tagName).toBe('TH');
     });
@@ -50,7 +50,7 @@ describe('TableHeader', () => {
     expect(thead).toHaveClass('bg-gray-50');
 
     const headers = screen.getAllByRole('columnheader');
-    headers.forEach(header => {
+    headers.forEach((header) => {
       expect(header).toHaveClass(
         'px-6',
         'py-3',

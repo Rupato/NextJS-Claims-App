@@ -22,17 +22,29 @@ interface CardsViewProps {
 
 // Mock the child components
 vi.mock('../TableView', () => ({
-  TableView: ({ formattedClaims, startIndex, endIndex, claimsLength }: TableViewProps) => (
+  TableView: ({
+    formattedClaims,
+    startIndex,
+    endIndex,
+    claimsLength,
+  }: TableViewProps) => (
     <div data-testid="table-view">
-      TableView: {formattedClaims.length} claims, {startIndex}-{endIndex}, total: {claimsLength}
+      TableView: {formattedClaims.length} claims, {startIndex}-{endIndex},
+      total: {claimsLength}
     </div>
   ),
 }));
 
 vi.mock('../CardsView', () => ({
-  CardsView: ({ formattedClaims, cardStartIndex, cardEndIndex, claimsLength }: CardsViewProps) => (
+  CardsView: ({
+    formattedClaims,
+    cardStartIndex,
+    cardEndIndex,
+    claimsLength,
+  }: CardsViewProps) => (
     <div data-testid="cards-view">
-      CardsView: {formattedClaims.length} claims, {cardStartIndex}-{cardEndIndex}, total: {claimsLength}
+      CardsView: {formattedClaims.length} claims, {cardStartIndex}-
+      {cardEndIndex}, total: {claimsLength}
     </div>
   ),
 }));
@@ -86,14 +98,18 @@ describe('ClaimsView', () => {
     render(<ClaimsView {...mockProps} viewMode="table" />);
 
     const tableView = screen.getByTestId('table-view');
-    expect(tableView).toHaveTextContent('TableView: 1 claims, 0-10, total: 100');
+    expect(tableView).toHaveTextContent(
+      'TableView: 1 claims, 0-10, total: 100'
+    );
   });
 
   it('passes correct props to CardsView', () => {
     render(<ClaimsView {...mockProps} viewMode="cards" />);
 
     const cardsView = screen.getByTestId('cards-view');
-    expect(cardsView).toHaveTextContent('CardsView: 1 claims, 0-12, total: 100');
+    expect(cardsView).toHaveTextContent(
+      'CardsView: 1 claims, 0-12, total: 100'
+    );
   });
 
   it('switches between views when viewMode changes', () => {

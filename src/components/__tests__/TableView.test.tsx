@@ -5,7 +5,13 @@ import { FormattedClaim } from '../../types/claims';
 
 // Mock the child components
 vi.mock('../TableHeader', () => ({
-  TableHeader: () => <thead data-testid="table-header"><tr><th>Mock Header</th></tr></thead>,
+  TableHeader: () => (
+    <thead data-testid="table-header">
+      <tr>
+        <th>Mock Header</th>
+      </tr>
+    </thead>
+  ),
 }));
 
 vi.mock('../TableRow', () => ({
@@ -88,7 +94,7 @@ describe('TableView', () => {
     render(<TableView {...mockProps} />);
 
     const rowgroups = screen.getAllByRole('rowgroup');
-    const tbody = rowgroups.find(rg => rg.tagName === 'TBODY');
+    const tbody = rowgroups.find((rg) => rg.tagName === 'TBODY');
     expect(tbody).toBeInTheDocument();
   });
 
@@ -109,7 +115,13 @@ describe('TableView', () => {
 
     const container = screen.getByRole('region');
     expect(container).toBeInTheDocument();
-    expect(container).toHaveClass('overflow-auto', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-inset');
+    expect(container).toHaveClass(
+      'overflow-auto',
+      'focus:outline-none',
+      'focus:ring-2',
+      'focus:ring-blue-500',
+      'focus:ring-inset'
+    );
   });
 
   it('renders footer with virtualization info', () => {
@@ -118,7 +130,9 @@ describe('TableView', () => {
     const footerDiv = document.getElementById('claims-table-desc');
     expect(footerDiv).toBeInTheDocument();
     expect(footerDiv).toHaveTextContent('Virtualized table');
-    expect(footerDiv).toHaveTextContent('Showing 2 rendered rows of 10 total claims');
+    expect(footerDiv).toHaveTextContent(
+      'Showing 2 rendered rows of 10 total claims'
+    );
     expect(footerDiv).toHaveTextContent('Rendered range: 1-2');
   });
 
@@ -152,7 +166,7 @@ describe('TableView', () => {
     expect(table).toHaveClass('min-w-full', 'divide-y', 'divide-gray-200');
 
     const rowgroups = screen.getAllByRole('rowgroup');
-    const tbody = rowgroups.find(rg => rg.tagName === 'TBODY');
+    const tbody = rowgroups.find((rg) => rg.tagName === 'TBODY');
     expect(tbody).toHaveClass('bg-white', 'divide-y', 'divide-gray-200');
   });
 

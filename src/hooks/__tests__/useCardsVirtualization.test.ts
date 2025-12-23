@@ -12,27 +12,21 @@ vi.mock('../../constants/virtualization', () => ({
 
 describe('useCardsVirtualization', () => {
   it('returns zero indices when viewMode is not cards', () => {
-    const { result } = renderHook(() =>
-      useCardsVirtualization(10, 'table')
-    );
+    const { result } = renderHook(() => useCardsVirtualization(10, 'table'));
 
     expect(result.current.cardStartIndex).toBe(0);
     expect(result.current.cardEndIndex).toBe(0);
   });
 
   it('returns zero indices when claimsLength is 0', () => {
-    const { result } = renderHook(() =>
-      useCardsVirtualization(0, 'cards')
-    );
+    const { result } = renderHook(() => useCardsVirtualization(0, 'cards'));
 
     expect(result.current.cardStartIndex).toBe(0);
     expect(result.current.cardEndIndex).toBe(0);
   });
 
   it('calculates correct indices when viewMode is cards and claimsLength > 0', () => {
-    const { result } = renderHook(() =>
-      useCardsVirtualization(20, 'cards')
-    );
+    const { result } = renderHook(() => useCardsVirtualization(20, 'cards'));
 
     // With scrollTop = 0, should show first visible cards with buffer
     expect(result.current.cardStartIndex).toBe(0); // max(0, 0 - 6) = 0
@@ -40,9 +34,7 @@ describe('useCardsVirtualization', () => {
   });
 
   it('updates scrollTop when handleCardsScroll is called', () => {
-    const { result } = renderHook(() =>
-      useCardsVirtualization(20, 'cards')
-    );
+    const { result } = renderHook(() => useCardsVirtualization(20, 'cards'));
 
     const mockEvent = {
       currentTarget: { scrollTop: 280 },
@@ -56,9 +48,7 @@ describe('useCardsVirtualization', () => {
   });
 
   it('recalculates indices when scrollTop changes', () => {
-    const { result } = renderHook(() =>
-      useCardsVirtualization(20, 'cards')
-    );
+    const { result } = renderHook(() => useCardsVirtualization(20, 'cards'));
 
     // Scroll down
     const mockEvent = {
@@ -74,6 +64,4 @@ describe('useCardsVirtualization', () => {
     // Note: The actual index calculation depends on the constants,
     // we're mainly testing that the hook responds to scroll changes
   });
-
-
 });

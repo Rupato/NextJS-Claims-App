@@ -140,7 +140,9 @@ describe('ClaimsDashboard', () => {
     render(<ClaimsDashboard />);
 
     expect(screen.getByText('Claims Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('View and manage all insurance claims')).toBeInTheDocument();
+    expect(
+      screen.getByText('View and manage all insurance claims')
+    ).toBeInTheDocument();
     expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
     expect(screen.getByText('LoadingSkeleton: table')).toBeInTheDocument();
   });
@@ -154,7 +156,9 @@ describe('ClaimsDashboard', () => {
 
     render(<ClaimsDashboard />);
 
-    expect(screen.getByText('Error loading claims: Network error')).toBeInTheDocument();
+    expect(
+      screen.getByText('Error loading claims: Network error')
+    ).toBeInTheDocument();
     expect(screen.getByRole('alert')).toBeInTheDocument();
   });
 
@@ -171,7 +175,9 @@ describe('ClaimsDashboard', () => {
   it('renders skip link for accessibility', () => {
     render(<ClaimsDashboard />);
 
-    const skipLink = screen.getByRole('link', { name: /skip to main content/i });
+    const skipLink = screen.getByRole('link', {
+      name: /skip to main content/i,
+    });
     expect(skipLink).toBeInTheDocument();
     expect(skipLink).toHaveAttribute('href', '#main-content');
   });
@@ -186,7 +192,9 @@ describe('ClaimsDashboard', () => {
   it('renders live region for status updates', () => {
     render(<ClaimsDashboard />);
 
-    const liveRegion = screen.getByText('Displaying 1 insurance claims in table view');
+    const liveRegion = screen.getByText(
+      'Displaying 1 insurance claims in table view'
+    );
     expect(liveRegion).toBeInTheDocument();
     expect(liveRegion).toHaveAttribute('aria-live', 'polite');
   });
@@ -209,14 +217,22 @@ describe('ClaimsDashboard', () => {
     expect(mockUseClaims).toHaveBeenCalledTimes(1);
     expect(mockUseFormattedClaims).toHaveBeenCalledWith(mockClaims);
     expect(mockUseTableVirtualization).toHaveBeenCalledWith(mockClaims.length);
-    expect(mockUseCardsVirtualization).toHaveBeenCalledWith(mockClaims.length, 'table');
-    expect(mockUsePersistedState).toHaveBeenCalledWith('claims-dashboard-view-mode', 'table');
+    expect(mockUseCardsVirtualization).toHaveBeenCalledWith(
+      mockClaims.length,
+      'table'
+    );
+    expect(mockUsePersistedState).toHaveBeenCalledWith(
+      'claims-dashboard-view-mode',
+      'table'
+    );
   });
 
   it('renders main content section with correct attributes', () => {
     render(<ClaimsDashboard />);
 
-    const mainContent = screen.getByRole('region', { name: /insurance claims data/i });
+    const mainContent = screen.getByRole('region', {
+      name: /insurance claims data/i,
+    });
     expect(mainContent).toBeInTheDocument();
     expect(mainContent).toHaveAttribute('id', 'main-content');
   });
@@ -233,7 +249,9 @@ describe('ClaimsDashboard', () => {
 
     expect(screen.getByRole('main')).toBeInTheDocument();
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByRole('region', { name: /insurance claims data/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole('region', { name: /insurance claims data/i })
+    ).toBeInTheDocument();
   });
 
   it('applies correct CSS classes', () => {
@@ -243,7 +261,12 @@ describe('ClaimsDashboard', () => {
     expect(main).toHaveClass('min-h-screen', 'bg-gray-50', 'py-8');
 
     const header = screen.getByRole('banner');
-    expect(header).toHaveClass('bg-white', 'shadow-sm', 'rounded-lg', 'overflow-hidden');
+    expect(header).toHaveClass(
+      'bg-white',
+      'shadow-sm',
+      'rounded-lg',
+      'overflow-hidden'
+    );
   });
 
   it('renders dashboard title with correct id', () => {

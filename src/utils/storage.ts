@@ -7,10 +7,10 @@ export const usePersistedState = <T>(key: string, defaultValue: T) => {
         const stored = localStorage.getItem(key);
         return stored ? JSON.parse(stored) : defaultValue;
       }
-      } catch {
-        // localStorage not available (test environment, SSR, etc.)
-        console.warn('localStorage not available, using default value');
-      }
+    } catch {
+      // localStorage not available (test environment, SSR, etc.)
+      console.warn('localStorage not available, using default value');
+    }
     return defaultValue;
   });
 

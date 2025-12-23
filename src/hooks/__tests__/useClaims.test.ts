@@ -23,7 +23,17 @@ describe('useClaims', () => {
 
   it('returns claims data on successful fetch', async () => {
     const mockClaims = [
-      { id: 1, number: 'CLM-001', incidentDate: '2023-01-01', createdAt: '2023-01-02', amount: '1000', holder: 'John Doe', policyNumber: 'POL-001', processingFee: '50', status: 'Approved' }
+      {
+        id: 1,
+        number: 'CLM-001',
+        incidentDate: '2023-01-01',
+        createdAt: '2023-01-02',
+        amount: '1000',
+        holder: 'John Doe',
+        policyNumber: 'POL-001',
+        processingFee: '50',
+        status: 'Approved',
+      },
     ];
 
     fetchMock.mockResolvedValueOnce({
@@ -93,11 +103,14 @@ describe('useClaims', () => {
     renderHook(() => useClaims());
 
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalledWith('http://localhost:8001/api/v1/claims', {
-        headers: {
-          'Cache-Control': 'max-age=300',
-        },
-      });
+      expect(fetchMock).toHaveBeenCalledWith(
+        'http://localhost:8001/api/v1/claims',
+        {
+          headers: {
+            'Cache-Control': 'max-age=300',
+          },
+        }
+      );
     });
   });
 });

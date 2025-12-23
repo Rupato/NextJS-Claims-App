@@ -4,32 +4,38 @@ import { LoadingSkeleton } from '../LoadingSkeleton';
 
 describe('LoadingSkeleton', () => {
   describe('table view mode', () => {
-  it('renders table skeleton structure', () => {
-    render(<LoadingSkeleton viewMode="table" />);
+    it('renders table skeleton structure', () => {
+      render(<LoadingSkeleton viewMode="table" />);
 
-    const container = document.querySelector('.animate-pulse');
-    expect(container).toBeInTheDocument();
+      const container = document.querySelector('.animate-pulse');
+      expect(container).toBeInTheDocument();
 
       // Check for table header skeleton
       const headerSkeleton = document.querySelector('.bg-gray-50.border-b');
       expect(headerSkeleton).toBeInTheDocument();
 
       // Check for 9 header skeleton elements
-      const headerElements = document.querySelectorAll('.bg-gray-50.border-b .h-4');
+      const headerElements = document.querySelectorAll(
+        '.bg-gray-50.border-b .h-4'
+      );
       expect(headerElements).toHaveLength(9);
 
       // Check for table rows skeleton (15 rows)
-      const rowSkeletons = document.querySelectorAll('.border-b.border-gray-100');
+      const rowSkeletons = document.querySelectorAll(
+        '.border-b.border-gray-100'
+      );
       expect(rowSkeletons).toHaveLength(15);
 
       // Check each row has 9 skeleton elements
-      rowSkeletons.forEach(row => {
+      rowSkeletons.forEach((row) => {
         const elements = row.querySelectorAll('.h-4');
         expect(elements).toHaveLength(9);
       });
 
       // Check for footer skeleton
-      const footerSkeleton = document.querySelector('.border-t.border-gray-200.bg-gray-50');
+      const footerSkeleton = document.querySelector(
+        '.border-t.border-gray-200.bg-gray-50'
+      );
       expect(footerSkeleton).toBeInTheDocument();
     });
 
@@ -53,7 +59,9 @@ describe('LoadingSkeleton', () => {
       render(<LoadingSkeleton viewMode="cards" />);
 
       // Check for grid layout
-      const grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+      const grid = document.querySelector(
+        '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3'
+      );
       expect(grid).toBeInTheDocument();
 
       // Check for 12 card skeletons
@@ -61,8 +69,14 @@ describe('LoadingSkeleton', () => {
       expect(cards).toHaveLength(12);
 
       // Check each card structure
-      cards.forEach(card => {
-        expect(card).toHaveClass('bg-white', 'border', 'border-gray-200', 'rounded-lg', 'p-6');
+      cards.forEach((card) => {
+        expect(card).toHaveClass(
+          'bg-white',
+          'border',
+          'border-gray-200',
+          'rounded-lg',
+          'p-6'
+        );
 
         // Check header
         const header = card.querySelector('header');
@@ -82,7 +96,9 @@ describe('LoadingSkeleton', () => {
       });
 
       // Check for cards footer skeleton
-      const footerSkeleton = document.querySelectorAll('.border-t.border-gray-200.bg-gray-50');
+      const footerSkeleton = document.querySelectorAll(
+        '.border-t.border-gray-200.bg-gray-50'
+      );
       expect(footerSkeleton).toHaveLength(1);
     });
 
@@ -104,7 +120,9 @@ describe('LoadingSkeleton', () => {
   it('renders different structures for different view modes', () => {
     const { rerender } = render(<LoadingSkeleton viewMode="table" />);
 
-    let grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+    let grid = document.querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3'
+    );
     expect(grid).not.toBeInTheDocument();
 
     let tableHeader = document.querySelector('.bg-gray-50.border-b');
@@ -112,7 +130,9 @@ describe('LoadingSkeleton', () => {
 
     rerender(<LoadingSkeleton viewMode="cards" />);
 
-    grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+    grid = document.querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3'
+    );
     expect(grid).toBeInTheDocument();
 
     tableHeader = document.querySelector('.bg-gray-50.border-b');

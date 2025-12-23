@@ -59,7 +59,9 @@ describe('CardsView', () => {
   it('renders grid layout container', () => {
     render(<CardsView {...mockProps} />);
 
-    const grid = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3');
+    const grid = document.querySelector(
+      '.grid.grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-3'
+    );
     expect(grid).toBeInTheDocument();
   });
 
@@ -76,7 +78,13 @@ describe('CardsView', () => {
     const container = screen.getByRole('region');
     expect(container).toBeInTheDocument();
     expect(container).toHaveAttribute('aria-labelledby', 'claims-cards');
-    expect(container).toHaveClass('overflow-auto', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-500', 'focus:ring-inset');
+    expect(container).toHaveClass(
+      'overflow-auto',
+      'focus:outline-none',
+      'focus:ring-2',
+      'focus:ring-blue-500',
+      'focus:ring-inset'
+    );
   });
 
   it('renders virtualization spacers', () => {
@@ -98,7 +106,9 @@ describe('CardsView', () => {
     const footerDiv = document.getElementById('claims-cards-desc');
     expect(footerDiv).toBeInTheDocument();
     expect(footerDiv).toHaveTextContent('Virtualized cards');
-    expect(footerDiv).toHaveTextContent('Showing 2 rendered cards of 10 total claims');
+    expect(footerDiv).toHaveTextContent(
+      'Showing 2 rendered cards of 10 total claims'
+    );
     expect(footerDiv).toHaveTextContent('Rendered range: 1-2');
   });
 
@@ -128,7 +138,12 @@ describe('CardsView', () => {
     expect(container).toHaveStyle({ height: '600px' }); // CONTAINER_HEIGHT
 
     const grid = document.querySelector('.grid');
-    expect(grid).toHaveClass('grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'gap-6');
+    expect(grid).toHaveClass(
+      'grid-cols-1',
+      'md:grid-cols-2',
+      'lg:grid-cols-3',
+      'gap-6'
+    );
 
     const paddingDiv = document.querySelector('.p-6');
     expect(paddingDiv).toBeInTheDocument();

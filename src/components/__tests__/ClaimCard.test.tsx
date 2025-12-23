@@ -45,7 +45,7 @@ describe('ClaimCard', () => {
   it('applies correct status color classes for different statuses', () => {
     const statuses = ['Rejected', 'Submitted', 'Processed', 'Completed'];
 
-    statuses.forEach(status => {
+    statuses.forEach((status) => {
       const claim = { ...mockClaim, status };
       const { rerender } = render(<ClaimCard claim={claim} />);
 

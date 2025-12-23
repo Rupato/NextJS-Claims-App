@@ -4,10 +4,7 @@ import React, { useRef } from 'react';
 import { FormattedClaim } from '../types/claims';
 import { TableHeader } from './TableHeader';
 import { TableRow } from './TableRow';
-import {
-  ROW_HEIGHT,
-  CONTAINER_HEIGHT,
-} from '../constants/virtualization';
+import { ROW_HEIGHT, CONTAINER_HEIGHT } from '../constants/virtualization';
 
 interface TableViewProps {
   formattedClaims: FormattedClaim[];
