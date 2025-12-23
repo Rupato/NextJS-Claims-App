@@ -7,12 +7,11 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import { Claim, FormattedClaim, ViewMode } from '../types/claims';
+import { Claim } from '../types/claims';
 import { formatCurrency } from '../utils/formatters';
 import { usePersistedState } from '../utils/storage';
-import { TableView } from './TableView';
-import { CardsView } from './CardsView';
 import { ClaimCard } from './ClaimCard';
+import { ViewModeTabs } from './ViewModeTabs';
 import {
   ROW_HEIGHT,
   BUFFER_SIZE,
@@ -254,33 +253,10 @@ const ClaimsDashboard: React.FC = () => {
                 </p>
               </div>
 
-              {/* View Mode Tabs */}
-              <nav aria-label="View mode selection" className="flex space-x-1">
-                <button
-                  onClick={() => setViewMode('table')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    viewMode === 'table'
-                      ? 'bg-blue-100 text-blue-700 border-blue-200'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
-                  aria-pressed={viewMode === 'table'}
-                  aria-label="Switch to table view"
-                >
-                  📊 Table View
-                </button>
-                <button
-                  onClick={() => setViewMode('cards')}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    viewMode === 'cards'
-                      ? 'bg-blue-100 text-blue-700 border-blue-200'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                  }`}
-                  aria-pressed={viewMode === 'cards'}
-                  aria-label="Switch to card view"
-                >
-                  🃏 Card View
-                </button>
-              </nav>
+              <ViewModeTabs
+                viewMode={viewMode}
+                onViewModeChange={setViewMode}
+              />
             </div>
           </div>
         </header>
