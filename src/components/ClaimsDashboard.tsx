@@ -121,16 +121,21 @@ const ClaimCard: React.FC<{ claim: FormattedClaim }> = ({ claim }) => (
   </article>
 );
 
+const CARDS_PER_PAGE = 12; // Show 12 cards per page for better performance
+
 const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
-  // Virtualization state (only used for table view)
+  // Table virtualization state
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(20); // Show 20 rows initially
   const [scrollTop, setScrollTop] = useState(0);
+
+  // Cards pagination state
+  const [currentCardPage, setCurrentCardPage] = useState(1);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -208,6 +213,20 @@ const ClaimsDashboard: React.FC = () => {
       };
     });
   }, [claims]);
+
+  // Calculate pagination for cards (after formattedClaims is defined)
+  const totalCardPages = Math.ceil(formattedClaims.length / CARDS_PER_PAGE);
+  const startCardIndex = (currentCardPage - 1) * CARDS_PER_PAGE;
+  const endCardIndex = startCardIndex + CARDS_PER_PAGE;
+  const currentCards = formattedClaims.slice(startCardIndex, endCardIndex);
+
+  // Pagination handlers
+  const goToCardPage = (page: number) => {
+    setCurrentCardPage(Math.max(1, Math.min(page, totalCardPages)));
+  };
+
+  const nextCardPage = () => goToCardPage(currentCardPage + 1);
+  const prevCardPage = () => goToCardPage(currentCardPage - 1);
 
   if (loading) {
     return (
@@ -461,23 +480,56 @@ const ClaimsDashboard: React.FC = () => {
               </div>
             </>
           ) : (
-            /* Cards View */
+            /* Cards View with Pagination */
             <>
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="claims-cards">
-                  {formattedClaims.map((claim) => (
+                  {currentCards.map((claim) => (
                     <ClaimCard key={claim.id} claim={claim} />
                   ))}
                 </div>
+
+                {/* Pagination Controls */}
+                {totalCardPages > 1 && (
+                  <div className="mt-8 flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={prevCardPage}
+                        disabled={currentCardPage === 1}
+                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Previous page"
+                      >
+                        ← Previous
+                      </button>
+
+                      <span className="text-sm text-gray-700">
+                        Page {currentCardPage} of {totalCardPages}
+                      </span>
+
+                      <button
+                        onClick={nextCardPage}
+                        disabled={currentCardPage === totalCardPages}
+                        className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label="Next page"
+                      >
+                        Next →
+                      </button>
+                    </div>
+
+                    <div className="text-sm text-gray-500">
+                      Showing {startCardIndex + 1}-{Math.min(endCardIndex, formattedClaims.length)} of {formattedClaims.length} claims
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="px-6 py-4 border-t border-gray-200 bg-gray-50" id="claims-cards-desc">
                 <div>
                   <p className="text-sm text-gray-500">
-                    Card view: Showing all {claims.length} claims in an easy-to-scan card layout.
+                    Card view: Paginated display with {CARDS_PER_PAGE} cards per page for optimal performance.
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Last updated: {new Date().toLocaleString()}
+                    Total claims: {claims.length} | Current page: {currentCardPage} of {totalCardPages} | Last updated: {new Date().toLocaleString()}
                   </p>
                 </div>
               </div>
