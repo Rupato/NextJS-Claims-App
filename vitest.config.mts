@@ -15,10 +15,10 @@ export default defineConfig({
       exclude: ['node_modules/', 'src/test/', '**/*.d.ts', '.github/', 'dist/'],
       thresholds: {
         global: {
-          branches: 60,
-          functions: 60,
-          lines: 60,
-          statements: 60,
+          branches: 70,
+          functions: 70,
+          lines: 70,
+          statements: 70,
         },
       },
     },

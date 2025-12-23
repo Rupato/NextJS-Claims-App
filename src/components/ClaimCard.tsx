@@ -6,7 +6,7 @@ interface ClaimCardProps {
   claim: FormattedClaim;
 }
 
-const ClaimCard: React.FC<ClaimCardProps> = ({ claim }) => {
+const ClaimCard: React.FC<ClaimCardProps> = React.memo(({ claim }) => {
   return (
     <article className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
       <header className="flex items-start justify-between mb-4">
@@ -77,7 +77,7 @@ const ClaimCard: React.FC<ClaimCardProps> = ({ claim }) => {
       </div>
     </article>
   );
-};
+});
 
 ClaimCard.displayName = 'ClaimCard';
 

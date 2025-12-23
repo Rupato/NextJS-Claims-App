@@ -6,7 +6,6 @@ import { TableHeader } from './TableHeader';
 import { TableRow } from './TableRow';
 import {
   ROW_HEIGHT,
-  BUFFER_SIZE,
   CONTAINER_HEIGHT,
 } from '../constants/virtualization';
 
@@ -36,20 +35,19 @@ export const TableView: React.FC<TableViewProps> = ({
         onScroll={onScroll}
         role="region"
         aria-labelledby="claims-table"
-        aria-describedby="claims-table-desc"
-        tabIndex={0}
-        aria-label="Virtualized claims data table - scroll to load more data"
       >
         {/* Top spacer for virtualization */}
         <div style={{ height: startIndex * ROW_HEIGHT }} />
 
+        <h3 id="claims-table" className="sr-only">
+          Insurance Claims Data Table
+        </h3>
         <table
           className="min-w-full divide-y divide-gray-200"
           role="table"
-          aria-label="Insurance claims data table showing claim ID, status, holder name, policy number, claim amount, processing fee, total amount, and dates"
+          aria-labelledby="claims-table"
           aria-rowcount={formattedClaims.length + 1}
           aria-colcount={9}
-          id="claims-table"
         >
           <TableHeader />
           <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">

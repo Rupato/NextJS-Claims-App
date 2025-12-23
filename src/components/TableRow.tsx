@@ -6,7 +6,7 @@ interface TableRowProps {
   claim: FormattedClaim;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({ claim }) => (
+export const TableRow: React.FC<TableRowProps> = React.memo(({ claim }) => (
   <tr className="hover:bg-gray-50" role="row">
     <td
       className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
@@ -67,4 +67,6 @@ export const TableRow: React.FC<TableRowProps> = ({ claim }) => (
       <time dateTime={claim.createdAt}>{claim.formattedCreatedDate}</time>
     </td>
   </tr>
-);
+));
+
+TableRow.displayName = 'TableRow';

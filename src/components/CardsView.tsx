@@ -35,9 +35,6 @@ export const CardsView: React.FC<CardsViewProps> = ({
         onScroll={onScroll}
         role="region"
         aria-labelledby="claims-cards"
-        aria-describedby="claims-cards-desc"
-        tabIndex={0}
-        aria-label="Virtualized claims cards - scroll to load more data"
       >
         {/* Top spacer for cards virtualization */}
         <div
@@ -47,9 +44,13 @@ export const CardsView: React.FC<CardsViewProps> = ({
         />
 
         <div className="p-6">
+          <h3 id="claims-cards" className="sr-only">
+            Insurance Claims Cards
+          </h3>
           <div
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            id="claims-cards"
+            role="grid"
+            aria-labelledby="claims-cards"
           >
             {formattedClaims
               .slice(cardStartIndex, cardEndIndex)

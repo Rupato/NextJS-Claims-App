@@ -7,10 +7,10 @@ export const usePersistedState = <T>(key: string, defaultValue: T) => {
         const stored = localStorage.getItem(key);
         return stored ? JSON.parse(stored) : defaultValue;
       }
-    } catch (error) {
-      // localStorage not available (test environment, SSR, etc.)
-      console.warn('localStorage not available, using default value');
-    }
+      } catch {
+        // localStorage not available (test environment, SSR, etc.)
+        console.warn('localStorage not available, using default value');
+      }
     return defaultValue;
   });
 
@@ -22,7 +22,7 @@ export const usePersistedState = <T>(key: string, defaultValue: T) => {
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem(key, JSON.stringify(newValue));
         }
-      } catch (error) {
+      } catch {
         // localStorage not available, silently continue
         console.warn('localStorage not available, state not persisted');
       }
