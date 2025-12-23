@@ -59,6 +59,15 @@ Fix ESLint issues automatically:
 pnpm lint:fix
 ```
 
+## Pre-commit Hooks
+
+This project includes Git pre-commit hooks that automatically run quality checks before each commit:
+
+- **ESLint**: Code linting to ensure code quality
+- **Tests**: Run test suite to prevent regressions
+
+The hooks are configured in `.git/hooks/pre-commit` and will prevent commits if any checks fail.
+
 ## Testing
 
 Run tests:
