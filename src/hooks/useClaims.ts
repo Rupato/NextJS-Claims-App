@@ -5,7 +5,6 @@ import { Claim } from '../types/claims';
 
 export const useClaims = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -27,13 +26,11 @@ export const useClaims = () => {
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch claims');
         console.error('Error fetching claims:', err);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchClaims();
   }, []);
 
-  return { claims, loading, error };
+  return { claims, error };
 };
