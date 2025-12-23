@@ -14,7 +14,7 @@ describe('Page', () => {
   it('renders the claims dashboard', () => {
     render(<Page />);
     expect(
-      screen.getByText('Loading claims...')
+      screen.getByText('Claims Dashboard')
     ).toBeInTheDocument();
   });
 });
