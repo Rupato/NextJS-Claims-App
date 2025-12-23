@@ -151,11 +151,44 @@ const CARDS_PER_ROW = 3; // Assuming 3 cards per row on large screens
 const CARD_HEIGHT = 280; // Approximate height of each card in pixels
 const CARD_BUFFER_SIZE = 6; // Number of cards to keep as buffer above/below visible area
 
+// Custom hook for persisted state
+const usePersistedState = <T,>(key: string, defaultValue: T) => {
+  const [state, setState] = useState<T>(() => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+      }
+    } catch (error) {
+      // localStorage not available (test environment, SSR, etc.)
+      console.warn('localStorage not available, using default value');
+    }
+    return defaultValue;
+  });
+
+  const setPersistedState = (value: T | ((prev: T) => T)) => {
+    setState(prev => {
+      const newValue = typeof value === 'function' ? (value as (prev: T) => T)(prev) : value;
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem(key, JSON.stringify(newValue));
+        }
+      } catch (error) {
+        // localStorage not available, silently continue
+        console.warn('localStorage not available, state not persisted');
+      }
+      return newValue;
+    });
+  };
+
+  return [state, setPersistedState] as const;
+};
+
 const ClaimsDashboard: React.FC = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
+  const [viewMode, setViewMode] = usePersistedState<'table' | 'cards'>('claims-dashboard-view-mode', 'table');
 
   // Table virtualization state
   const [startIndex, setStartIndex] = useState(0);
