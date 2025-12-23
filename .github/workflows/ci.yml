@@ -167,7 +167,7 @@ jobs:
 
   # ⭐ ADVANCED: Coverage Threshold
   coverage:
-    name: "7️⃣ CI / coverage"
+    name: '7️⃣ CI / coverage'
     runs-on: ubuntu-latest
 
     steps:
