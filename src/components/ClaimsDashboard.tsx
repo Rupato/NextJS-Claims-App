@@ -7,9 +7,11 @@ import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
 import { useSearch } from '../hooks/useSearch';
+import { sortClaims } from '../utils/sorting';
 import { ViewModeTabs } from './ViewModeTabs';
 import { SearchInput } from './SearchInput';
 import StatusFilter from './StatusFilter';
+import SortDropdown, { SortOption } from './SortDropdown';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
 
@@ -22,6 +24,10 @@ const ClaimsDashboard: React.FC = () => {
   const [selectedStatuses, setSelectedStatuses] = usePersistedState<string[]>(
     'claims-dashboard-selected-statuses',
     []
+  );
+  const [sortOption, setSortOption] = usePersistedState<SortOption>(
+    'claims-dashboard-sort-option',
+    'created-newest'
   );
 
   // Get available statuses from claims data
@@ -38,9 +44,14 @@ const ClaimsDashboard: React.FC = () => {
     return claims.filter((claim) => selectedStatuses.includes(claim.status));
   }, [claims, selectedStatuses]);
 
-  // Search functionality (applied after status filtering)
+  // Sort claims (applied after status filtering)
+  const sortedClaims = React.useMemo(() => {
+    return sortClaims(statusFilteredClaims, sortOption);
+  }, [statusFilteredClaims, sortOption]);
+
+  // Search functionality (applied after sorting)
   const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
-    useSearch(statusFilteredClaims);
+    useSearch(sortedClaims);
 
   // Determine row/card height based on active filters
   const rowHeight = selectedStatuses.length > 0 || !!searchTerm ? 48 : 64;
@@ -143,13 +154,18 @@ const ClaimsDashboard: React.FC = () => {
           </div>
         </header>
 
-        {/* Status Filter */}
-        <div className="mt-4">
-          <StatusFilter
-            selectedStatuses={selectedStatuses}
-            onStatusChange={setSelectedStatuses}
-            availableStatuses={availableStatuses}
-          />
+        {/* Status Filter and Sort */}
+        <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 sm:space-x-4">
+          <div className="flex-1">
+            <StatusFilter
+              selectedStatuses={selectedStatuses}
+              onStatusChange={setSelectedStatuses}
+              availableStatuses={availableStatuses}
+            />
+          </div>
+          <div className="sm:w-auto">
+            <SortDropdown value={sortOption} onChange={setSortOption} />
+          </div>
         </div>
 
         {/* Screen Reader Navigation Instructions */}
