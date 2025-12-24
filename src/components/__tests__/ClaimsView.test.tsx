@@ -51,6 +51,8 @@ const mockClaims: FormattedClaim[] = [
     amount: '5000',
     holder: 'John Doe',
     policyNumber: 'POL-12345',
+    insuredName: 'Car',
+    description: 'Accident repair',
     processingFee: '100',
     status: 'Approved',
     formattedClaimAmount: '$5,000.00',

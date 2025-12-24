@@ -2,8 +2,7 @@ import React from 'react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from './lib/queryClient';
-import Home from './app/page';
-import './app/globals.css';
+import Home from '../app/page';
 
 // Check if we're in development mode
 const isDev = process.env.NODE_ENV === 'development';

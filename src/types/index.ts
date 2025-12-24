@@ -1,3 +1,4 @@
+// Core types
 export interface Claim {
   id: string;
   number: string;
@@ -6,6 +7,8 @@ export interface Claim {
   amount: string;
   holder: string;
   policyNumber: string;
+  insuredName: string;
+  description: string;
   processingFee: string;
   status: string;
 }
@@ -18,4 +21,14 @@ export interface FormattedClaim extends Claim {
   formattedCreatedDate: string;
 }
 
+// UI types
 export type ViewMode = 'table' | 'cards';
+
+// Sort options
+export type SortOption =
+  | 'created-newest'
+  | 'created-oldest'
+  | 'amount-highest'
+  | 'amount-lowest'
+  | 'total-highest'
+  | 'total-lowest';

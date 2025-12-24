@@ -1,107 +1,128 @@
-// Simple URL state hook for strings
-import { useCallback, useState } from 'react';
+'use client';
 
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
+
+// URL state hook for strings using Next.js search params
 export function useUrlStringState(key: string, defaultValue: string = '') {
-  const [value, setValue] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const paramValue = urlParams.get(key);
-      return paramValue !== null ? paramValue : defaultValue;
-    }
-    return defaultValue;
-  });
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const value = useMemo(() => {
+    const paramValue = searchParams.get(key);
+    return paramValue !== null ? paramValue : defaultValue;
+  }, [searchParams, key, defaultValue]);
 
   const updateValue = useCallback(
     (newValue: string | ((prev: string) => string)) => {
       const actualValue =
         typeof newValue === 'function' ? newValue(value) : newValue;
-      setValue(actualValue);
 
-      const urlParams = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(searchParams.toString());
+
       if (actualValue === defaultValue) {
-        urlParams.delete(key);
+        params.delete(key);
       } else {
-        urlParams.set(key, actualValue);
+        params.set(key, actualValue);
       }
 
-      const newSearch = urlParams.toString();
+      const newSearch = params.toString();
       const newUrl = newSearch ? `?${newSearch}` : window.location.pathname;
-      window.history.replaceState(null, '', newUrl);
+      router.replace(newUrl, { scroll: false });
     },
-    [value, key, defaultValue]
+    [value, key, searchParams, router, defaultValue]
   );
 
   return [value, updateValue] as const;
 }
 
-// URL state hook for string arrays
+// URL state hook for string arrays using Next.js search params
 export function useUrlArrayState(key: string, defaultValue: string[] = []) {
-  const [value, setValue] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const paramValue = urlParams.get(key);
-      return paramValue !== null && paramValue !== ''
-        ? paramValue.split(',').map((s) => s.trim())
-        : defaultValue;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const value = useMemo(() => {
+    // Support multiple parameters with same key: ?status=Approved&status=Completed&status=Processed
+    const paramValues = searchParams.getAll(key);
+    if (paramValues.length > 0) {
+      return paramValues.filter((v) => v !== '');
     }
+
+    // Fallback to single parameter with separators for backward compatibility
+    const paramValue = searchParams.get(key);
+    if (paramValue !== null && paramValue !== '') {
+      // Check for different separators
+      const separators = [';', '|', ','];
+      for (const sep of separators) {
+        if (paramValue.includes(sep)) {
+          return paramValue
+            .split(sep)
+            .map((s) => s.trim())
+            .filter((s) => s !== '');
+        }
+      }
+      // Single value
+      return [paramValue];
+    }
+
     return defaultValue;
-  });
+  }, [searchParams, key, defaultValue]);
 
   const updateValue = useCallback(
     (newValue: string[] | ((prev: string[]) => string[])) => {
       const actualValue =
         typeof newValue === 'function' ? newValue(value) : newValue;
-      setValue(actualValue);
 
-      const urlParams = new URLSearchParams(window.location.search);
-      if (
-        actualValue.length === 0 ||
-        (actualValue.length === 1 && actualValue[0] === '')
-      ) {
-        urlParams.delete(key);
-      } else {
-        urlParams.set(key, actualValue.join(','));
-      }
+      const params = new URLSearchParams(searchParams.toString());
 
-      const newSearch = urlParams.toString();
+      // Remove all existing instances of this key
+      params.delete(key);
+
+      // Add each value as a separate parameter
+      actualValue.forEach((val) => {
+        if (val && val.trim() !== '') {
+          params.append(key, val.trim());
+        }
+      });
+
+      const newSearch = params.toString();
       const newUrl = newSearch ? `?${newSearch}` : window.location.pathname;
-      window.history.replaceState(null, '', newUrl);
+      router.replace(newUrl, { scroll: false });
     },
-    [value, key]
+    [value, key, searchParams, router]
   );
 
   return [value, updateValue] as const;
 }
 
-// URL state hook for sort options (string enum)
+// URL state hook for sort options using Next.js search params
 export function useUrlSortState(key: string, defaultValue: string) {
-  const [value, setValue] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search);
-      const paramValue = urlParams.get(key);
-      return paramValue !== null ? paramValue : defaultValue;
-    }
-    return defaultValue;
-  });
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const value = useMemo(() => {
+    const paramValue = searchParams.get(key);
+    return paramValue !== null ? paramValue : defaultValue;
+  }, [searchParams, key, defaultValue]);
 
   const updateValue = useCallback(
     (newValue: string | ((prev: string) => string)) => {
       const actualValue =
         typeof newValue === 'function' ? newValue(value) : newValue;
-      setValue(actualValue);
 
-      const urlParams = new URLSearchParams(window.location.search);
+      const params = new URLSearchParams(searchParams.toString());
+
       if (actualValue === defaultValue) {
-        urlParams.delete(key);
+        params.delete(key);
       } else {
-        urlParams.set(key, actualValue);
+        params.set(key, actualValue);
       }
 
-      const newSearch = urlParams.toString();
+      const newSearch = params.toString();
       const newUrl = newSearch ? `?${newSearch}` : window.location.pathname;
-      window.history.replaceState(null, '', newUrl);
+      router.replace(newUrl, { scroll: false });
     },
-    [value, key, defaultValue]
+    [value, key, searchParams, router, defaultValue]
   );
 
   return [value, updateValue] as const;

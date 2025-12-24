@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { FormattedClaim } from '../types/claims';
+import { FormattedClaim } from '../types';
 import { TableHeader } from './TableHeader';
 import { TableRow } from './TableRow';
 import { ROW_HEIGHT, CONTAINER_HEIGHT } from '../constants/virtualization';
@@ -204,8 +204,7 @@ export const TableView: React.FC<TableViewProps> = ({
           </p>
           <p className="text-xs text-gray-400 mt-1">
             Rendered range: {startIndex + 1}-
-            {Math.min(endIndex, formattedClaims.length)} | Last updated:{' '}
-            {new Date().toLocaleString()}
+            {Math.min(endIndex, formattedClaims.length)}
           </p>
         </div>
       </div>

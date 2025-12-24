@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ViewMode } from '../types/claims';
+import { ViewMode } from '../types';
 
 interface ViewModeTabsProps {
   viewMode: ViewMode;

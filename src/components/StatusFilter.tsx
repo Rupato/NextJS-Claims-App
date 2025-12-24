@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getStatusColorClasses } from '../utils';
 
 interface StatusFilterProps {
   selectedStatuses: string[];
@@ -47,6 +48,12 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
   // Remove duplicates from availableStatuses
   const uniqueAvailableStatuses = [...new Set(availableStatuses)];
 
+  // Determine icon rotation based on dropdown state
+  const iconRotationClass = isOpen ? 'rotate-180' : '';
+
+  // Determine if we have active filters
+  const hasActiveFilters = selectedStatuses.length > 0;
+
   return (
     <div className="relative" ref={dropdownRef}>
       <div className="flex items-center gap-4">
@@ -63,7 +70,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
               Filter by Status
             </span>
             <svg
-              className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+              className={`w-4 h-4 text-gray-400 transition-transform ${iconRotationClass}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -104,19 +111,19 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
         </div>
 
         {/* Active Filters */}
-        {selectedStatuses.length > 0 && (
+        {hasActiveFilters && (
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Active filters:</span>
             <div className="flex flex-wrap gap-2">
               {selectedStatuses.map((status) => (
                 <span
                   key={status}
-                  className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full"
+                  className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full ${getStatusColorClasses(status)}`}
                 >
                   {status}
                   <button
                     onClick={() => handleRemoveStatus(status)}
-                    className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
+                    className="ml-1 hover:bg-opacity-75 rounded-full p-0.5"
                     aria-label={`Remove ${status} filter`}
                   >
                     <svg

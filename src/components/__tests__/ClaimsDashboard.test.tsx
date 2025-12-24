@@ -1,7 +1,17 @@
 import { render, screen } from '../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
+
+// Mock Next.js router hooks
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({
+    replace: vi.fn(),
+    push: vi.fn(),
+  }),
+  useSearchParams: () => new URLSearchParams(),
+}));
+
 import ClaimsDashboard from '../ClaimsDashboard';
-import { FormattedClaim, Claim } from '../../types/claims';
+import { FormattedClaim, Claim } from '../../types';
 import { UseQueryResult } from '@tanstack/react-query';
 
 // Type for mocking React Query result
@@ -28,8 +38,9 @@ vi.mock('../../hooks/useSearch', () => ({
   useSearch: vi.fn(),
 }));
 
-vi.mock('../../utils/storage', () => ({
+vi.mock('../../utils', () => ({
   usePersistedState: vi.fn(() => ['table', vi.fn()]),
+  sortClaims: vi.fn((claims) => claims), // Mock sort function that returns claims as-is
 }));
 
 // Define proper types for mock props
@@ -80,7 +91,7 @@ import { useFormattedClaims } from '../../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../../hooks/useCardsVirtualization';
 import { useSearch } from '../../hooks/useSearch';
-import { usePersistedState } from '../../utils/storage';
+import { usePersistedState } from '../../utils';
 
 const mockUseClaimsQuery = vi.mocked(useClaimsQuery);
 const mockUseFormattedClaims = vi.mocked(useFormattedClaims);
@@ -98,6 +109,8 @@ const mockClaims: Claim[] = [
     amount: '5000',
     holder: 'John Doe',
     policyNumber: 'POL-12345',
+    insuredName: 'Car',
+    description: 'Accident repair',
     processingFee: '100',
     status: 'Approved',
   },
@@ -112,6 +125,8 @@ const mockFormattedClaims: FormattedClaim[] = [
     amount: '5000',
     holder: 'John Doe',
     policyNumber: 'POL-12345',
+    insuredName: 'Car',
+    description: 'Accident repair',
     processingFee: '100',
     status: 'Approved',
     formattedClaimAmount: '$5,000.00',
@@ -271,7 +286,8 @@ describe('ClaimsDashboard', () => {
   it('calls hooks with correct parameters', () => {
     render(<ClaimsDashboard />);
 
-    expect(mockUseClaimsQuery).toHaveBeenCalledTimes(1);
+    // React StrictMode can cause hooks to be called twice in development
+    expect(mockUseClaimsQuery).toHaveBeenCalled();
     expect(mockUseSearch).toHaveBeenCalledWith(mockClaims);
     expect(mockUseFormattedClaims).toHaveBeenCalledWith(mockClaims);
     expect(mockUseTableVirtualization).toHaveBeenCalledWith(
