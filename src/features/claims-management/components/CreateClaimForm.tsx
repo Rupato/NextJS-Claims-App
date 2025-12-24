@@ -10,6 +10,7 @@ import {
   useCreateClaimMutation,
   usePolicyQuery,
 } from '../hooks/useClaimsQuery';
+import { useRouter } from 'next/navigation';
 
 // Yup validation schema
 const validationSchema = yup.object({
@@ -75,6 +76,7 @@ interface CreateClaimFormProps {
 }
 
 const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
+  const navigate = useRouter();
   // Initialize React Hook Form with Yup resolver
   const {
     register,
@@ -175,6 +177,7 @@ const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
   // Handle form submission with React Hook Form
   const onSubmit = (data: FormData) => {
     createClaimMutation.mutate(data);
+    navigate.replace('/');
   };
 
   return (

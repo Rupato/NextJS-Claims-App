@@ -115,6 +115,7 @@ const updateClaim = async ({
 const deleteClaim = async (id: string): Promise<void> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
+  // Mock delete - in real API, would delete the claim with id
 };
 
 // Query Hook - Fetch all claims with enhanced error handling
