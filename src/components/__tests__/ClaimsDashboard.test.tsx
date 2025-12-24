@@ -1,35 +1,11 @@
 import { render, screen } from '../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import ClaimsDashboard from '../ClaimsDashboard';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim, Claim } from '../../types/claims';
+import { UseQueryResult } from '@tanstack/react-query';
 
 // Type for mocking React Query result
-type MockQueryResult<T> = {
-  data: T | undefined;
-  isLoading: boolean;
-  error: Error | null;
-  isError: boolean;
-  isSuccess: boolean;
-  isPending: boolean;
-  isFetching: boolean;
-  status: 'success' | 'error' | 'pending' | 'idle';
-  dataUpdatedAt: number;
-  errorUpdatedAt: number;
-  failureCount: number;
-  failureReason: Error | null;
-  errorUpdateCount: number;
-  isFetched: boolean;
-  isFetchedAfterMount: boolean;
-  isFetchingError: boolean;
-  isLoadingError: boolean;
-  isPaused: boolean;
-  isPlaceholderData: boolean;
-  isRefetchError: boolean;
-  isRefetching: boolean;
-  isStale: boolean;
-  refetch: () => Promise<unknown>;
-  promise: Promise<T | undefined>;
-};
+type MockQueryResult<T> = UseQueryResult<T, Error>;
 
 // Mock all the hooks
 vi.mock('../../hooks/useClaimsQuery', () => ({
@@ -113,7 +89,21 @@ const mockUseCardsVirtualization = vi.mocked(useCardsVirtualization);
 const mockUseSearch = vi.mocked(useSearch);
 const mockUsePersistedState = vi.mocked(usePersistedState);
 
-const mockClaims: FormattedClaim[] = [
+const mockClaims: Claim[] = [
+  {
+    id: '1',
+    number: 'CLM-001',
+    incidentDate: '2023-12-01T00:00:00Z',
+    createdAt: '2023-12-15T00:00:00Z',
+    amount: '5000',
+    holder: 'John Doe',
+    policyNumber: 'POL-12345',
+    processingFee: '100',
+    status: 'Approved',
+  },
+];
+
+const mockFormattedClaims: FormattedClaim[] = [
   {
     id: '1',
     number: 'CLM-001',
@@ -146,6 +136,7 @@ describe('ClaimsDashboard', () => {
       isPending: false,
       isFetching: false,
       status: 'success' as const,
+      fetchStatus: 'idle' as const,
       dataUpdatedAt: Date.now(),
       errorUpdatedAt: 0,
       failureCount: 0,
@@ -153,18 +144,19 @@ describe('ClaimsDashboard', () => {
       errorUpdateCount: 0,
       isFetched: true,
       isFetchedAfterMount: true,
-      isFetchingError: false,
       isLoadingError: false,
       isPaused: false,
       isPlaceholderData: false,
       isRefetchError: false,
       isRefetching: false,
       isStale: false,
+      isInitialLoading: false,
+      isEnabled: true,
       refetch: vi.fn(),
       promise: Promise.resolve(mockClaims),
-    } satisfies MockQueryResult<FormattedClaim[]>);
+    } satisfies MockQueryResult<Claim[]>);
 
-    mockUseFormattedClaims.mockReturnValue(mockClaims);
+    mockUseFormattedClaims.mockReturnValue(mockFormattedClaims);
 
     mockUseTableVirtualization.mockReturnValue({
       startIndex: 0,
@@ -187,44 +179,6 @@ describe('ClaimsDashboard', () => {
       filteredClaims: mockClaims,
       isSearching: false,
     });
-  });
-
-  it.skip('renders loading skeleton when loading', () => {
-    mockUseClaimsQuery.mockReturnValue({
-      data: [],
-      isLoading: true,
-      error: null,
-      isError: false,
-      isSuccess: false,
-      isPending: true,
-      isFetching: true,
-      status: 'pending',
-      dataUpdatedAt: 0,
-      errorUpdatedAt: 0,
-      failureCount: 0,
-      failureReason: null,
-      errorUpdateCount: 0,
-      isFetched: false,
-      isFetchedAfterMount: false,
-      isFetchingError: false,
-      isLoadingError: false,
-      isPaused: false,
-      isPlaceholderData: false,
-      isRefetchError: false,
-      isRefetching: false,
-      isStale: true,
-      refetch: vi.fn(),
-      promise: Promise.resolve([]),
-    } satisfies MockQueryResult<FormattedClaim[]>);
-
-    render(<ClaimsDashboard />);
-
-    expect(screen.getByText('Claims Dashboard')).toBeInTheDocument();
-    expect(
-      screen.getByText('View and manage all insurance claims')
-    ).toBeInTheDocument();
-    expect(screen.getByTestId('loading-skeleton')).toBeInTheDocument();
-    expect(screen.getByText('LoadingSkeleton: table')).toBeInTheDocument();
   });
 
   it.skip('renders error message when there is an error', () => {
