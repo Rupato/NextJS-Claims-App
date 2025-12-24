@@ -1,10 +1,11 @@
-import ClaimsDashboard from '../src/components/ClaimsDashboard';
-import { Claim } from '../src/types';
+import ClaimsDashboard from '@/features/claims-management/components/ClaimsDashboard';
+import { Claim } from '@/entities/claim/types';
 
 // Fetch claims data on the server
 async function getClaims(): Promise<Claim[]> {
   try {
-    const response = await fetch('http://localhost:8001/api/v1/claims', {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const response = await fetch(`${apiUrl}/api/v1/claims`, {
       cache: 'no-store', // Always fetch fresh data
     });
 

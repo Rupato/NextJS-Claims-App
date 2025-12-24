@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import { Providers } from '../src/components/Providers';
+import { Providers } from '@/shared/ui/Providers';
+import ErrorBoundary from '@/shared/ui/ErrorBoundary';
 
 export const metadata: Metadata = {
   title: 'Insurance Claims Dashboard',
@@ -48,7 +49,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-gray-50 text-gray-900">
-        <Providers>{children}</Providers>
+        <ErrorBoundary>
+          <Providers>{children}</Providers>
+        </ErrorBoundary>
       </body>
     </html>
   );
