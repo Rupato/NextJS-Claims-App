@@ -1,16 +1,28 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import CreateClaimForm from '../../../src/components/CreateClaimForm';
+import CreateClaimForm from '@/features/claims-management/components/CreateClaimForm';
+import { useCreateClaimMutation } from '@/features/claims-management/hooks/useClaimsQuery';
 
 const NewClaimPage = () => {
   const router = useRouter();
+  const createClaimMutation = useCreateClaimMutation();
 
-  const handleSuccess = () => {
-    // Navigate back to dashboard
-    router.push('/');
-  };
+  // Navigate back when mutation succeeds (with slight delay to ensure cache updates)
+  useEffect(() => {
+    console.log(createClaimMutation);
+    if (createClaimMutation.isSuccess) {
+      console.log(
+        '🎯 CLIENT: Mutation successful, navigating back in 100ms...'
+      );
+      // Show navigation overlay briefly before navigating
+      setTimeout(() => {
+        router.push('/');
+      }, 100);
+      // Small delay to ensure cache invalidation completes
+    }
+  }, [createClaimMutation.isSuccess, router]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -49,7 +61,7 @@ const NewClaimPage = () => {
           </div>
 
           <div className="px-6 py-6">
-            <CreateClaimForm onSuccess={handleSuccess} />
+            <CreateClaimForm />
           </div>
         </div>
       </div>
