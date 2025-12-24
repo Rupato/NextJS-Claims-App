@@ -6,10 +6,11 @@ interface TableRowProps {
   claim: FormattedClaim;
   onRowSelect?: (claim: FormattedClaim) => void;
   isSelected?: boolean;
+  columnVisibility?: Record<string, boolean>;
 }
 
 export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
-  ({ claim, onRowSelect, isSelected = false }, ref) => {
+  ({ claim, onRowSelect, isSelected = false, columnVisibility }, ref) => {
     const handleClick = () => {
       onRowSelect?.(claim);
     };
@@ -27,6 +28,120 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     ${onRowSelect ? 'focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset' : ''}
   `.trim();
 
+    // Define cells with their corresponding keys
+    const cells = [
+      {
+        key: 'number',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+            role="cell"
+          >
+            {claim.number}
+          </td>
+        ),
+      },
+      {
+        key: 'status',
+        content: (
+          <td className="px-6 py-4 whitespace-nowrap" role="cell">
+            <span
+              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColorClasses(
+                claim.status
+              )}`}
+              aria-label={`Status: ${claim.status}`}
+            >
+              {claim.status}
+            </span>
+          </td>
+        ),
+      },
+      {
+        key: 'holder',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            role="cell"
+          >
+            {claim.holder}
+          </td>
+        ),
+      },
+      {
+        key: 'policyNumber',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            role="cell"
+          >
+            {claim.policyNumber}
+          </td>
+        ),
+      },
+      {
+        key: 'formattedClaimAmount',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            role="cell"
+          >
+            {claim.formattedClaimAmount}
+          </td>
+        ),
+      },
+      {
+        key: 'formattedProcessingFee',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+            role="cell"
+          >
+            {claim.formattedProcessingFee}
+          </td>
+        ),
+      },
+      {
+        key: 'formattedTotalAmount',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+            role="cell"
+          >
+            {claim.formattedTotalAmount}
+          </td>
+        ),
+      },
+      {
+        key: 'formattedIncidentDate',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            role="cell"
+          >
+            <time dateTime={claim.incidentDate}>
+              {claim.formattedIncidentDate}
+            </time>
+          </td>
+        ),
+      },
+      {
+        key: 'formattedCreatedDate',
+        content: (
+          <td
+            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
+            role="cell"
+          >
+            <time dateTime={claim.createdAt}>{claim.formattedCreatedDate}</time>
+          </td>
+        ),
+      },
+    ];
+
+    // Filter cells based on column visibility
+    const visibleCells = cells.filter((cell) => {
+      return columnVisibility ? columnVisibility[cell.key] !== false : true;
+    });
+
     return (
       <tr
         ref={ref}
@@ -37,66 +152,9 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
         onKeyDown={handleKeyDown}
         aria-label={`Claim ${claim.number} - ${claim.holder}`}
       >
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-          role="cell"
-        >
-          {claim.number}
-        </td>
-        <td className="px-6 py-4 whitespace-nowrap" role="cell">
-          <span
-            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColorClasses(
-              claim.status
-            )}`}
-            aria-label={`Status: ${claim.status}`}
-          >
-            {claim.status}
-          </span>
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-          role="cell"
-        >
-          {claim.holder}
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-          role="cell"
-        >
-          {claim.policyNumber}
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-          role="cell"
-        >
-          {claim.formattedClaimAmount}
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-          role="cell"
-        >
-          {claim.formattedProcessingFee}
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-          role="cell"
-        >
-          {claim.formattedTotalAmount}
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-          role="cell"
-        >
-          <time dateTime={claim.incidentDate}>
-            {claim.formattedIncidentDate}
-          </time>
-        </td>
-        <td
-          className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-          role="cell"
-        >
-          <time dateTime={claim.createdAt}>{claim.formattedCreatedDate}</time>
-        </td>
+        {visibleCells.map((cell) => (
+          <React.Fragment key={cell.key}>{cell.content}</React.Fragment>
+        ))}
       </tr>
     );
   }

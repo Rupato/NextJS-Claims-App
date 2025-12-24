@@ -252,6 +252,47 @@ export const useDeleteClaimMutation = () => {
   });
 };
 
+// Query Hook - Fetch policy by number for smart form behavior
+export const usePolicyQuery = (
+  policyNumber: string,
+  enabled: boolean = false
+) => {
+  return useQuery({
+    queryKey: queryKeys.policy(policyNumber),
+    queryFn: async (): Promise<{
+      id: number;
+      number: string;
+      holder: string;
+      status: string;
+      finalAmount: string;
+    } | null> => {
+      if (!policyNumber || !/^TL-\d{5}$/.test(policyNumber)) {
+        return null;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(
+        `${apiUrl}/api/v1/policies?number=${encodeURIComponent(policyNumber)}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch policy');
+      }
+
+      const policies = await response.json();
+      // Json-server returns array, so find the matching policy
+      const policy = Array.isArray(policies)
+        ? policies.find((p: { number: string }) => p.number === policyNumber)
+        : null;
+
+      return policy || null; // Return policy or null if not found
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    retry: false, // Don't retry on 404
+  });
+};
+
 // Hook for manual cache invalidation (useful for refresh buttons)
 export const useInvalidateClaims = () => {
   const queryClient = useQueryClient();

@@ -20,6 +20,51 @@ import { ClaimDetailsModal } from './ClaimDetailsModal';
 import CreateClaimModal from './CreateClaimModal';
 import { FormattedClaim, Claim } from '@/entities/claim/types';
 
+// Column visibility management
+interface ColumnConfig {
+  key: keyof FormattedClaim;
+  label: string;
+  visible: boolean;
+  sortable: boolean;
+}
+
+const DEFAULT_COLUMNS: ColumnConfig[] = [
+  { key: 'number', label: 'Claim ID', visible: true, sortable: true },
+  { key: 'status', label: 'Status', visible: true, sortable: true },
+  { key: 'holder', label: 'Holder', visible: true, sortable: true },
+  { key: 'policyNumber', label: 'Policy #', visible: true, sortable: true },
+  {
+    key: 'formattedClaimAmount',
+    label: 'Claim Amount',
+    visible: true,
+    sortable: true,
+  },
+  {
+    key: 'formattedProcessingFee',
+    label: 'Processing Fee',
+    visible: true,
+    sortable: true,
+  },
+  {
+    key: 'formattedTotalAmount',
+    label: 'Total Amount',
+    visible: true,
+    sortable: true,
+  },
+  {
+    key: 'formattedIncidentDate',
+    label: 'Incident Date',
+    visible: true,
+    sortable: true,
+  },
+  {
+    key: 'formattedCreatedDate',
+    label: 'Created Date',
+    visible: true,
+    sortable: true,
+  },
+];
+
 interface ClaimsDashboardProps {
   initialClaims?: Claim[];
 }
@@ -76,6 +121,18 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
     SortOption,
     (value: SortOption | ((prev: SortOption) => SortOption)) => void,
   ];
+
+  // Column visibility state - persisted in localStorage
+  const [columnVisibility, setColumnVisibility] = usePersistedState<
+    Record<string, boolean>
+  >(
+    'claims-dashboard-column-visibility',
+    DEFAULT_COLUMNS.reduce(
+      (acc, col) => ({ ...acc, [col.key]: col.visible }),
+      {}
+    )
+  );
+
   // Modal state for claim details
   const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
     null
@@ -83,6 +140,9 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Modal state for create claim form
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Column visibility menu state
+  const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
 
   const handleRowSelect = (claim: FormattedClaim) => {
     setSelectedClaim(claim);
@@ -177,12 +237,34 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div
-          className="text-lg text-red-600"
-          role="alert"
-          aria-live="assertive"
-        >
-          Error loading claims: {errorMessage}
+        <div className="text-center">
+          <div
+            className="text-lg text-red-600 mb-4"
+            role="alert"
+            aria-live="assertive"
+          >
+            Error loading claims: {errorMessage}
+          </div>
+          <button
+            onClick={() => refetch()}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            aria-label="Retry loading claims"
+          >
+            <svg
+              className="mr-2 h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -262,7 +344,7 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
           </div>
         </header>
 
-        {/* Status Filter and Sort */}
+        {/* Status Filter, Sort, and Column Visibility */}
         <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 sm:space-x-4">
           <div className="flex-1">
             {mounted && (
@@ -273,7 +355,77 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
               />
             )}
           </div>
-          <div className="sm:w-auto">
+          <div className="flex flex-col space-y-3 sm:flex-row sm:items-center sm:space-y-0 sm:space-x-4">
+            {/* Column Visibility Toggle */}
+            {viewMode === 'table' && mounted && (
+              <div className="relative">
+                <button
+                  onClick={() => setIsColumnMenuOpen(!isColumnMenuOpen)}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  aria-haspopup="menu"
+                  aria-expanded={isColumnMenuOpen}
+                >
+                  <svg
+                    className="mr-2 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"
+                    />
+                  </svg>
+                  Columns
+                  <svg
+                    className="ml-2 h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {isColumnMenuOpen && (
+                  <div className="absolute right-0 z-10 mt-2 w-56 bg-white border border-gray-300 rounded-md shadow-lg">
+                    <div className="py-1">
+                      {DEFAULT_COLUMNS.map((column) => (
+                        <label
+                          key={column.key}
+                          className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={
+                              columnVisibility[column.key] ?? column.visible
+                            }
+                            onChange={(e) => {
+                              setColumnVisibility((prev) => ({
+                                ...prev,
+                                [column.key]: e.target.checked,
+                              }));
+                            }}
+                            className="mr-3 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">
+                            {column.label}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {mounted && (
               <SortDropdown value={sortOption} onChange={setSortOption} />
             )}
@@ -357,6 +509,9 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
                 onCardsScroll={handleCardsScroll}
                 hasActiveFilters={selectedStatuses.length > 0 || !!searchTerm}
                 onRowSelect={handleRowSelect}
+                columnVisibility={columnVisibility}
+                onColumnSort={setSortOption}
+                currentSort={sortOption}
               />
             )
           )}
