@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { useFormattedClaims } from '../useFormattedClaims';
-import { Claim } from '../../types/claims';
+import { Claim } from '../../types';
 
 describe('useFormattedClaims', () => {
   it('returns empty array when claims is empty', () => {

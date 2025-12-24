@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ClaimsView } from '../ClaimsView';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim } from '../../types';
 
 // Define proper types for mock props
 interface TableViewProps {

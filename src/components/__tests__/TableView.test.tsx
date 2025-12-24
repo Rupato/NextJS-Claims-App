@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { TableView } from '../TableView';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim } from '../../types';
 
 // Mock the child components
 vi.mock('../TableHeader', () => ({
