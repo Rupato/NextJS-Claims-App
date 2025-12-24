@@ -1,9 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Claim } from '../types/claims';
 
-export const useSearch = (claims: Claim[], delay: number = 300) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+export const useSearch = (
+  claims: Claim[],
+  initialSearchTerm: string = '',
+  delay: number = 300
+) => {
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] =
+    useState(initialSearchTerm);
 
   // Debounce the search term
   useEffect(() => {
@@ -34,9 +39,9 @@ export const useSearch = (claims: Claim[], delay: number = 300) => {
   const isSearching = searchTerm !== debouncedSearchTerm;
 
   return {
-    searchTerm,
-    setSearchTerm,
     filteredClaims,
     isSearching,
+    searchTerm,
+    setSearchTerm,
   };
 };

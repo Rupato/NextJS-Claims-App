@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { usePersistedState } from '../utils/storage';
-import { useClaims } from '../hooks/useClaims';
+import { useUrlArrayState, useUrlSortState } from '../hooks/useUrlState';
+import { useClaimsQuery } from '../hooks/useClaimsQuery';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
@@ -18,20 +19,22 @@ import { ClaimDetailsModal } from './ClaimDetailsModal';
 import { FormattedClaim } from '../types/claims';
 
 const ClaimsDashboard: React.FC = () => {
-  const { claims, loading, error } = useClaims();
+  const { data: claims = [], isLoading: loading, error } = useClaimsQuery();
   const [viewMode, setViewMode] = usePersistedState<'table' | 'cards'>(
     'claims-dashboard-view-mode',
     'table'
   );
-  const [selectedStatuses, setSelectedStatuses] = usePersistedState<string[]>(
-    'claims-dashboard-selected-statuses',
+  const [selectedStatuses, setSelectedStatuses] = useUrlArrayState(
+    'status',
     []
   );
-  const [sortOption, setSortOption] = usePersistedState<SortOption>(
-    'claims-dashboard-sort-option',
+  const [sortOption, setSortOption] = useUrlSortState(
+    'sort',
     'created-newest'
-  );
-
+  ) as [
+    SortOption,
+    (value: SortOption | ((prev: SortOption) => SortOption)) => void,
+  ];
   // Modal state for claim details
   const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
     null
@@ -68,7 +71,7 @@ const ClaimsDashboard: React.FC = () => {
   }, [statusFilteredClaims, sortOption]);
 
   // Search functionality (applied after sorting)
-  const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
+  const { filteredClaims, isSearching, searchTerm, setSearchTerm } =
     useSearch(sortedClaims);
 
   // Determine row/card height based on active filters
@@ -113,7 +116,7 @@ const ClaimsDashboard: React.FC = () => {
           role="alert"
           aria-live="assertive"
         >
-          Error loading claims: {error}
+          Error loading claims: {error.message || 'Unknown error occurred'}
         </div>
       </div>
     );
@@ -268,7 +271,6 @@ const ClaimsDashboard: React.FC = () => {
               endIndex={endIndex}
               cardStartIndex={cardStartIndex}
               cardEndIndex={cardEndIndex}
-              claimsLength={claims.length}
               cardsPerRow={cardsPerRow}
               onTableScroll={handleScroll}
               onCardsScroll={handleCardsScroll}

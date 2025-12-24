@@ -12,7 +12,6 @@ interface ClaimsViewProps {
   endIndex: number;
   cardStartIndex: number;
   cardEndIndex: number;
-  claimsLength: number;
   cardsPerRow: number;
   onTableScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   onCardsScroll: (event: React.UIEvent<HTMLDivElement>) => void;
@@ -27,7 +26,6 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
   endIndex,
   cardStartIndex,
   cardEndIndex,
-  claimsLength,
   cardsPerRow,
   onTableScroll,
   onCardsScroll,
