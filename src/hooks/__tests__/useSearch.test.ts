@@ -149,7 +149,7 @@ describe('useSearch', () => {
   });
 
   it('uses custom debounce delay', () => {
-    const { result } = renderHook(() => useSearch(mockClaims, '', 500));
+    const { result } = renderHook(() => useSearch(mockClaims, 500));
 
     act(() => {
       result.current.setSearchTerm('test');
