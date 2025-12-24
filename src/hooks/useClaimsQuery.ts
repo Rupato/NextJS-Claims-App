@@ -8,7 +8,7 @@ const fetchClaims = async (): Promise<Claim[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // For now, return mock data - replace with real API call
-  const response = await fetch('http://localhost:8002/api/v1/claims');
+  const response = await fetch('http://localhost:8001/api/v1/claims');
   if (!response.ok) {
     throw new Error('Failed to fetch claims');
   }
