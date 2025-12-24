@@ -9,8 +9,8 @@ describe('TableHeader', () => {
     const headers = [
       'Claim ID',
       'Status',
-      'Holder Name',
-      'Policy Number',
+      'Holder',
+      'Policy #',
       'Claim Amount',
       'Processing Fee',
       'Total Amount',
@@ -71,8 +71,8 @@ describe('TableHeader', () => {
     const expectedHeaders = [
       'Claim ID',
       'Status',
-      'Holder Name',
-      'Policy Number',
+      'Holder',
+      'Policy #',
       'Claim Amount',
       'Processing Fee',
       'Total Amount',

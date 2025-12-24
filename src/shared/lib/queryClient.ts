@@ -32,6 +32,8 @@ export const queryKeys = {
   claims: ['claims'] as const,
   claim: (id: string) => ['claims', id] as const,
   claimStats: ['claims', 'stats'] as const,
+  policies: ['policies'] as const,
+  policy: (number: string) => ['policies', number] as const,
 } as const;
 
 // Mutation keys for optimistic updates

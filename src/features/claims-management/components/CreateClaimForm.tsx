@@ -1,66 +1,114 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useCreateClaimMutation } from '../hooks/useClaimsQuery';
+import { useForm, useWatch } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import {
+  useCreateClaimMutation,
+  usePolicyQuery,
+} from '../hooks/useClaimsQuery';
 
-interface FormData {
-  amount: string;
-  holder: string;
-  policyNumber: string;
-  insuredName: string;
-  description: string;
-  processingFee: string;
-  incidentDate: string;
+// Yup validation schema
+const validationSchema = yup.object({
+  amount: yup
+    .string()
+    .required('Claim amount is required')
+    .test('is-valid-number', 'Please enter a valid amount', (value) => {
+      if (!value) return false;
+      const num = parseFloat(value);
+      return !isNaN(num) && num > 0;
+    })
+    .test('max-amount', 'Claim amount cannot exceed $10,000', (value) => {
+      if (!value) return true;
+      const num = parseFloat(value);
+      return num <= 10000;
+    }),
+  holder: yup
+    .string()
+    .required('Policy holder name is required')
+    .min(2, 'Policy holder name must be at least 2 characters'),
+  policyNumber: yup
+    .string()
+    .required('Policy number is required')
+    .matches(/^TL-\d{5}$/, 'Policy number must be in format TL-XXXXX'),
+  insuredName: yup
+    .string()
+    .required('Insured name is required')
+    .min(2, 'Insured name must be at least 2 characters'),
+  description: yup
+    .string()
+    .required('Description is required')
+    .min(10, 'Description must be at least 10 characters'),
+  processingFee: yup
+    .string()
+    .required('Processing fee is required')
+    .test('is-valid-fee', 'Please enter a valid processing fee', (value) => {
+      if (!value) return false;
+      const num = parseFloat(value);
+      return !isNaN(num) && num >= 0;
+    }),
+  incidentDate: yup
+    .string()
+    .required('Incident date is required')
+    .test(
+      'valid-date-range',
+      'Incident date must be between 6 months ago and yesterday',
+      (value) => {
+        if (!value) return false;
+        const date = new Date(value);
+        const now = new Date();
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(now.getMonth() - 6);
+
+        return date >= sixMonthsAgo && date <= now;
+      }
+    ),
+});
+
+type FormData = yup.InferType<typeof validationSchema>;
+
+interface CreateClaimFormProps {
+  onFormChange?: (hasChanges: boolean) => void;
 }
 
-interface FormErrors {
-  amount?: string;
-  holder?: string;
-  policyNumber?: string;
-  insuredName?: string;
-  description?: string;
-  processingFee?: string;
-  incidentDate?: string;
-}
-
-const CreateClaimForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    amount: '',
-    holder: '',
-    policyNumber: '',
-    insuredName: '',
-    description: '',
-    processingFee: '',
-    incidentDate: '',
+const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
+  // Initialize React Hook Form with Yup resolver
+  const {
+    register,
+    handleSubmit: rhfHandleSubmit,
+    setValue,
+    control,
+    formState: { errors, isValid },
+  } = useForm<FormData>({
+    resolver: yupResolver(validationSchema),
+    mode: 'onBlur', // Validate on blur
   });
 
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [isHolderAutoFilled, setIsHolderAutoFilled] = useState(false);
+  const [shouldLookupPolicy, setShouldLookupPolicy] = useState(false);
+
+  // Watch form values for smart behaviors using useWatch
+  const formValues = useWatch({
+    control,
+  });
 
   // Use the client-side mutation hook
   const createClaimMutation = useCreateClaimMutation();
   const isPending = createClaimMutation.isPending;
   const mutationError = createClaimMutation.error;
 
-  // Calculate form validity
-  const isFormValid = React.useMemo(() => {
-    // Check if all required fields are filled and have no errors
-    const allFieldsFilled = Object.values(formData).every(
-      (value) => value.trim() !== ''
-    );
-    const hasNoErrors = Object.values(errors).every((error) => !error);
-    const allTouched = [
-      'amount',
-      'holder',
-      'policyNumber',
-      'insuredName',
-      'description',
-      'processingFee',
-      'incidentDate',
-    ].every((field) => touched[field]);
-
-    return allFieldsFilled && hasNoErrors && allTouched;
-  }, [formData, errors, touched]);
+  // Policy lookup query - only enabled when we have a valid policy number and should lookup
+  const {
+    data: policyData,
+    isLoading: isPolicyLoading,
+    error: policyError,
+  } = usePolicyQuery(
+    formValues.policyNumber || '',
+    shouldLookupPolicy && !!formValues.policyNumber
+  );
 
   // Calculate date constraints
   const sixMonthsAgo = React.useMemo(() => {
@@ -75,134 +123,62 @@ const CreateClaimForm: React.FC = () => {
 
   // Smart field behavior: auto-calculate processing fee based on amount
   React.useEffect(() => {
-    if (formData.amount && !formData.processingFee) {
-      const amount = parseFloat(formData.amount);
+    if (formValues.amount && !formValues.processingFee) {
+      const amount = parseFloat(formValues.amount.replace(/,/g, '')); // Remove commas for calculation
       if (!isNaN(amount)) {
         // Set processing fee to 5% of claim amount, rounded to 2 decimal places
         const processingFee = (amount * 0.05).toFixed(2);
-        setFormData((prev) => ({ ...prev, processingFee }));
+        setValue('processingFee', processingFee);
       }
     }
-  }, [formData.amount, formData.processingFee]);
+  }, [formValues.amount, formValues.processingFee, setValue]);
 
-  const validateField = (name: string, value: string): string | undefined => {
-    switch (name) {
-      case 'amount':
-        if (!value) return 'Claim amount is required';
-        const amount = parseFloat(value);
-        if (isNaN(amount) || amount <= 0) return 'Please enter a valid amount';
-        if (amount > 10000) return 'Claim amount cannot exceed $10,000';
-        break;
-      case 'holder':
-        if (!value) return 'Policy holder name is required';
-        if (value.length < 2)
-          return 'Policy holder name must be at least 2 characters';
-        break;
-      case 'policyNumber':
-        if (!value) return 'Policy number is required';
-        if (!/^TL-\d{5}$/.test(value))
-          return 'Policy number must be in format TL-XXXXX';
-        break;
-      case 'insuredName':
-        if (!value) return 'Insured name is required';
-        if (value.length < 2)
-          return 'Insured name must be at least 2 characters';
-        break;
-      case 'description':
-        if (!value) return 'Description is required';
-        if (value.length < 10)
-          return 'Description must be at least 10 characters';
-        break;
-      case 'processingFee':
-        if (!value) return 'Processing fee is required';
-        const fee = parseFloat(value);
-        if (isNaN(fee) || fee < 0) return 'Please enter a valid processing fee';
-        break;
-      case 'incidentDate':
-        if (!value) return 'Incident date is required';
-        const date = new Date(value);
-        const now = new Date();
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(now.getMonth() - 6);
-
-        if (date > now) return 'Incident date cannot be in the future';
-        if (date < sixMonthsAgo)
-          return 'Incident date cannot be more than 6 months ago';
-        break;
+  // Handle policy lookup response
+  React.useEffect(() => {
+    if (policyData && shouldLookupPolicy) {
+      // Auto-fill holder name
+      setValue('holder', policyData.holder);
+      setIsHolderAutoFilled(true);
+      setShouldLookupPolicy(false); // Reset the trigger
+    } else if (policyData === null && shouldLookupPolicy) {
+      // Policy not found - allow manual entry
+      setIsHolderAutoFilled(false);
+      setShouldLookupPolicy(false); // Reset the trigger
     }
-    return undefined;
-  };
+  }, [policyData, shouldLookupPolicy, setValue]);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Handle policy lookup errors
+  React.useEffect(() => {
+    if (policyError && shouldLookupPolicy) {
+      // API failed - allow manual entry
+      setIsHolderAutoFilled(false);
+      setShouldLookupPolicy(false);
+    }
+  }, [policyError, shouldLookupPolicy]);
 
-    // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined }));
+  // Track form changes for unsaved changes warning
+  React.useEffect(() => {
+    const hasChanges = Object.values(formValues).some(
+      (value) => value && value.trim() !== ''
+    );
+    onFormChange?.(hasChanges);
+  }, [formValues, onFormChange]);
+
+  // Handle policy lookup trigger
+  const handlePolicyBlur = () => {
+    const policyNumber = formValues.policyNumber;
+    if (policyNumber && /^TL-\d{5}$/.test(policyNumber)) {
+      setShouldLookupPolicy(true);
     }
   };
 
-  const handleBlur = (
-    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
-
-    const error = validateField(name, value);
-    setErrors((prev) => ({ ...prev, [name]: error }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Validate all fields
-    const newErrors: FormErrors = {};
-    Object.keys(formData).forEach((key) => {
-      const error = validateField(key, formData[key as keyof FormData]);
-      if (error) newErrors[key as keyof FormErrors] = error;
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      setTouched({
-        amount: true,
-        holder: true,
-        policyNumber: true,
-        insuredName: true,
-        description: true,
-        processingFee: true,
-        incidentDate: true,
-      });
-      return;
-    }
-
-    // If validation passes, submit the form data using the mutation hook
-    const claimData = {
-      amount: formData.amount,
-      holder: formData.holder,
-      policyNumber: formData.policyNumber,
-      insuredName: formData.insuredName,
-      description: formData.description,
-      processingFee: formData.processingFee,
-      incidentDate: formData.incidentDate,
-    };
-
-    createClaimMutation.mutate(claimData);
-  };
-
-  const isFieldValid = (fieldName: string) => {
-    return !errors[fieldName as keyof FormErrors] && touched[fieldName];
-  };
-
-  const isFieldInvalid = (fieldName: string) => {
-    return errors[fieldName as keyof FormErrors] && touched[fieldName];
+  // Handle form submission with React Hook Form
+  const onSubmit = (data: FormData) => {
+    createClaimMutation.mutate(data);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={rhfHandleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Amount */}
         <div>
@@ -215,24 +191,19 @@ const CreateClaimForm: React.FC = () => {
           <input
             type="number"
             id="amount"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            onBlur={handleBlur}
             step="0.01"
             min="0"
             max="10000"
             className={`mt-1 h-[40px] p-[10px] block w-full rounded-md shadow-sm sm:text-sm text-black ${
-              isFieldInvalid('amount')
+              errors.amount
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : isFieldValid('amount')
-                  ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
             }`}
             placeholder="0.00"
+            {...register('amount')}
           />
           {errors.amount && (
-            <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+            <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
           )}
         </div>
 
@@ -247,23 +218,20 @@ const CreateClaimForm: React.FC = () => {
           <input
             type="number"
             id="processingFee"
-            name="processingFee"
-            value={formData.processingFee}
-            onChange={handleChange}
-            onBlur={handleBlur}
             step="0.01"
             min="0"
             className={`mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
-              isFieldInvalid('processingFee')
+              errors.processingFee
                 ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : isFieldValid('processingFee')
-                  ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
             }`}
             placeholder="0.00"
+            {...register('processingFee')}
           />
           {errors.processingFee && (
-            <p className="mt-1 text-sm text-red-600">{errors.processingFee}</p>
+            <p className="mt-1 text-sm text-red-600">
+              {errors.processingFee.message}
+            </p>
           )}
           <p className="mt-1 text-xs text-gray-500">
             Auto-calculated as 5% of claim amount
@@ -278,25 +246,61 @@ const CreateClaimForm: React.FC = () => {
           className="block text-sm font-medium text-gray-700"
         >
           Policy Holder Name
+          {isHolderAutoFilled && (
+            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+              Auto-filled
+            </span>
+          )}
         </label>
-        <input
-          type="text"
-          id="holder"
-          name="holder"
-          value={formData.holder}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          className={`mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
-            isFieldInvalid('holder')
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : isFieldValid('holder')
-                ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-          placeholder="Enter policy holder name"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            id="holder"
+            className={`mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
+              errors.holder
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+                : isHolderAutoFilled
+                  ? 'border-green-300 bg-green-50'
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+            }`}
+            placeholder={
+              isHolderAutoFilled
+                ? 'Auto-filled from policy'
+                : 'Enter policy holder name'
+            }
+            {...register('holder')}
+          />
+          {isPolicyLoading && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <svg
+                className="animate-spin h-4 w-4 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
         {errors.holder && (
-          <p className="mt-1 text-sm text-red-600">{errors.holder}</p>
+          <p className="mt-1 text-sm text-red-600">{errors.holder.message}</p>
+        )}
+        {isHolderAutoFilled && (
+          <p className="mt-1 text-xs text-green-600">
+            Policy verified ✓ You can still edit this field if needed
+          </p>
         )}
       </div>
 
@@ -311,21 +315,20 @@ const CreateClaimForm: React.FC = () => {
         <input
           type="text"
           id="policyNumber"
-          name="policyNumber"
-          value={formData.policyNumber}
-          onChange={handleChange}
-          onBlur={handleBlur}
           className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            isFieldInvalid('policyNumber')
+            errors.policyNumber
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : isFieldValid('policyNumber')
-                ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
           }`}
           placeholder="TL-XXXXX"
+          {...register('policyNumber', {
+            onBlur: handlePolicyBlur,
+          })}
         />
         {errors.policyNumber && (
-          <p className="mt-1 text-sm text-red-600">{errors.policyNumber}</p>
+          <p className="mt-1 text-sm text-red-600">
+            {errors.policyNumber.message}
+          </p>
         )}
       </div>
 
@@ -340,21 +343,18 @@ const CreateClaimForm: React.FC = () => {
         <input
           type="text"
           id="insuredName"
-          name="insuredName"
-          value={formData.insuredName}
-          onChange={handleChange}
-          onBlur={handleBlur}
           className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            isFieldInvalid('insuredName')
+            errors.insuredName
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : isFieldValid('insuredName')
-                ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
           }`}
           placeholder="Enter insured item name"
+          {...register('insuredName')}
         />
         {errors.insuredName && (
-          <p className="mt-1 text-sm text-red-600">{errors.insuredName}</p>
+          <p className="mt-1 text-sm text-red-600">
+            {errors.insuredName.message}
+          </p>
         )}
       </div>
 
@@ -366,25 +366,28 @@ const CreateClaimForm: React.FC = () => {
         >
           Incident Date
         </label>
-        <input
-          type="date"
-          id="incidentDate"
-          name="incidentDate"
-          value={formData.incidentDate}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          min={sixMonthsAgo}
-          max={yesterday}
+        <DatePicker
+          selected={
+            formValues.incidentDate ? new Date(formValues.incidentDate) : null
+          }
+          onChange={(date: Date | null) => {
+            const dateString = date ? date.toISOString().split('T')[0] : '';
+            setValue('incidentDate', dateString);
+          }}
+          minDate={new Date(sixMonthsAgo)}
+          maxDate={new Date(yesterday)}
+          dateFormat="MMM dd, yyyy"
+          placeholderText="Select incident date"
           className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            isFieldInvalid('incidentDate')
+            errors.incidentDate
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : isFieldValid('incidentDate')
-                ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
           }`}
         />
         {errors.incidentDate && (
-          <p className="mt-1 text-sm text-red-600">{errors.incidentDate}</p>
+          <p className="mt-1 text-sm text-red-600">
+            {errors.incidentDate.message}
+          </p>
         )}
       </div>
 
@@ -398,25 +401,22 @@ const CreateClaimForm: React.FC = () => {
         </label>
         <textarea
           id="description"
-          name="description"
           rows={4}
-          value={formData.description}
-          onChange={handleChange}
-          onBlur={handleBlur}
           className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            isFieldInvalid('description')
+            errors.description
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : isFieldValid('description')
-                ? 'border-green-300 focus:border-green-500 focus:ring-green-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
+              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
           }`}
           placeholder="Describe the incident and claim details..."
+          {...register('description')}
         />
         {errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+          <p className="mt-1 text-sm text-red-600">
+            {errors.description.message}
+          </p>
         )}
         <p className="mt-1 text-xs text-gray-500">
-          {formData.description.length}/10 minimum characters
+          {formValues.description?.length || 0}/10 minimum characters
         </p>
       </div>
 
@@ -449,7 +449,7 @@ const CreateClaimForm: React.FC = () => {
       <div className="flex justify-end">
         <button
           type="submit"
-          disabled={!isFormValid || isPending}
+          disabled={!isValid || isPending}
           className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? (

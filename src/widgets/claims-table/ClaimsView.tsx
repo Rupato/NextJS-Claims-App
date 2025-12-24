@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { FormattedClaim } from '@/entities/claim/types';
+import { SortOption } from '@/shared/types';
 import { TableView } from './TableView';
 import { CardsView } from './CardsView';
 
@@ -17,6 +18,9 @@ interface ClaimsViewProps {
   onCardsScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   hasActiveFilters: boolean;
   onRowSelect?: (claim: FormattedClaim) => void;
+  columnVisibility?: Record<string, boolean>;
+  onColumnSort?: (sortOption: SortOption) => void;
+  currentSort?: SortOption;
 }
 
 export const ClaimsView: React.FC<ClaimsViewProps> = ({
@@ -31,6 +35,9 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
   onCardsScroll,
   hasActiveFilters,
   onRowSelect,
+  columnVisibility,
+  onColumnSort,
+  currentSort,
 }) => {
   if (viewMode === 'table') {
     return (
@@ -41,6 +48,9 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
         onScroll={onTableScroll}
         hasActiveFilters={hasActiveFilters}
         onRowSelect={onRowSelect}
+        columnVisibility={columnVisibility}
+        onColumnSort={onColumnSort}
+        currentSort={currentSort}
       />
     );
   }

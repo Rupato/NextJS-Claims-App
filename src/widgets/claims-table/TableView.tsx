@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { FormattedClaim } from '@/entities/claim/types';
+import { SortOption } from '@/shared/types';
 import { TableHeader } from './TableHeader';
 import { TableRow } from '@/entities/claim/ui/TableRow';
 import { ROW_HEIGHT, CONTAINER_HEIGHT } from '@/shared/virtualization';
@@ -13,6 +14,9 @@ interface TableViewProps {
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   hasActiveFilters: boolean;
   onRowSelect?: (claim: FormattedClaim) => void;
+  columnVisibility?: Record<string, boolean>;
+  onColumnSort?: (sortOption: SortOption) => void;
+  currentSort?: SortOption;
 }
 
 export const TableView: React.FC<TableViewProps> = ({
@@ -22,6 +26,9 @@ export const TableView: React.FC<TableViewProps> = ({
   onScroll,
   hasActiveFilters,
   onRowSelect,
+  columnVisibility,
+  onColumnSort,
+  currentSort,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
@@ -84,7 +91,6 @@ export const TableView: React.FC<TableViewProps> = ({
 
       const visibleClaims = formattedClaims.slice(startIndex, endIndex);
       const currentVisibleIndex = selectedIndex - startIndex;
-      console.log(e.key);
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();
@@ -168,7 +174,11 @@ export const TableView: React.FC<TableViewProps> = ({
           aria-colcount={9}
         >
           {/* Top spacer for virtualization */}
-          <TableHeader />
+          <TableHeader
+            columnVisibility={columnVisibility}
+            onColumnSort={onColumnSort}
+            currentSort={currentSort}
+          />
           <tbody className="bg-white divide-y divide-gray-200" role="rowgroup">
             <tr style={{ height: startIndex * rowHeight }} />
             {formattedClaims.slice(startIndex, endIndex).map((claim, index) => (
@@ -180,6 +190,7 @@ export const TableView: React.FC<TableViewProps> = ({
                 claim={claim}
                 onRowSelect={onRowSelect}
                 isSelected={selectedIndex === startIndex + index}
+                columnVisibility={columnVisibility}
               />
             ))}
             <tr
