@@ -12,6 +12,7 @@ interface CardsViewProps {
   cardsPerRow: number;
   onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   hasActiveFilters: boolean;
+  onCardClick?: (claim: FormattedClaim) => void;
 }
 
 export const CardsView: React.FC<CardsViewProps> = ({
@@ -21,6 +22,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
   cardsPerRow,
   onScroll,
   hasActiveFilters,
+  onCardClick,
 }) => {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +57,11 @@ export const CardsView: React.FC<CardsViewProps> = ({
             {formattedClaims
               .slice(cardStartIndex, cardEndIndex)
               .map((claim) => (
-                <ClaimCard key={claim.id} claim={claim} />
+                <ClaimCard
+                  key={claim.id}
+                  claim={claim}
+                  onCardClick={onCardClick}
+                />
               ))}
             {/* Bottom spacer for cards virtualization */}
           </div>
