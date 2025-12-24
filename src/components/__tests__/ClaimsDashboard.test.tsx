@@ -25,7 +25,7 @@ vi.mock('../../hooks/useSearch', () => ({
 }));
 
 vi.mock('../../utils/storage', () => ({
-  usePersistedState: vi.fn(),
+  usePersistedState: vi.fn(() => ['table', vi.fn()]),
 }));
 
 // Define proper types for mock props
@@ -41,7 +41,6 @@ interface ClaimsViewProps {
   endIndex: number;
   cardStartIndex: number;
   cardEndIndex: number;
-  claimsLength: number;
   onTableScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   onCardsScroll: (event: React.UIEvent<HTMLDivElement>) => void;
 }
@@ -118,7 +117,7 @@ describe('ClaimsDashboard', () => {
       isSuccess: true,
       isPending: false,
       isFetching: false,
-      status: 'success',
+      status: 'success' as const,
     } as any);
 
     mockUseFormattedClaims.mockReturnValue(mockClaims);
@@ -144,11 +143,6 @@ describe('ClaimsDashboard', () => {
       filteredClaims: mockClaims,
       isSearching: false,
     });
-
-    mockUsePersistedState
-      .mockReturnValueOnce(['table', vi.fn()]) // viewMode
-      .mockReturnValueOnce([[], vi.fn()]) // selectedStatuses
-      .mockReturnValueOnce(['created-newest', vi.fn()]); // sortOption
   });
 
   it('renders loading skeleton when loading', () => {

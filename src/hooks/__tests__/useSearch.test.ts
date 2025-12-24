@@ -11,7 +11,7 @@ beforeEach(() => {
 describe('useSearch', () => {
   const mockClaims: Claim[] = [
     {
-      id: 1,
+      id: '1',
       number: 'CLM-001',
       incidentDate: '2023-12-01T00:00:00Z',
       createdAt: '2023-12-15T00:00:00Z',
@@ -22,7 +22,7 @@ describe('useSearch', () => {
       status: 'Approved',
     },
     {
-      id: 2,
+      id: '2',
       number: 'CLM-002',
       incidentDate: '2023-12-02T00:00:00Z',
       createdAt: '2023-12-16T00:00:00Z',
@@ -33,7 +33,7 @@ describe('useSearch', () => {
       status: 'Pending',
     },
     {
-      id: 3,
+      id: '3',
       number: 'CLM-003',
       incidentDate: '2023-12-03T00:00:00Z',
       createdAt: '2023-12-17T00:00:00Z',
@@ -149,7 +149,7 @@ describe('useSearch', () => {
   });
 
   it('uses custom debounce delay', () => {
-    const { result } = renderHook(() => useSearch(mockClaims, 500));
+    const { result } = renderHook(() => useSearch(mockClaims, '', 500));
 
     act(() => {
       result.current.setSearchTerm('test');

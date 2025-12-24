@@ -13,7 +13,7 @@ describe('useFormattedClaims', () => {
   it('formats claims correctly', () => {
     const mockClaims: Claim[] = [
       {
-        id: 1,
+        id: '1',
         number: 'CLM-001',
         incidentDate: '2023-12-01T00:00:00Z',
         createdAt: '2023-12-15T00:00:00Z',
@@ -31,7 +31,7 @@ describe('useFormattedClaims', () => {
     const formattedClaim = result.current[0];
 
     expect(formattedClaim).toMatchObject({
-      id: 1,
+      id: '1',
       number: 'CLM-001',
       holder: 'John Doe',
       policyNumber: 'POL-12345',
@@ -49,7 +49,7 @@ describe('useFormattedClaims', () => {
   it('handles multiple claims', () => {
     const mockClaims: Claim[] = [
       {
-        id: 1,
+        id: '1',
         number: 'CLM-001',
         incidentDate: '2023-12-01T00:00:00Z',
         createdAt: '2023-12-15T00:00:00Z',
@@ -60,7 +60,7 @@ describe('useFormattedClaims', () => {
         status: 'Approved',
       },
       {
-        id: 2,
+        id: '2',
         number: 'CLM-002',
         incidentDate: '2023-11-15T00:00:00Z',
         createdAt: '2023-12-01T00:00:00Z',
@@ -83,7 +83,7 @@ describe('useFormattedClaims', () => {
   it('memoizes results', () => {
     const mockClaims: Claim[] = [
       {
-        id: 1,
+        id: '1',
         number: 'CLM-001',
         incidentDate: '2023-12-01T00:00:00Z',
         createdAt: '2023-12-15T00:00:00Z',
@@ -112,7 +112,7 @@ describe('useFormattedClaims', () => {
   it('recalculates when claims change', () => {
     const mockClaims1: Claim[] = [
       {
-        id: 1,
+        id: '1',
         number: 'CLM-001',
         incidentDate: '2023-12-01T00:00:00Z',
         createdAt: '2023-12-15T00:00:00Z',
@@ -126,7 +126,7 @@ describe('useFormattedClaims', () => {
 
     const mockClaims2: Claim[] = [
       {
-        id: 2,
+        id: '2',
         number: 'CLM-002',
         incidentDate: '2023-11-15T00:00:00Z',
         createdAt: '2023-12-01T00:00:00Z',

@@ -24,7 +24,7 @@ vi.mock('../TableRow', () => ({
 
 const mockClaims: FormattedClaim[] = [
   {
-    id: 1,
+    id: '1',
     number: 'CLM-001',
     incidentDate: '2023-12-01T00:00:00Z',
     createdAt: '2023-12-15T00:00:00Z',
@@ -40,7 +40,7 @@ const mockClaims: FormattedClaim[] = [
     formattedCreatedDate: 'less than a minute ago',
   },
   {
-    id: 2,
+    id: '2',
     number: 'CLM-002',
     incidentDate: '2023-12-02T00:00:00Z',
     createdAt: '2023-12-16T00:00:00Z',

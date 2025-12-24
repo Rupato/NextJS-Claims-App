@@ -4,7 +4,7 @@ import { TableRow } from '../TableRow';
 import { FormattedClaim } from '../../types/claims';
 
 const mockClaim: FormattedClaim = {
-  id: 1,
+  id: '1',
   number: 'CLM-001',
   incidentDate: '2023-12-01T00:00:00Z',
   createdAt: '2023-12-15T00:00:00Z',

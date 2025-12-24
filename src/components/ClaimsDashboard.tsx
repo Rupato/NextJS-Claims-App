@@ -2,11 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePersistedState } from '../utils/storage';
-import {
-  useUrlStringState,
-  useUrlArrayState,
-  useUrlSortState,
-} from '../hooks/useUrlState';
+import { useUrlArrayState, useUrlSortState } from '../hooks/useUrlState';
 import { useClaimsQuery } from '../hooks/useClaimsQuery';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
@@ -39,8 +35,6 @@ const ClaimsDashboard: React.FC = () => {
     SortOption,
     (value: SortOption | ((prev: SortOption) => SortOption)) => void,
   ];
-  const [searchTerm, setSearchTerm] = useUrlStringState('search', '');
-
   // Modal state for claim details
   const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
     null
@@ -77,7 +71,8 @@ const ClaimsDashboard: React.FC = () => {
   }, [statusFilteredClaims, sortOption]);
 
   // Search functionality (applied after sorting)
-  const { filteredClaims, isSearching } = useSearch(sortedClaims, searchTerm);
+  const { filteredClaims, isSearching, searchTerm, setSearchTerm } =
+    useSearch(sortedClaims);
 
   // Determine row/card height based on active filters
   const rowHeight = selectedStatuses.length > 0 || !!searchTerm ? 48 : 64;
@@ -276,7 +271,6 @@ const ClaimsDashboard: React.FC = () => {
               endIndex={endIndex}
               cardStartIndex={cardStartIndex}
               cardEndIndex={cardEndIndex}
-              claimsLength={claims.length}
               cardsPerRow={cardsPerRow}
               onTableScroll={handleScroll}
               onCardsScroll={handleCardsScroll}

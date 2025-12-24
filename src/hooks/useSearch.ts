@@ -3,20 +3,21 @@ import { Claim } from '../types/claims';
 
 export const useSearch = (
   claims: Claim[],
-  externalSearchTerm: string = '',
+  initialSearchTerm: string = '',
   delay: number = 300
 ) => {
+  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
   const [debouncedSearchTerm, setDebouncedSearchTerm] =
-    useState(externalSearchTerm);
+    useState(initialSearchTerm);
 
   // Debounce the search term
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(externalSearchTerm);
+      setDebouncedSearchTerm(searchTerm);
     }, delay);
 
     return () => clearTimeout(timer);
-  }, [externalSearchTerm, delay]);
+  }, [searchTerm, delay]);
 
   // Filter claims based on search term
   const filteredClaims = useMemo(() => {
@@ -35,10 +36,12 @@ export const useSearch = (
   }, [claims, debouncedSearchTerm]);
 
   // Show loading when search term has changed but debounced value hasn't caught up
-  const isSearching = externalSearchTerm !== debouncedSearchTerm;
+  const isSearching = searchTerm !== debouncedSearchTerm;
 
   return {
     filteredClaims,
     isSearching,
+    searchTerm,
+    setSearchTerm,
   };
 };

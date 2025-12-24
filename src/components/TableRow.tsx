@@ -29,6 +29,7 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
 
     return (
       <tr
+        ref={ref}
         className={rowClassName}
         role="row"
         tabIndex={onRowSelect ? 0 : -1}

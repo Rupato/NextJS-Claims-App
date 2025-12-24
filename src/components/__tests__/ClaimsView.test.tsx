@@ -44,7 +44,7 @@ vi.mock('../CardsView', () => ({
 
 const mockClaims: FormattedClaim[] = [
   {
-    id: 1,
+    id: '1',
     number: 'CLM-001',
     incidentDate: '2023-12-01T00:00:00Z',
     createdAt: '2023-12-15T00:00:00Z',
@@ -67,7 +67,6 @@ const mockProps = {
   endIndex: 2,
   cardStartIndex: 0,
   cardEndIndex: 3,
-  claimsLength: 10,
   cardsPerRow: 3,
   onTableScroll: vi.fn(),
   onCardsScroll: vi.fn(),
