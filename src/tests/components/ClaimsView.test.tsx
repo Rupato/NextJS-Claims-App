@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ClaimsView } from '../ClaimsView';
-import { FormattedClaim } from '../../types';
+import { ClaimsView } from '@/widgets/claims-table/ClaimsView';
+import { FormattedClaim } from '@/entities/claim/types';
 
 // Define proper types for mock props
 interface TableViewProps {
@@ -21,7 +21,7 @@ interface CardsViewProps {
 }
 
 // Mock the child components
-vi.mock('../TableView', () => ({
+vi.mock('@/widgets/claims-table/TableView', () => ({
   TableView: ({ formattedClaims, startIndex, endIndex }: TableViewProps) => (
     <div data-testid="table-view">
       TableView: {formattedClaims.length} claims, {startIndex}-{endIndex}
@@ -29,7 +29,7 @@ vi.mock('../TableView', () => ({
   ),
 }));
 
-vi.mock('../CardsView', () => ({
+vi.mock('@/widgets/claims-table/CardsView', () => ({
   CardsView: ({
     formattedClaims,
     cardStartIndex,

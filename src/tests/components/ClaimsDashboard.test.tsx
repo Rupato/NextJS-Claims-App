@@ -1,4 +1,4 @@
-import { render, screen } from '../../test/test-utils';
+import { render, screen } from '../test-utils';
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock Next.js router hooks
@@ -10,35 +10,35 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-import ClaimsDashboard from '../ClaimsDashboard';
-import { FormattedClaim, Claim } from '../../types';
+import ClaimsDashboard from '@/features/claims-management/components/ClaimsDashboard';
+import { FormattedClaim, Claim } from '@/entities/claim/types';
 import { UseQueryResult } from '@tanstack/react-query';
 
 // Type for mocking React Query result
 type MockQueryResult<T> = UseQueryResult<T, Error>;
 
 // Mock all the hooks
-vi.mock('../../hooks/useClaimsQuery', () => ({
+vi.mock('@/features/claims-management/hooks/useClaimsQuery', () => ({
   useClaimsQuery: vi.fn(),
 }));
 
-vi.mock('../../hooks/useFormattedClaims', () => ({
+vi.mock('@/features/claims-management/hooks/useFormattedClaims', () => ({
   useFormattedClaims: vi.fn(),
 }));
 
-vi.mock('../../hooks/useTableVirtualization', () => ({
+vi.mock('@/shared/hooks/useTableVirtualization', () => ({
   useTableVirtualization: vi.fn(),
 }));
 
-vi.mock('../../hooks/useCardsVirtualization', () => ({
+vi.mock('@/shared/hooks/useCardsVirtualization', () => ({
   useCardsVirtualization: vi.fn(),
 }));
 
-vi.mock('../../hooks/useSearch', () => ({
+vi.mock('@/shared/hooks/useSearch', () => ({
   useSearch: vi.fn(),
 }));
 
-vi.mock('../../utils', () => ({
+vi.mock('@/shared/utils', () => ({
   usePersistedState: vi.fn(() => ['table', vi.fn()]),
   sortClaims: vi.fn((claims) => claims), // Mock sort function that returns claims as-is
 }));
@@ -65,7 +65,7 @@ interface LoadingSkeletonProps {
 }
 
 // Mock child components
-vi.mock('../ViewModeTabs', () => ({
+vi.mock('@/shared/ui/ViewModeTabs', () => ({
   ViewModeTabs: ({ viewMode, onViewModeChange }: ViewModeTabsProps) => (
     <div data-testid="view-mode-tabs">
       ViewModeTabs: {viewMode}
@@ -74,24 +74,24 @@ vi.mock('../ViewModeTabs', () => ({
   ),
 }));
 
-vi.mock('../ClaimsView', () => ({
+vi.mock('@/widgets/claims-table/ClaimsView', () => ({
   ClaimsView: ({ viewMode }: ClaimsViewProps) => (
     <div data-testid="claims-view">ClaimsView: {viewMode}</div>
   ),
 }));
 
-vi.mock('../LoadingSkeleton', () => ({
+vi.mock('@/shared/ui/LoadingSkeleton', () => ({
   LoadingSkeleton: ({ viewMode }: LoadingSkeletonProps) => (
     <div data-testid="loading-skeleton">LoadingSkeleton: {viewMode}</div>
   ),
 }));
 
-import { useClaimsQuery } from '../../hooks/useClaimsQuery';
-import { useFormattedClaims } from '../../hooks/useFormattedClaims';
-import { useTableVirtualization } from '../../hooks/useTableVirtualization';
-import { useCardsVirtualization } from '../../hooks/useCardsVirtualization';
-import { useSearch } from '../../hooks/useSearch';
-import { usePersistedState } from '../../utils';
+import { useClaimsQuery } from '@/features/claims-management/hooks/useClaimsQuery';
+import { useFormattedClaims } from '@/features/claims-management/hooks/useFormattedClaims';
+import { useTableVirtualization } from '@/shared/hooks/useTableVirtualization';
+import { useCardsVirtualization } from '@/shared/hooks/useCardsVirtualization';
+import { useSearch } from '@/shared/hooks/useSearch';
+import { usePersistedState } from '@/shared/utils';
 
 const mockUseClaimsQuery = vi.mocked(useClaimsQuery);
 const mockUseFormattedClaims = vi.mocked(useFormattedClaims);
@@ -167,7 +167,7 @@ describe('ClaimsDashboard', () => {
       isStale: false,
       isInitialLoading: false,
       isEnabled: true,
-      refetch: vi.fn(),
+      refetch: vi.fn().mockResolvedValue({ data: mockClaims }),
       promise: Promise.resolve(mockClaims),
     } satisfies MockQueryResult<Claim[]>);
 

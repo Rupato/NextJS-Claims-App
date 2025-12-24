@@ -1,9 +1,9 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { useCardsVirtualization } from '../../../shared/hooks/useCardsVirtualization';
+import { useCardsVirtualization } from '@/shared/hooks/useCardsVirtualization';
 
 // Mock the constants
-vi.mock('../../../shared/virtualization', () => ({
+vi.mock('@/shared/virtualization', () => ({
   CONTAINER_HEIGHT: 600,
   CARDS_PER_ROW: 3,
   CARD_HEIGHT: 280,

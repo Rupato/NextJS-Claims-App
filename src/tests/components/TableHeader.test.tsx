@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TableHeader } from '../TableHeader';
+import { TableHeader } from '@/widgets/claims-table/TableHeader';
 
 describe('TableHeader', () => {
   it('renders all table headers correctly', () => {

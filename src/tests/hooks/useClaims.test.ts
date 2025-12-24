@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { useClaims } from '../useClaims';
+import { useClaims } from '@/features/claims-management/hooks/useClaims';
 
 // Mock fetch globally
 const fetchMock = vi.fn();
@@ -104,7 +104,7 @@ describe('useClaims', () => {
 
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
-        'http://localhost:8001/api/v1/claims',
+        'http://api-mock:8001/api/v1/claims',
         {
           headers: {
             'Cache-Control': 'max-age=300',

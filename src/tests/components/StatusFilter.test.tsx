@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import StatusFilter from '../StatusFilter';
+import StatusFilter from '@/features/claims-management/components/StatusFilter';
 
 describe('StatusFilter', () => {
   const mockOnStatusChange = vi.fn();

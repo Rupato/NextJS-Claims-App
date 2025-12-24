@@ -10,8 +10,8 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-import { useSearch } from '../useSearch';
-import { Claim } from '../../types';
+import { useSearch } from '@/shared/hooks/useSearch';
+import { Claim } from '@/entities/claim/types';
 
 // Mock timer functions
 beforeEach(() => {

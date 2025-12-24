@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { LoadingSkeleton } from '../LoadingSkeleton';
+import { LoadingSkeleton } from '@/shared/ui/LoadingSkeleton';
 
 describe('LoadingSkeleton', () => {
   describe('table view mode', () => {

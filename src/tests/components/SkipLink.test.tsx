@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import SkipLink from '../SkipLink';
+import SkipLink from '@/shared/ui/SkipLink';
 
 describe('SkipLink', () => {
   it('renders the skip link with correct attributes', () => {

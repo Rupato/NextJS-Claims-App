@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import SortDropdown from '../SortDropdown';
+import SortDropdown from '@/shared/ui/SortDropdown';
 
 describe('SortDropdown', () => {
   const mockOnChange = vi.fn();

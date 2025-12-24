@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { CardsView } from '../CardsView';
-import { FormattedClaim } from '../../types';
+import { CardsView } from '@/widgets/claims-table/CardsView';
+import { FormattedClaim } from '@/entities/claim/types';
 
 // Mock the child component
-vi.mock('../ClaimCard', () => ({
+vi.mock('@/entities/claim/ui/ClaimCard', () => ({
   ClaimCard: ({ claim }: { claim: FormattedClaim }) => (
     <article data-testid={`claim-card-${claim.id}`}>
       Card for {claim.number}

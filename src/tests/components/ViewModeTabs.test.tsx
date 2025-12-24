@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ViewModeTabs } from '../ViewModeTabs';
+import { ViewModeTabs } from '@/shared/ui/ViewModeTabs';
 
 describe('ViewModeTabs', () => {
   const mockOnViewModeChange = vi.fn();

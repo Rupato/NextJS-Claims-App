@@ -1,10 +1,10 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { TableView } from '../TableView';
-import { FormattedClaim } from '../../types';
+import { TableView } from '@/widgets/claims-table/TableView';
+import { FormattedClaim } from '@/entities/claim/types';
 
 // Mock the child components
-vi.mock('../TableHeader', () => ({
+vi.mock('@/widgets/claims-table/TableHeader', () => ({
   TableHeader: () => (
     <thead data-testid="table-header">
       <tr>
@@ -14,7 +14,7 @@ vi.mock('../TableHeader', () => ({
   ),
 }));
 
-vi.mock('../TableRow', () => ({
+vi.mock('@/entities/claim/ui/TableRow', () => ({
   TableRow: ({ claim }: { claim: FormattedClaim }) => (
     <tr data-testid={`table-row-${claim.id}`}>
       <td>Row for {claim.number}</td>

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { TableRow } from '../TableRow';
-import { FormattedClaim } from '../../types';
+import { TableRow } from '@/entities/claim/ui/TableRow';
+import { FormattedClaim } from '@/entities/claim/types';
 
 const mockClaim: FormattedClaim = {
   id: '1',
