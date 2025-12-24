@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { usePersistedState } from '../utils/storage';
 import { useClaims } from '../hooks/useClaims';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
@@ -14,6 +14,8 @@ import StatusFilter from './StatusFilter';
 import SortDropdown, { SortOption } from './SortDropdown';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
+import { ClaimDetailsModal } from './ClaimDetailsModal';
+import { FormattedClaim } from '../types/claims';
 
 const ClaimsDashboard: React.FC = () => {
   const { claims, loading, error } = useClaims();
@@ -29,6 +31,22 @@ const ClaimsDashboard: React.FC = () => {
     'claims-dashboard-sort-option',
     'created-newest'
   );
+
+  // Modal state for claim details
+  const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleRowSelect = (claim: FormattedClaim) => {
+    setSelectedClaim(claim);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedClaim(null);
+  };
 
   // Get available statuses from claims data
   const availableStatuses = React.useMemo(() => {
@@ -171,9 +189,9 @@ const ClaimsDashboard: React.FC = () => {
         {/* Screen Reader Navigation Instructions */}
         <nav aria-label="Dashboard actions" className="sr-only">
           <p>
-            Use Tab to navigate through the claims table. Use Enter or Space to
-            interact with focusable elements. Use arrow keys to navigate between
-            view modes.
+            Use Tab to navigate through the claims table. Use ↑↓ arrow keys to
+            navigate rows, Enter to open claim details. Use Tab to navigate
+            between view modes.
           </p>
         </nav>
 
@@ -201,13 +219,13 @@ const ClaimsDashboard: React.FC = () => {
           <div className="sr-only">
             <h2 id="claims-section-title">Insurance Claims Data</h2>
             <div id="claims-table-instructions">
-              Table view: Use arrow keys to navigate cells, Enter to interact
-              with rows. Virtualized for performance with{' '}
+              Table view: Click rows or use ↑↓ arrow keys to navigate, Enter to
+              view details. Virtualized for performance with{' '}
               {filteredClaims.length} of {claims.length} claims shown
               {searchTerm ? ` matching "${searchTerm}"` : ''}.
             </div>
             <div id="claims-cards-instructions">
-              Cards view: Use Tab to navigate between cards, Enter to expand
+              Cards view: Click cards or use Tab to navigate, Enter to view
               details. Virtualized grid with {filteredClaims.length} of{' '}
               {claims.length} claims shown
               {searchTerm ? ` matching "${searchTerm}"` : ''}.
@@ -255,6 +273,7 @@ const ClaimsDashboard: React.FC = () => {
               onTableScroll={handleScroll}
               onCardsScroll={handleCardsScroll}
               hasActiveFilters={selectedStatuses.length > 0 || !!searchTerm}
+              onRowSelect={handleRowSelect}
             />
           )}
         </section>
@@ -271,6 +290,13 @@ const ClaimsDashboard: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Claim Details Modal */}
+      <ClaimDetailsModal
+        claim={selectedClaim}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </main>
   );
 };

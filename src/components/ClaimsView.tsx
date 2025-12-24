@@ -17,6 +17,7 @@ interface ClaimsViewProps {
   onTableScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   onCardsScroll: (event: React.UIEvent<HTMLDivElement>) => void;
   hasActiveFilters: boolean;
+  onRowSelect?: (claim: FormattedClaim) => void;
 }
 
 export const ClaimsView: React.FC<ClaimsViewProps> = ({
@@ -31,6 +32,7 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
   onTableScroll,
   onCardsScroll,
   hasActiveFilters,
+  onRowSelect,
 }) => {
   if (viewMode === 'table') {
     return (
@@ -40,6 +42,7 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
         endIndex={endIndex}
         onScroll={onTableScroll}
         hasActiveFilters={hasActiveFilters}
+        onRowSelect={onRowSelect}
       />
     );
   }
@@ -52,6 +55,7 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
       cardsPerRow={cardsPerRow}
       onScroll={onCardsScroll}
       hasActiveFilters={hasActiveFilters}
+      onCardClick={onRowSelect}
     />
   );
 };
