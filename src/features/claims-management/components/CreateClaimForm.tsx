@@ -174,7 +174,6 @@ const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
 
   // Handle form submission with React Hook Form
   const onSubmit = (data: FormData) => {
-    console.log('Form submitted with data:', data);
     createClaimMutation.mutate(data);
   };
 

@@ -91,7 +91,6 @@ export const TableView: React.FC<TableViewProps> = ({
 
       const visibleClaims = formattedClaims.slice(startIndex, endIndex);
       const currentVisibleIndex = selectedIndex - startIndex;
-      console.log(e.key);
       switch (e.key) {
         case 'ArrowDown':
           e.preventDefault();

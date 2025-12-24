@@ -19,11 +19,8 @@ const fetchClaims = async (): Promise<Claim[]> => {
 const createClaim = async (
   claimData: Omit<Claim, 'id' | 'number' | 'createdAt' | 'status'>
 ): Promise<Claim> => {
-  console.log('🚀 CLIENT: Starting claim creation with data:', claimData);
-
   // Call the real API
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  console.log('🌐 CLIENT: API URL:', apiUrl);
 
   const requestBody = {
     amount: parseFloat(claimData.amount),
@@ -35,8 +32,6 @@ const createClaim = async (
     incidentDate: claimData.incidentDate,
   };
 
-  console.log('📤 CLIENT: Sending request body:', requestBody);
-
   const response = await fetch(`${apiUrl}/api/v1/claims`, {
     method: 'POST',
     headers: {
@@ -44,12 +39,6 @@ const createClaim = async (
     },
     body: JSON.stringify(requestBody),
   });
-
-  console.log('📥 CLIENT: Response status:', response.status);
-  console.log(
-    '📥 CLIENT: Response headers:',
-    Object.fromEntries(response.headers.entries())
-  );
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -61,10 +50,8 @@ const createClaim = async (
 
   // JSON Server might return empty body for POST, so handle that case
   const responseText = await response.text();
-  console.log('📄 CLIENT: Raw response text:', responseText);
 
   if (!responseText.trim()) {
-    console.log('📄 CLIENT: Empty response, creating claim object locally');
     // Create a claim object since the API didn't return one
     const newClaim: Claim = {
       id: Date.now().toString(), // Temporary ID
@@ -84,7 +71,6 @@ const createClaim = async (
 
   try {
     const data = JSON.parse(responseText);
-    console.log('✅ CLIENT: Parsed response data:', data);
     return data;
   } catch (error) {
     console.error('❌ CLIENT: Failed to parse response JSON:', error);
@@ -102,7 +88,6 @@ const createClaim = async (
       status: 'pending',
       createdAt: new Date().toISOString(),
     };
-    console.log('🔄 CLIENT: Using fallback claim object:', newClaim);
     return newClaim;
   }
 };
@@ -130,9 +115,6 @@ const updateClaim = async ({
 const deleteClaim = async (id: string): Promise<void> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Mock API response - replace with real API call
-  console.log(`Deleted claim ${id}`);
 };
 
 // Query Hook - Fetch all claims with enhanced error handling
@@ -171,25 +153,17 @@ export const useCreateClaimMutation = () => {
     mutationFn: createClaim,
     mutationKey: mutationKeys.createClaim,
     onSuccess: (newClaim) => {
-      console.log('✅ CLIENT: Mutation success - new claim:', newClaim);
-
       // Optimistically update the cache
       queryClient.setQueryData(
         queryKeys.claims,
         (oldClaims: Claim[] | undefined) => {
           const updated = oldClaims ? [...oldClaims, newClaim] : [newClaim];
-          console.log(
-            '📝 CLIENT: Cache updated optimistically, new count:',
-            updated.length
-          );
           return updated;
         }
       );
 
       // Invalidate and refetch to ensure consistency
-      console.log('🔄 CLIENT: Invalidating queries...');
       queryClient.invalidateQueries({ queryKey: queryKeys.claims });
-      console.log('✅ CLIENT: Cache invalidation complete');
     },
     onError: (error) => {
       console.error('❌ Failed to create claim:', error);

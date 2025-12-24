@@ -84,11 +84,6 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
 
   // Force refetch when component mounts to ensure fresh data after navigation
   React.useEffect(() => {
-    console.log(
-      '🏠 CLIENT: ClaimsDashboard mounted, initialClaims length:',
-      initialClaims?.length || 0
-    );
-    console.log('🔄 CLIENT: Triggering refetch to get fresh data...');
     refetch()
       .then((result) => {
         console.log(

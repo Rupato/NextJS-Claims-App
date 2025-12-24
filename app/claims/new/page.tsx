@@ -58,8 +58,8 @@ const NewClaimPage = () => {
   // Handle successful mutation - show success message then navigate
   useEffect(() => {
     if (createClaimMutation.isSuccess) {
-      console.log('🎯 CLIENT: Mutation successful, showing success message...');
       // Reset unsaved changes flag since we're navigating after successful save
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasUnsavedChanges(false);
       // Show success message
       setShowSuccessMessage(true);
