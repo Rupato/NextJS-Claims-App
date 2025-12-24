@@ -1,11 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen } from '../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import ClaimsDashboard from '../ClaimsDashboard';
 import { FormattedClaim } from '../../types/claims';
 
 // Mock all the hooks
-vi.mock('../../hooks/useClaims', () => ({
-  useClaims: vi.fn(),
+vi.mock('../../hooks/useClaimsQuery', () => ({
+  useClaimsQuery: vi.fn(),
 }));
 
 vi.mock('../../hooks/useFormattedClaims', () => ({
@@ -72,15 +72,14 @@ vi.mock('../LoadingSkeleton', () => ({
   ),
 }));
 
-// Import after mocking
-import { useClaims } from '../../hooks/useClaims';
+import { useClaimsQuery } from '../../hooks/useClaimsQuery';
 import { useFormattedClaims } from '../../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../../hooks/useCardsVirtualization';
 import { useSearch } from '../../hooks/useSearch';
 import { usePersistedState } from '../../utils/storage';
 
-const mockUseClaims = vi.mocked(useClaims);
+const mockUseClaimsQuery = vi.mocked(useClaimsQuery);
 const mockUseFormattedClaims = vi.mocked(useFormattedClaims);
 const mockUseTableVirtualization = vi.mocked(useTableVirtualization);
 const mockUseCardsVirtualization = vi.mocked(useCardsVirtualization);
@@ -89,7 +88,7 @@ const mockUsePersistedState = vi.mocked(usePersistedState);
 
 const mockClaims: FormattedClaim[] = [
   {
-    id: 1,
+    id: '1',
     number: 'CLM-001',
     incidentDate: '2023-12-01T00:00:00Z',
     createdAt: '2023-12-15T00:00:00Z',
@@ -110,12 +109,17 @@ describe('ClaimsDashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // Default mocks
-    mockUseClaims.mockReturnValue({
-      claims: mockClaims,
-      loading: false,
+    // Default mocks - React Query structure
+    mockUseClaimsQuery.mockReturnValue({
+      data: mockClaims,
+      isLoading: false,
       error: null,
-    });
+      isError: false,
+      isSuccess: true,
+      isPending: false,
+      isFetching: false,
+      status: 'success',
+    } as any);
 
     mockUseFormattedClaims.mockReturnValue(mockClaims);
 
@@ -148,11 +152,16 @@ describe('ClaimsDashboard', () => {
   });
 
   it('renders loading skeleton when loading', () => {
-    mockUseClaims.mockReturnValue({
-      claims: [],
-      loading: true,
+    mockUseClaimsQuery.mockReturnValue({
+      data: [],
+      isLoading: true,
       error: null,
-    });
+      isError: false,
+      isSuccess: false,
+      isPending: true,
+      isFetching: true,
+      status: 'pending',
+    } as any);
 
     render(<ClaimsDashboard />);
 
@@ -165,11 +174,16 @@ describe('ClaimsDashboard', () => {
   });
 
   it('renders error message when there is an error', () => {
-    mockUseClaims.mockReturnValue({
-      claims: [],
-      loading: false,
-      error: 'Network error',
-    });
+    mockUseClaimsQuery.mockReturnValue({
+      data: [],
+      isLoading: false,
+      error: new Error('Network error'),
+      isError: true,
+      isSuccess: false,
+      isPending: false,
+      isFetching: false,
+      status: 'error',
+    } as any);
 
     render(<ClaimsDashboard />);
 
@@ -231,7 +245,7 @@ describe('ClaimsDashboard', () => {
   it('calls hooks with correct parameters', () => {
     render(<ClaimsDashboard />);
 
-    expect(mockUseClaims).toHaveBeenCalledTimes(1);
+    expect(mockUseClaimsQuery).toHaveBeenCalledTimes(1);
     expect(mockUseSearch).toHaveBeenCalledWith(mockClaims);
     expect(mockUseFormattedClaims).toHaveBeenCalledWith(mockClaims);
     expect(mockUseTableVirtualization).toHaveBeenCalledWith(

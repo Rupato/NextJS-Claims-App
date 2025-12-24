@@ -1,5 +1,5 @@
 export interface Claim {
-  id: number;
+  id: string;
   number: string;
   incidentDate: string;
   createdAt: string;

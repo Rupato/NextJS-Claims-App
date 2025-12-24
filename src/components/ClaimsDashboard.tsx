@@ -2,7 +2,12 @@
 
 import React, { useState } from 'react';
 import { usePersistedState } from '../utils/storage';
-import { useClaims } from '../hooks/useClaims';
+import {
+  useUrlStringState,
+  useUrlArrayState,
+  useUrlSortState,
+} from '../hooks/useUrlState';
+import { useClaimsQuery } from '../hooks/useClaimsQuery';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
@@ -18,19 +23,23 @@ import { ClaimDetailsModal } from './ClaimDetailsModal';
 import { FormattedClaim } from '../types/claims';
 
 const ClaimsDashboard: React.FC = () => {
-  const { claims, loading, error } = useClaims();
+  const { data: claims = [], isLoading: loading, error } = useClaimsQuery();
   const [viewMode, setViewMode] = usePersistedState<'table' | 'cards'>(
     'claims-dashboard-view-mode',
     'table'
   );
-  const [selectedStatuses, setSelectedStatuses] = usePersistedState<string[]>(
-    'claims-dashboard-selected-statuses',
+  const [selectedStatuses, setSelectedStatuses] = useUrlArrayState(
+    'status',
     []
   );
-  const [sortOption, setSortOption] = usePersistedState<SortOption>(
-    'claims-dashboard-sort-option',
+  const [sortOption, setSortOption] = useUrlSortState(
+    'sort',
     'created-newest'
-  );
+  ) as [
+    SortOption,
+    (value: SortOption | ((prev: SortOption) => SortOption)) => void,
+  ];
+  const [searchTerm, setSearchTerm] = useUrlStringState('search', '');
 
   // Modal state for claim details
   const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
@@ -68,8 +77,7 @@ const ClaimsDashboard: React.FC = () => {
   }, [statusFilteredClaims, sortOption]);
 
   // Search functionality (applied after sorting)
-  const { searchTerm, setSearchTerm, filteredClaims, isSearching } =
-    useSearch(sortedClaims);
+  const { filteredClaims, isSearching } = useSearch(sortedClaims, searchTerm);
 
   // Determine row/card height based on active filters
   const rowHeight = selectedStatuses.length > 0 || !!searchTerm ? 48 : 64;
@@ -113,7 +121,7 @@ const ClaimsDashboard: React.FC = () => {
           role="alert"
           aria-live="assertive"
         >
-          Error loading claims: {error}
+          Error loading claims: {error.message || 'Unknown error occurred'}
         </div>
       </div>
     );
