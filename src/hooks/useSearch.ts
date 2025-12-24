@@ -1,14 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useUrlStringState } from './useUrlState';
 import { Claim } from '../types/claims';
 
-export const useSearch = (
-  claims: Claim[],
-  initialSearchTerm: string = '',
-  delay: number = 300
-) => {
-  const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
-  const [debouncedSearchTerm, setDebouncedSearchTerm] =
-    useState(initialSearchTerm);
+export const useSearch = (claims: Claim[], delay: number = 300) => {
+  const [searchTerm, setSearchTerm] = useUrlStringState('search', '');
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Debounce the search term
   useEffect(() => {
