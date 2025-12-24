@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys, mutationKeys } from '../lib/queryClient';
-import { Claim } from '../types/claims';
+import { Claim } from '../types';
 
 // Mock API functions (replace with real API calls)
 const fetchClaims = async (): Promise<Claim[]> => {
@@ -15,18 +15,31 @@ const fetchClaims = async (): Promise<Claim[]> => {
   return response.json();
 };
 
-const createClaim = async (claimData: Omit<Claim, 'id'>): Promise<Claim> => {
-  // Simulate network delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+const createClaim = async (
+  claimData: Omit<Claim, 'id' | 'number' | 'createdAt' | 'status'>
+): Promise<Claim> => {
+  // Call the real API
+  const response = await fetch('http://localhost:8001/api/v1/claims', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      amount: parseFloat(claimData.amount),
+      holder: claimData.holder,
+      policyNumber: claimData.policyNumber,
+      insuredName: claimData.insuredName,
+      description: claimData.description,
+      processingFee: parseFloat(claimData.processingFee),
+      incidentDate: claimData.incidentDate,
+    }),
+  });
 
-  // Mock API response - replace with real API call
-  const newClaim: Claim = {
-    ...claimData,
-    id: `claim-${Date.now()}`,
-    createdAt: new Date().toISOString(),
-  };
+  if (!response.ok) {
+    throw new Error('Failed to create claim');
+  }
 
-  return newClaim;
+  return response.json();
 };
 
 const updateClaim = async ({
@@ -58,10 +71,11 @@ const deleteClaim = async (id: string): Promise<void> => {
 };
 
 // Query Hook - Fetch all claims
-export const useClaimsQuery = () => {
+export const useClaimsQuery = (initialData?: Claim[]) => {
   return useQuery({
     queryKey: queryKeys.claims,
     queryFn: fetchClaims,
+    initialData: initialData,
     // Keep data fresh for 30 seconds
     staleTime: 30 * 1000,
     // Cache for 5 minutes

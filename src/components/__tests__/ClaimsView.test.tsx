@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ClaimsView } from '../ClaimsView';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim } from '../../types';
 
 // Define proper types for mock props
 interface TableViewProps {
@@ -51,6 +51,8 @@ const mockClaims: FormattedClaim[] = [
     amount: '5000',
     holder: 'John Doe',
     policyNumber: 'POL-12345',
+    insuredName: 'Car',
+    description: 'Accident repair',
     processingFee: '100',
     status: 'Approved',
     formattedClaimAmount: '$5,000.00',

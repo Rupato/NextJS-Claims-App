@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useUrlStringState } from './useUrlState';
-import { Claim } from '../types/claims';
+import { Claim } from '../types';
 
 export const useSearch = (claims: Claim[], delay: number = 300) => {
   const [searchTerm, setSearchTerm] = useUrlStringState('search', '');

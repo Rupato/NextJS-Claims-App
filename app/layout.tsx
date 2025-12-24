@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
-import SkipLink from '../components/SkipLink';
+import { Providers } from '../src/components/Providers';
 
 export const metadata: Metadata = {
   title: 'Insurance Claims Dashboard',
@@ -48,10 +48,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased bg-gray-50 text-gray-900">
-        <SkipLink />
-        <main id="main-content" tabIndex={-1}>
-          {children}
-        </main>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

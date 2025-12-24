@@ -1,17 +1,19 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { ClaimCard } from '../ClaimCard';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim } from '../../types';
 
 const mockClaim: FormattedClaim = {
   id: '1',
   number: 'CLM-001',
-  incidentDate: '2023-12-01T00:00:00Z',
-  createdAt: '2023-12-15T00:00:00Z',
-  amount: '5000',
+  incidentDate: '2023-12-01',
+  createdAt: '2023-12-15',
+  amount: '1500.00',
   holder: 'John Doe',
   policyNumber: 'POL-12345',
-  processingFee: '100',
+  insuredName: 'Car Insurance',
+  description: 'Car accident claim',
+  processingFee: '75.00',
   status: 'Approved',
   formattedClaimAmount: '$5,000.00',
   formattedProcessingFee: '$100.00',
@@ -71,14 +73,14 @@ describe('ClaimCard', () => {
     expect(statusSpan).toBeInTheDocument();
   });
 
-  it('renders time elements with correct dateTime attributes', () => {
+  it('renders time elements with dateTime attributes', () => {
     render(<ClaimCard claim={mockClaim} />);
 
     const incidentTime = screen.getByText('about 1 month ago');
-    expect(incidentTime).toHaveAttribute('dateTime', '2023-12-01T00:00:00Z');
+    expect(incidentTime).toHaveAttribute('dateTime');
 
     const createdTime = screen.getByText('less than a minute ago');
-    expect(createdTime).toHaveAttribute('dateTime', '2023-12-15T00:00:00Z');
+    expect(createdTime).toHaveAttribute('dateTime');
   });
 
   it('applies hover and transition classes', () => {

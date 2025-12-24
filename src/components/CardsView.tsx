@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { FormattedClaim } from '../types/claims';
+import { FormattedClaim } from '../types';
 import { ClaimCard } from './ClaimCard';
 import { CONTAINER_HEIGHT, CARD_HEIGHT } from '../constants/virtualization';
 
@@ -88,8 +88,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
           </p>
           <p className="text-xs text-gray-400 mt-1">
             Rendered range: {cardStartIndex + 1}-
-            {Math.min(cardEndIndex, formattedClaims.length)} | Last updated:{' '}
-            {new Date().toLocaleString()}
+            {Math.min(cardEndIndex, formattedClaims.length)}
           </p>
         </div>
       </div>

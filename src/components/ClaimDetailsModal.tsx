@@ -1,6 +1,6 @@
 import React from 'react';
-import { FormattedClaim } from '../types/claims';
-import { getStatusColorClasses } from '../utils/formatters';
+import { FormattedClaim } from '../types';
+import { getStatusColorClasses } from '../utils';
 
 interface ClaimDetailsModalProps {
   claim: FormattedClaim | null;

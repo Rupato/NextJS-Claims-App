@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FormattedClaim } from '../types/claims';
+import { FormattedClaim } from '../types';
 import { TableView } from './TableView';
 import { CardsView } from './CardsView';
 

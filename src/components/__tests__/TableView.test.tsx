@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { TableView } from '../TableView';
-import { FormattedClaim } from '../../types/claims';
+import { FormattedClaim } from '../../types';
 
 // Mock the child components
 vi.mock('../TableHeader', () => ({
@@ -31,6 +31,8 @@ const mockClaims: FormattedClaim[] = [
     amount: '5000',
     holder: 'John Doe',
     policyNumber: 'POL-12345',
+    insuredName: 'Car',
+    description: 'Accident repair',
     processingFee: '100',
     status: 'Approved',
     formattedClaimAmount: '$5,000.00',
@@ -47,6 +49,8 @@ const mockClaims: FormattedClaim[] = [
     amount: '3000',
     holder: 'Jane Smith',
     policyNumber: 'POL-67890',
+    insuredName: 'Phone',
+    description: 'Screen replacement',
     processingFee: '50',
     status: 'Rejected',
     formattedClaimAmount: '$3,000.00',

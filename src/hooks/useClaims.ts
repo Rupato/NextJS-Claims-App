@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Claim } from '../types/claims';
+import { Claim } from '../types';
 
 export const useClaims = () => {
   const [claims, setClaims] = useState<Claim[]>([]);

@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePersistedState } from '../utils/storage';
+import Link from 'next/link';
+import { usePersistedState, sortClaims } from '../utils';
 import { useUrlArrayState, useUrlSortState } from '../hooks/useUrlState';
 import { useClaimsQuery } from '../hooks/useClaimsQuery';
 import { useFormattedClaims } from '../hooks/useFormattedClaims';
 import { useTableVirtualization } from '../hooks/useTableVirtualization';
 import { useCardsVirtualization } from '../hooks/useCardsVirtualization';
 import { useSearch } from '../hooks/useSearch';
-import { sortClaims } from '../utils/sorting';
 import { ViewModeTabs } from './ViewModeTabs';
 import { SearchInput } from './SearchInput';
 import StatusFilter from './StatusFilter';
@@ -16,14 +16,29 @@ import SortDropdown, { SortOption } from './SortDropdown';
 import { ClaimsView } from './ClaimsView';
 import { LoadingSkeleton } from './LoadingSkeleton';
 import { ClaimDetailsModal } from './ClaimDetailsModal';
-import { FormattedClaim } from '../types/claims';
+import CreateClaimModal from './CreateClaimModal';
+import { FormattedClaim, Claim } from '../types';
 
-const ClaimsDashboard: React.FC = () => {
-  const { data: claims = [], isLoading: loading, error } = useClaimsQuery();
+interface ClaimsDashboardProps {
+  initialClaims?: Claim[];
+}
+
+const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
+  const {
+    data: claims = [],
+    isLoading: loading,
+    error,
+  } = useClaimsQuery(initialClaims);
   const [viewMode, setViewMode] = usePersistedState<'table' | 'cards'>(
     'claims-dashboard-view-mode',
     'table'
   );
+  const [mounted, setMounted] = React.useState(false);
+
+  // Prevent hydration mismatch by waiting for client-side mount
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
   const [selectedStatuses, setSelectedStatuses] = useUrlArrayState(
     'status',
     []
@@ -40,6 +55,8 @@ const ClaimsDashboard: React.FC = () => {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Modal state for create claim form
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleRowSelect = (claim: FormattedClaim) => {
     setSelectedClaim(claim);
@@ -75,8 +92,31 @@ const ClaimsDashboard: React.FC = () => {
     useSearch(sortedClaims);
 
   // Determine row/card height based on active filters
-  const rowHeight = selectedStatuses.length > 0 || !!searchTerm ? 48 : 64;
-  const cardHeight = selectedStatuses.length > 0 || !!searchTerm ? 200 : 240;
+  const hasActiveFilters = selectedStatuses.length > 0 || !!searchTerm;
+  const rowHeight = hasActiveFilters ? 48 : 64;
+  const cardHeight = hasActiveFilters ? 200 : 240;
+
+  // Determine aria-describedby based on view mode
+  const ariaDescribedBy = mounted
+    ? viewMode === 'table'
+      ? 'claims-table-desc claims-table-instructions'
+      : 'claims-cards-desc claims-cards-instructions'
+    : 'claims-table-desc claims-table-instructions';
+
+  // Determine if we should show "nothing found" state
+  const shouldShowEmptyState =
+    filteredClaims.length === 0 && (searchTerm || selectedStatuses.length > 0);
+
+  // Determine empty state message
+  const getEmptyStateMessage = () => {
+    if (searchTerm && selectedStatuses.length > 0) {
+      return `No claims match "${searchTerm}" with the selected status filters.`;
+    }
+    if (searchTerm) {
+      return `No claims match "${searchTerm}". Try adjusting your search.`;
+    }
+    return 'No claims found with the selected status filters. Try adjusting your filters.';
+  };
 
   // Always call hooks in same order (Rules of Hooks)
   const formattedClaims = useFormattedClaims(filteredClaims);
@@ -166,10 +206,31 @@ const ClaimsDashboard: React.FC = () => {
                   onChange={setSearchTerm}
                   isSearching={isSearching}
                 />
-                <ViewModeTabs
-                  viewMode={viewMode}
-                  onViewModeChange={setViewMode}
-                />
+                {mounted && (
+                  <ViewModeTabs
+                    viewMode={viewMode}
+                    onViewModeChange={setViewMode}
+                  />
+                )}
+                <Link
+                  href="/claims/new"
+                  className="inline-flex items-center px-4 py-2 md:px-6 md:py-3 border border-transparent text-sm md:text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap min-w-fit"
+                >
+                  <svg
+                    className="mr-2 h-5 w-5 flex-shrink-0"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  Create Claim
+                </Link>
               </div>
             </div>
           </div>
@@ -178,14 +239,18 @@ const ClaimsDashboard: React.FC = () => {
         {/* Status Filter and Sort */}
         <div className="mt-4 flex flex-col space-y-4 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 sm:space-x-4">
           <div className="flex-1">
-            <StatusFilter
-              selectedStatuses={selectedStatuses}
-              onStatusChange={setSelectedStatuses}
-              availableStatuses={availableStatuses}
-            />
+            {mounted && (
+              <StatusFilter
+                selectedStatuses={selectedStatuses}
+                onStatusChange={setSelectedStatuses}
+                availableStatuses={availableStatuses}
+              />
+            )}
           </div>
           <div className="sm:w-auto">
-            <SortDropdown value={sortOption} onChange={setSortOption} />
+            {mounted && (
+              <SortDropdown value={sortOption} onChange={setSortOption} />
+            )}
           </div>
         </div>
 
@@ -199,25 +264,23 @@ const ClaimsDashboard: React.FC = () => {
         </nav>
 
         {/* Live Region for Status Updates */}
-        <div
-          aria-live="polite"
-          aria-atomic="true"
-          className="sr-only"
-          id="dashboard-status"
-        >
-          {filteredClaims.length > 0 &&
-            `Displaying ${filteredClaims.length} of ${claims.length} insurance claims in ${viewMode} view${searchTerm ? ` matching "${searchTerm}"` : ''}`}
-        </div>
+        {mounted && (
+          <div
+            aria-live="polite"
+            aria-atomic="true"
+            className="sr-only"
+            id="dashboard-status"
+          >
+            {filteredClaims.length > 0 &&
+              `Displaying ${filteredClaims.length} of ${claims.length} insurance claims in ${viewMode} view${searchTerm ? ` matching "${searchTerm}"` : ''}`}
+          </div>
+        )}
 
         <section
           id="main-content"
           className="mt-6 bg-white shadow-sm rounded-lg overflow-hidden"
           aria-labelledby="claims-section-title"
-          aria-describedby={
-            viewMode === 'table'
-              ? 'claims-table-desc claims-table-instructions'
-              : 'claims-cards-desc claims-cards-instructions'
-          }
+          aria-describedby={ariaDescribedBy}
         >
           <div className="sr-only">
             <h2 id="claims-section-title">Insurance Claims Data</h2>
@@ -235,8 +298,7 @@ const ClaimsDashboard: React.FC = () => {
             </div>
           </div>
 
-          {filteredClaims.length === 0 &&
-          (searchTerm || selectedStatuses.length > 0) ? (
+          {shouldShowEmptyState ? (
             <div className="flex flex-col items-center justify-center py-12 px-4">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
@@ -256,11 +318,7 @@ const ClaimsDashboard: React.FC = () => {
                 Nothing found
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                {searchTerm && selectedStatuses.length > 0
-                  ? `No claims match "${searchTerm}" with the selected status filters.`
-                  : searchTerm
-                    ? `No claims match "${searchTerm}". Try adjusting your search.`
-                    : `No claims found with the selected status filters. Try adjusting your filters.`}
+                {getEmptyStateMessage()}
               </p>
             </div>
           ) : (
@@ -287,8 +345,7 @@ const ClaimsDashboard: React.FC = () => {
             {searchTerm
               ? `, showing ${filteredClaims.length} matching "${searchTerm}"`
               : ''}
-            . Currently viewing in {viewMode} mode. Last updated:{' '}
-            {new Date().toLocaleString()}.
+            . Currently viewing in {viewMode} mode.
           </p>
         </div>
       </div>
@@ -298,6 +355,12 @@ const ClaimsDashboard: React.FC = () => {
         claim={selectedClaim}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+      />
+
+      {/* Create Claim Modal */}
+      <CreateClaimModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
       />
     </main>
   );
