@@ -112,7 +112,7 @@ const updateClaim = async ({
   return updatedClaim;
 };
 
-const deleteClaim = async (id: string): Promise<void> => {
+const deleteClaim = async (): Promise<void> => {
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 500));
 };
