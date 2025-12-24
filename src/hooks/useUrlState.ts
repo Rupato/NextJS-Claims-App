@@ -1,21 +1,15 @@
 // Simple URL state hook for strings
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function useUrlStringState(key: string, defaultValue: string = '') {
-  const [value, setValue] = useState(defaultValue);
-  const initializedRef = useRef(false);
-
-  // Initialize from URL on mount (client-side only)
-  useEffect(() => {
-    if (!initializedRef.current && typeof window !== 'undefined') {
+  const [value, setValue] = useState(() => {
+    if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const paramValue = urlParams.get(key);
-      if (paramValue !== null) {
-        setValue(paramValue);
-      }
-      initializedRef.current = true;
+      return paramValue !== null ? paramValue : defaultValue;
     }
-  }, [key]);
+    return defaultValue;
+  });
 
   const updateValue = useCallback(
     (newValue: string | ((prev: string) => string)) => {
