@@ -1,18 +1,12 @@
 import React from 'react';
+import { SearchInputProps } from './types';
 
-interface SearchInputProps {
-  value: string;
-  onChange: (value: string) => void;
-  isSearching: boolean;
-  placeholder?: string;
-}
-
-export const SearchInput: React.FC<SearchInputProps> = ({
+export const SearchInput = ({
   value,
   onChange,
   isSearching,
   placeholder = 'Search claims...',
-}) => {
+}: SearchInputProps) => {
   return (
     <div className="relative w-full max-w-md">
       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

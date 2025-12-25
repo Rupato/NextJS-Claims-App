@@ -2,6 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { ProvidersProps } from './types';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -36,10 +37,6 @@ function DevTools() {
 
   if (!DevToolsComponent) return null;
   return <DevToolsComponent initialIsOpen={false} />;
-}
-
-interface ProvidersProps {
-  children: React.ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {

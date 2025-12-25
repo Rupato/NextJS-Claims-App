@@ -1,17 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { getStatusColorClasses } from '@/shared/utils';
+import { StatusFilterProps } from './types';
 
-interface StatusFilterProps {
-  selectedStatuses: string[];
-  onStatusChange: (statuses: string[]) => void;
-  availableStatuses: string[];
-}
-
-const StatusFilter: React.FC<StatusFilterProps> = ({
+const StatusFilter = ({
   selectedStatuses = [],
   onStatusChange,
   availableStatuses,
-}) => {
+}: StatusFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -89,20 +84,24 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
               <div className="p-2">
                 <div className="space-y-1">
                   {uniqueAvailableStatuses.map((status) => (
-                    <label
+                    <div
                       key={status}
                       className="flex items-center px-3 py-2 hover:bg-gray-50 rounded cursor-pointer"
                     >
                       <input
                         type="checkbox"
+                        id={`status-${status}`}
                         checked={selectedStatuses.includes(status)}
                         onChange={() => handleStatusToggle(status)}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                       />
-                      <span className="ml-3 text-sm text-gray-700">
+                      <label
+                        htmlFor={`status-${status}`}
+                        className="ml-3 text-sm text-gray-700 cursor-pointer"
+                      >
                         {status}
-                      </span>
-                    </label>
+                      </label>
+                    </div>
                   ))}
                 </div>
               </div>

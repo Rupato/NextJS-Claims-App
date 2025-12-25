@@ -21,7 +21,7 @@ interface TestWrapperProps {
   children: React.ReactNode;
 }
 
-export const TestWrapper: React.FC<TestWrapperProps> = ({ children }) => {
+export const TestWrapper = ({ children }: TestWrapperProps) => {
   const queryClient = createTestQueryClient();
 
   return (

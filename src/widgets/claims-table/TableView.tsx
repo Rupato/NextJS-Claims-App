@@ -1,25 +1,12 @@
 'use client';
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { FormattedClaim } from '@/entities/claim/types';
-import { SortOption } from '@/shared/types';
 import { TableHeader } from './TableHeader';
 import { TableRow } from '@/entities/claim/ui/TableRow';
 import { ROW_HEIGHT, CONTAINER_HEIGHT } from '@/shared/virtualization';
+import { TableViewProps } from './types';
 
-interface TableViewProps {
-  formattedClaims: FormattedClaim[];
-  startIndex: number;
-  endIndex: number;
-  onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
-  hasActiveFilters: boolean;
-  onRowSelect?: (claim: FormattedClaim) => void;
-  columnVisibility?: Record<string, boolean>;
-  onColumnSort?: (sortOption: SortOption) => void;
-  currentSort?: SortOption;
-}
-
-export const TableView: React.FC<TableViewProps> = ({
+export const TableView = ({
   formattedClaims,
   startIndex,
   endIndex,
@@ -29,7 +16,7 @@ export const TableView: React.FC<TableViewProps> = ({
   columnVisibility,
   onColumnSort,
   currentSort,
-}) => {
+}: TableViewProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<(HTMLTableRowElement | null)[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);

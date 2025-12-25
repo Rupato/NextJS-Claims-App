@@ -1,29 +1,11 @@
 'use client';
 
 import React from 'react';
-import { FormattedClaim } from '@/entities/claim/types';
-import { SortOption } from '@/shared/types';
 import { TableView } from './TableView';
 import { CardsView } from './CardsView';
+import { ClaimsViewProps } from './types';
 
-interface ClaimsViewProps {
-  viewMode: 'table' | 'cards';
-  formattedClaims: FormattedClaim[];
-  startIndex: number;
-  endIndex: number;
-  cardStartIndex: number;
-  cardEndIndex: number;
-  cardsPerRow: number;
-  onTableScroll: (event: React.UIEvent<HTMLDivElement>) => void;
-  onCardsScroll: (event: React.UIEvent<HTMLDivElement>) => void;
-  hasActiveFilters: boolean;
-  onRowSelect?: (claim: FormattedClaim) => void;
-  columnVisibility?: Record<string, boolean>;
-  onColumnSort?: (sortOption: SortOption) => void;
-  currentSort?: SortOption;
-}
-
-export const ClaimsView: React.FC<ClaimsViewProps> = ({
+export const ClaimsView = ({
   viewMode,
   formattedClaims,
   startIndex,
@@ -38,7 +20,7 @@ export const ClaimsView: React.FC<ClaimsViewProps> = ({
   columnVisibility,
   onColumnSort,
   currentSort,
-}) => {
+}: ClaimsViewProps) => {
   if (viewMode === 'table') {
     return (
       <TableView

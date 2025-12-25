@@ -1,18 +1,12 @@
 import React from 'react';
-import { FormattedClaim } from '@/entities/claim/types';
 import { getStatusColorClasses } from '@/shared/utils';
+import { ClaimDetailsModalProps } from './types';
 
-interface ClaimDetailsModalProps {
-  claim: FormattedClaim | null;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-export const ClaimDetailsModal: React.FC<ClaimDetailsModalProps> = ({
+export const ClaimDetailsModal = ({
   claim,
   isOpen,
   onClose,
-}) => {
+}: ClaimDetailsModalProps) => {
   if (!isOpen || !claim) return null;
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
