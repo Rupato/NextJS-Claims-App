@@ -120,8 +120,6 @@ jobs:
       - name: Run TypeScript type check
         run: pnpm exec tsc --noEmit
 
-
-
   # RECOMMENDED: Code Formatting Check
   format:
     name: '5. CI / format'
