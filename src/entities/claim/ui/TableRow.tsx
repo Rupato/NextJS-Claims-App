@@ -1,13 +1,6 @@
 import React from 'react';
-import { FormattedClaim } from '@/entities/claim/types';
-import { getStatusColorClasses } from '@/shared/utils';
-
-interface TableRowProps {
-  claim: FormattedClaim;
-  onRowSelect?: (claim: FormattedClaim) => void;
-  isSelected?: boolean;
-  columnVisibility?: Record<string, boolean>;
-}
+import { TableRowProps } from './types';
+import { tableCellConfigs } from './table-cells';
 
 export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
   ({ claim, onRowSelect, isSelected = false, columnVisibility }, ref) => {
@@ -28,114 +21,15 @@ export const TableRow = React.forwardRef<HTMLTableRowElement, TableRowProps>(
     ${onRowSelect ? 'focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset' : ''}
   `.trim();
 
-    // Define cells with their corresponding keys
-    const cells = [
-      {
-        key: 'number',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-            role="cell"
-          >
-            {claim.number}
-          </td>
-        ),
-      },
-      {
-        key: 'status',
-        content: (
-          <td className="px-6 py-4 whitespace-nowrap" role="cell">
-            <span
-              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColorClasses(
-                claim.status
-              )}`}
-              aria-label={`Status: ${claim.status}`}
-            >
-              {claim.status}
-            </span>
-          </td>
-        ),
-      },
-      {
-        key: 'holder',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-            role="cell"
-          >
-            {claim.holder}
-          </td>
-        ),
-      },
-      {
-        key: 'policyNumber',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-            role="cell"
-          >
-            {claim.policyNumber}
-          </td>
-        ),
-      },
-      {
-        key: 'formattedClaimAmount',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-            role="cell"
-          >
-            {claim.formattedClaimAmount}
-          </td>
-        ),
-      },
-      {
-        key: 'formattedProcessingFee',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-            role="cell"
-          >
-            {claim.formattedProcessingFee}
-          </td>
-        ),
-      },
-      {
-        key: 'formattedTotalAmount',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
-            role="cell"
-          >
-            {claim.formattedTotalAmount}
-          </td>
-        ),
-      },
-      {
-        key: 'formattedIncidentDate',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-            role="cell"
-          >
-            <time dateTime={claim.incidentDate}>
-              {claim.formattedIncidentDate}
-            </time>
-          </td>
-        ),
-      },
-      {
-        key: 'formattedCreatedDate',
-        content: (
-          <td
-            className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"
-            role="cell"
-          >
-            <time dateTime={claim.createdAt}>{claim.formattedCreatedDate}</time>
-          </td>
-        ),
-      },
-    ];
+    // Create cells array from configurations
+    const cells = tableCellConfigs.map((config) => ({
+      key: config.key,
+      content: (
+        <td className={config.className} role="cell">
+          {config.render(claim)}
+        </td>
+      ),
+    }));
 
     // Filter cells based on column visibility
     const visibleCells = cells.filter((cell) => {

@@ -24,7 +24,7 @@ describe('LoadingSkeleton', () => {
       const rowSkeletons = document.querySelectorAll(
         '.border-b.border-gray-100'
       );
-      expect(rowSkeletons).toHaveLength(15);
+      expect(rowSkeletons).toHaveLength(25);
 
       // Check each row has 9 skeleton elements
       rowSkeletons.forEach((row) => {

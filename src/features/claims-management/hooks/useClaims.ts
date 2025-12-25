@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Claim } from '@/entities/claim/types';
+import { API_CONFIG } from '@/shared/constants';
 
 export const useClaims = () => {
   const [claims, setClaims] = useState<Claim[]>([]);
@@ -11,14 +12,14 @@ export const useClaims = () => {
   useEffect(() => {
     const fetchClaims = async () => {
       try {
-        // Add cache control for better performance
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || 'http://api-mock:8001';
-        const response = await fetch(`${apiUrl}/api/v1/claims`, {
-          headers: {
-            'Cache-Control': 'max-age=300', // Cache for 5 minutes
-          },
-        });
+        const response = await fetch(
+          `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.CLAIMS}`,
+          {
+            headers: {
+              'Cache-Control': `max-age=${API_CONFIG.CACHE_DURATION}`,
+            },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

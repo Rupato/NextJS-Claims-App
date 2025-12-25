@@ -1,24 +1,17 @@
 'use client';
 
-import React, { useState, useCallback, ReactNode } from 'react';
+import React, { useState, useCallback } from 'react';
+import {
+  ErrorBoundaryProps,
+  ErrorState,
+  DefaultErrorFallbackProps,
+} from './types';
 
-interface ErrorBoundaryProps {
-  children: ReactNode;
-  fallback?: React.ComponentType<{ error?: Error; retry?: () => void }>;
-  onError?: (error: Error, errorInfo?: React.ErrorInfo) => void;
-}
-
-interface ErrorState {
-  hasError: boolean;
-  error?: Error;
-  errorInfo?: React.ErrorInfo;
-}
-
-const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({
+const ErrorBoundary = ({
   children,
   fallback: FallbackComponent,
   onError,
-}) => {
+}: ErrorBoundaryProps) => {
   const [errorState, setErrorState] = useState<ErrorState>({ hasError: false });
 
   const handleError = useCallback(
@@ -74,21 +67,16 @@ const ErrorBoundary: React.FC<ErrorBoundaryProps> = ({
 };
 
 // Default error fallback component
-interface DefaultErrorFallbackProps {
-  error?: Error;
-  onRetry: () => void;
-}
-
-const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
+const DefaultErrorFallback = ({
   error,
   onRetry,
-}) => {
+}: DefaultErrorFallbackProps) => {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 text-center">
         <div className="flex justify-center mb-4">
           <span className="text-6xl" role="img" aria-label="Warning">
-            ⚠️
+            !
           </span>
         </div>
 
@@ -106,7 +94,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
             <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
               Error Details (Development)
             </summary>
-            <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
+            <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32 text-black">
               {error.message}
               {error.stack && `\n\n${error.stack}`}
             </pre>
@@ -118,7 +106,7 @@ const DefaultErrorFallback: React.FC<DefaultErrorFallbackProps> = ({
             onClick={onRetry}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            🔄 Try Again
+            Try Again
           </button>
 
           <button

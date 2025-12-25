@@ -1,21 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { SortOption } from '@/shared/types';
+import { SortDropdownProps } from './types';
+import { SORT_OPTIONS } from './utils';
+import { SortOption } from '../types';
 
-interface SortDropdownProps {
-  value: SortOption;
-  onChange: (value: SortOption) => void;
-}
-
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'created-newest', label: 'Created date (newest first)' },
-  { value: 'created-oldest', label: 'Created date (oldest first)' },
-  { value: 'amount-highest', label: 'Claim amount (highest)' },
-  { value: 'amount-lowest', label: 'Claim amount (lowest)' },
-  { value: 'total-highest', label: 'Total amount (highest)' },
-  { value: 'total-lowest', label: 'Total amount (lowest)' },
-];
-
-const SortDropdown: React.FC<SortDropdownProps> = ({ value, onChange }) => {
+const SortDropdown = ({ value, onChange }: SortDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

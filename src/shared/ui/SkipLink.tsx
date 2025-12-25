@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-const SkipLink: React.FC = () => {
+const SkipLink = () => {
   return (
     <nav aria-label="Skip navigation">
       <a

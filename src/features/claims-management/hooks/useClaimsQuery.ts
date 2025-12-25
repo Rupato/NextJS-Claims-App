@@ -42,7 +42,7 @@ const createClaim = async (
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('❌ CLIENT: API error response:', errorText);
+    console.error('CLIENT: API error response:', errorText);
     throw new Error(
       `Failed to create claim: ${response.status} ${response.statusText}`
     );
@@ -73,7 +73,7 @@ const createClaim = async (
     const data = JSON.parse(responseText);
     return data;
   } catch (error) {
-    console.error('❌ CLIENT: Failed to parse response JSON:', error);
+    console.error('CLIENT: Failed to parse response JSON:', error);
     // Fallback: create claim object locally
     const newClaim: Claim = {
       id: Date.now().toString(),
@@ -167,7 +167,7 @@ export const useCreateClaimMutation = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.claims });
     },
     onError: (error) => {
-      console.error('❌ Failed to create claim:', error);
+      console.error('Failed to create claim:', error);
       // Could show a toast notification here
     },
   });

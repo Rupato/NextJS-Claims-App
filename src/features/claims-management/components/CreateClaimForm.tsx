@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -11,93 +10,38 @@ import {
   usePolicyQuery,
 } from '../hooks/useClaimsQuery';
 import { useRouter } from 'next/navigation';
-
-// Yup validation schema
-const validationSchema = yup.object({
-  amount: yup
-    .string()
-    .required('Claim amount is required')
-    .test('is-valid-number', 'Please enter a valid amount', (value) => {
-      if (!value) return false;
-      const num = parseFloat(value);
-      return !isNaN(num) && num > 0;
-    })
-    .test('max-amount', 'Claim amount cannot exceed $10,000', (value) => {
-      if (!value) return true;
-      const num = parseFloat(value);
-      return num <= 10000;
-    }),
-  holder: yup
-    .string()
-    .required('Policy holder name is required')
-    .min(2, 'Policy holder name must be at least 2 characters'),
-  policyNumber: yup
-    .string()
-    .required('Policy number is required')
-    .matches(/^TL-\d{5}$/, 'Policy number must be in format TL-XXXXX'),
-  insuredName: yup
-    .string()
-    .required('Insured name is required')
-    .min(2, 'Insured name must be at least 2 characters'),
-  description: yup
-    .string()
-    .required('Description is required')
-    .min(10, 'Description must be at least 10 characters'),
-  processingFee: yup
-    .string()
-    .required('Processing fee is required')
-    .test('is-valid-fee', 'Please enter a valid processing fee', (value) => {
-      if (!value) return false;
-      const num = parseFloat(value);
-      return !isNaN(num) && num >= 0;
-    }),
-  incidentDate: yup
-    .string()
-    .required('Incident date is required')
-    .test(
-      'valid-date-range',
-      'Incident date must be between 6 months ago and yesterday',
-      (value) => {
-        if (!value) return false;
-        const date = new Date(value);
-        const now = new Date();
-        const sixMonthsAgo = new Date();
-        sixMonthsAgo.setMonth(now.getMonth() - 6);
-
-        return date >= sixMonthsAgo && date <= now;
-      }
-    ),
-});
-
-type FormData = yup.InferType<typeof validationSchema>;
+import { formFieldConfigs } from './form-config';
+import { createClaimValidationSchema, CreateClaimFormData } from './validation';
 
 interface CreateClaimFormProps {
   onFormChange?: (hasChanges: boolean) => void;
 }
 
-const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
+const CreateClaimForm = ({ onFormChange }: CreateClaimFormProps) => {
   const navigate = useRouter();
-  // Initialize React Hook Form with Yup resolver
+
+  // Component state
+  const [isHolderAutoFilled, setIsHolderAutoFilled] = useState(false);
+  const [shouldLookupPolicy, setShouldLookupPolicy] = useState(false);
+
+  // Form management with validation
   const {
     register,
     handleSubmit: rhfHandleSubmit,
     setValue,
     control,
     formState: { errors, isValid },
-  } = useForm<FormData>({
-    resolver: yupResolver(validationSchema),
+  } = useForm<CreateClaimFormData>({
+    resolver: yupResolver(createClaimValidationSchema),
     mode: 'onBlur', // Validate on blur
   });
-
-  const [isHolderAutoFilled, setIsHolderAutoFilled] = useState(false);
-  const [shouldLookupPolicy, setShouldLookupPolicy] = useState(false);
 
   // Watch form values for smart behaviors using useWatch
   const formValues = useWatch({
     control,
   });
 
-  // Use the client-side mutation hook
+  // API hooks for data operations
   const createClaimMutation = useCreateClaimMutation();
   const isPending = createClaimMutation.isPending;
   const mutationError = createClaimMutation.error;
@@ -175,252 +119,154 @@ const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
   };
 
   // Handle form submission with React Hook Form
-  const onSubmit = (data: FormData) => {
-    createClaimMutation.mutate(data);
+  const onSubmit = (data: CreateClaimFormData) => {
+    createClaimMutation.mutate({
+      holder: data.holder,
+      policyNumber: data.policyNumber,
+      incidentDate: data.incidentDate,
+      amount: data.amount,
+      processingFee: data.processingFee,
+      description: data.description,
+      insuredName: data.insuredName,
+    });
     navigate.replace('/');
   };
+
+  // Create dynamic form fields with current state
+  const formFields = formFieldConfigs.map((field) => ({
+    ...field,
+    placeholder:
+      field.name === 'holder'
+        ? isHolderAutoFilled
+          ? 'Auto-filled from policy'
+          : field.placeholder
+        : field.placeholder,
+    showAutoFilled:
+      field.name === 'holder' ? isHolderAutoFilled : field.showAutoFilled,
+    showLoading: field.name === 'holder' ? isPolicyLoading : field.showLoading,
+    helperText: field.helperText,
+  }));
 
   return (
     <form onSubmit={rhfHandleSubmit(onSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {/* Amount */}
-        <div>
-          <label
-            htmlFor="amount"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Claim Amount ($)
-          </label>
-          <input
-            type="number"
-            id="amount"
-            step="0.01"
-            min="0"
-            max="10000"
-            className={`mt-1 h-[40px] p-[10px] block w-full rounded-md shadow-sm sm:text-sm text-black ${
-              errors.amount
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-            }`}
-            placeholder="0.00"
-            {...register('amount')}
-          />
-          {errors.amount && (
-            <p className="mt-1 text-sm text-red-600">{errors.amount.message}</p>
-          )}
-        </div>
+        {formFields.map((field) => {
+          const error = errors[field.name];
+          const hasError = !!error;
+          const isAutoFilled = field.showAutoFilled;
+          const isLoading = field.showLoading;
 
-        {/* Processing Fee */}
-        <div>
-          <label
-            htmlFor="processingFee"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Processing Fee ($)
-          </label>
-          <input
-            type="number"
-            id="processingFee"
-            step="0.01"
-            min="0"
-            className={`mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
-              errors.processingFee
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+          const inputClasses = `mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
+            hasError
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+              : isAutoFilled
+                ? 'border-green-300 bg-green-50'
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-            }`}
-            placeholder="0.00"
-            {...register('processingFee')}
-          />
-          {errors.processingFee && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.processingFee.message}
-            </p>
-          )}
-          <p className="mt-1 text-xs text-gray-500">
-            Auto-calculated as 5% of claim amount
-          </p>
-        </div>
-      </div>
+          }`;
 
-      {/* Policy Holder */}
-      <div>
-        <label
-          htmlFor="holder"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Policy Holder Name
-          {isHolderAutoFilled && (
-            <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-              Auto-filled
-            </span>
-          )}
-        </label>
-        <div className="relative">
-          <input
-            type="text"
-            id="holder"
-            className={`mt-1 block w-full h-[40px] p-[10px] rounded-md shadow-sm text-sm text-black ${
-              errors.holder
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : isHolderAutoFilled
-                  ? 'border-green-300 bg-green-50'
-                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-            }`}
-            placeholder={
-              isHolderAutoFilled
-                ? 'Auto-filled from policy'
-                : 'Enter policy holder name'
-            }
-            {...register('holder')}
-          />
-          {isPolicyLoading && (
-            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <svg
-                className="animate-spin h-4 w-4 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
+          return (
+            <div key={field.name} className={field.gridSpan}>
+              <label
+                htmlFor={field.name}
+                className="block text-sm font-medium text-gray-700"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
+                {field.label}
+                {isAutoFilled && (
+                  <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                    Auto-filled
+                  </span>
+                )}
+              </label>
+
+              <div className="relative">
+                {field.type === 'textarea' ? (
+                  <textarea
+                    id={field.name}
+                    rows={field.rows}
+                    className={inputClasses}
+                    placeholder={field.placeholder}
+                    {...register(field.name)}
+                  />
+                ) : field.type === 'datepicker' ? (
+                  <DatePicker
+                    selected={
+                      formValues.incidentDate
+                        ? new Date(formValues.incidentDate)
+                        : null
+                    }
+                    onChange={(date: Date | null) => {
+                      const dateString = date
+                        ? date.toISOString().split('T')[0]
+                        : '';
+                      setValue('incidentDate', dateString);
+                    }}
+                    minDate={new Date(sixMonthsAgo)}
+                    maxDate={new Date(yesterday)}
+                    dateFormat="MMM dd, yyyy"
+                    placeholderText={field.placeholder}
+                    className={inputClasses}
+                  />
+                ) : (
+                  <input
+                    type={field.type}
+                    id={field.name}
+                    step={field.step}
+                    min={field.min}
+                    max={field.max}
+                    className={inputClasses}
+                    placeholder={field.placeholder}
+                    {...register(
+                      field.name,
+                      field.name === 'policyNumber'
+                        ? {
+                            onBlur: handlePolicyBlur,
+                          }
+                        : {}
+                    )}
+                  />
+                )}
+
+                {isLoading && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <svg
+                      className="animate-spin h-4 w-4 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  </div>
+                )}
+              </div>
+
+              {error && (
+                <p className="mt-1 text-sm text-red-600">{error.message}</p>
+              )}
+
+              {isAutoFilled && (
+                <p className="mt-1 text-xs text-green-600">
+                  Policy verified ✓ You can still edit this field if needed
+                </p>
+              )}
+
+              {field.helperText && (
+                <p className="mt-1 text-xs text-gray-500">{field.helperText}</p>
+              )}
             </div>
-          )}
-        </div>
-        {errors.holder && (
-          <p className="mt-1 text-sm text-red-600">{errors.holder.message}</p>
-        )}
-        {isHolderAutoFilled && (
-          <p className="mt-1 text-xs text-green-600">
-            Policy verified ✓ You can still edit this field if needed
-          </p>
-        )}
-      </div>
-
-      {/* Policy Number */}
-      <div>
-        <label
-          htmlFor="policyNumber"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Policy Number
-        </label>
-        <input
-          type="text"
-          id="policyNumber"
-          className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            errors.policyNumber
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-          placeholder="TL-XXXXX"
-          {...register('policyNumber', {
-            onBlur: handlePolicyBlur,
-          })}
-        />
-        {errors.policyNumber && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.policyNumber.message}
-          </p>
-        )}
-      </div>
-
-      {/* Insured Name */}
-      <div>
-        <label
-          htmlFor="insuredName"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Insured Item Name
-        </label>
-        <input
-          type="text"
-          id="insuredName"
-          className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            errors.insuredName
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-          placeholder="Enter insured item name"
-          {...register('insuredName')}
-        />
-        {errors.insuredName && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.insuredName.message}
-          </p>
-        )}
-      </div>
-
-      {/* Incident Date */}
-      <div>
-        <label
-          htmlFor="incidentDate"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Incident Date
-        </label>
-        <DatePicker
-          selected={
-            formValues.incidentDate ? new Date(formValues.incidentDate) : null
-          }
-          onChange={(date: Date | null) => {
-            const dateString = date ? date.toISOString().split('T')[0] : '';
-            setValue('incidentDate', dateString);
-          }}
-          minDate={new Date(sixMonthsAgo)}
-          maxDate={new Date(yesterday)}
-          dateFormat="MMM dd, yyyy"
-          placeholderText="Select incident date"
-          className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            errors.incidentDate
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-        />
-        {errors.incidentDate && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.incidentDate.message}
-          </p>
-        )}
-      </div>
-
-      {/* Description */}
-      <div>
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Description
-        </label>
-        <textarea
-          id="description"
-          rows={4}
-          className={`mt-1 block w-full h-[40px] p-[10px] text-black rounded-md shadow-sm text-sm ${
-            errors.description
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-              : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
-          }`}
-          placeholder="Describe the incident and claim details..."
-          {...register('description')}
-        />
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-600">
-            {errors.description.message}
-          </p>
-        )}
-        <p className="mt-1 text-xs text-gray-500">
-          {formValues.description?.length || 0}/10 minimum characters
-        </p>
+          );
+        })}
       </div>
 
       {/* API Error Display */}
@@ -429,7 +275,7 @@ const CreateClaimForm: React.FC<CreateClaimFormProps> = ({ onFormChange }) => {
           <div className="flex">
             <div className="flex-shrink-0">
               <span className="text-red-400" role="img" aria-label="Error">
-                ⚠️
+                !
               </span>
             </div>
             <div className="ml-3">

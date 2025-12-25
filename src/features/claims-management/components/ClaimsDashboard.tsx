@@ -18,59 +18,23 @@ import { ClaimsView } from '@/widgets/claims-table/ClaimsView';
 import { LoadingSkeleton } from '@/shared/ui/LoadingSkeleton';
 import { ClaimDetailsModal } from './ClaimDetailsModal';
 import CreateClaimModal from './CreateClaimModal';
-import { FormattedClaim, Claim } from '@/entities/claim/types';
+import { DEFAULT_COLUMNS } from './utils';
+import { ClaimsDashboardProps } from './types';
+import { FormattedClaim } from '@/entities/claim/types';
 
-// Column visibility management
-interface ColumnConfig {
-  key: keyof FormattedClaim;
-  label: string;
-  visible: boolean;
-  sortable: boolean;
-}
-
-const DEFAULT_COLUMNS: ColumnConfig[] = [
-  { key: 'number', label: 'Claim ID', visible: true, sortable: true },
-  { key: 'status', label: 'Status', visible: true, sortable: true },
-  { key: 'holder', label: 'Holder', visible: true, sortable: true },
-  { key: 'policyNumber', label: 'Policy #', visible: true, sortable: true },
-  {
-    key: 'formattedClaimAmount',
-    label: 'Claim Amount',
-    visible: true,
-    sortable: true,
-  },
-  {
-    key: 'formattedProcessingFee',
-    label: 'Processing Fee',
-    visible: true,
-    sortable: true,
-  },
-  {
-    key: 'formattedTotalAmount',
-    label: 'Total Amount',
-    visible: true,
-    sortable: true,
-  },
-  {
-    key: 'formattedIncidentDate',
-    label: 'Incident Date',
-    visible: true,
-    sortable: true,
-  },
-  {
-    key: 'formattedCreatedDate',
-    label: 'Created Date',
-    visible: true,
-    sortable: true,
-  },
-];
-
-interface ClaimsDashboardProps {
-  initialClaims?: Claim[];
-}
-
-const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
+const ClaimsDashboard = ({ initialClaims }: ClaimsDashboardProps) => {
   const router = useRouter();
+
+  // Component state
+  const [mounted, setMounted] = React.useState(false);
+  const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
+
+  // Data fetching and API state
   const {
     data: claims = [],
     isLoading: loading,
@@ -82,33 +46,18 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
   const errorMessage =
     error instanceof Error ? error.message : 'Unknown error occurred';
 
-  // Force refetch when component mounts to ensure fresh data after navigation
-  React.useEffect(() => {
-    refetch()
-      .then((result) => {
-        console.log(
-          '✅ CLIENT: Refetch complete, new data length:',
-          result.data?.length || 0
-        );
-      })
-      .catch((error) => {
-        console.error('❌ CLIENT: Refetch failed:', error);
-      });
-  }, [refetch]); // Remove initialClaims from dependencies to always refetch
+  // UI state management
   const [viewMode, setViewMode] = usePersistedState<'table' | 'cards'>(
     'claims-dashboard-view-mode',
     'table'
   );
-  const [mounted, setMounted] = React.useState(false);
 
-  // Prevent hydration mismatch by waiting for client-side mount
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  // URL state synchronization
   const [selectedStatuses, setSelectedStatuses] = useUrlArrayState(
     'status',
     []
   );
+
   const [sortOption, setSortOption] = useUrlSortState(
     'sort',
     'created-newest'
@@ -117,7 +66,6 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
     (value: SortOption | ((prev: SortOption) => SortOption)) => void,
   ];
 
-  // Column visibility state - persisted in localStorage
   const [columnVisibility, setColumnVisibility] = usePersistedState<
     Record<string, boolean>
   >(
@@ -128,16 +76,23 @@ const ClaimsDashboard: React.FC<ClaimsDashboardProps> = ({ initialClaims }) => {
     )
   );
 
-  // Modal state for claim details
-  const [selectedClaim, setSelectedClaim] = useState<FormattedClaim | null>(
-    null
-  );
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // Modal state for create claim form
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // Effects for data synchronization and UI management
+  React.useEffect(() => {
+    refetch()
+      .then((result) => {
+        console.log(
+          'CLIENT: Refetch complete, new data length:',
+          result.data?.length || 0
+        );
+      })
+      .catch((error) => {
+        console.error('CLIENT: Refetch failed:', error);
+      });
+  }, [refetch]);
 
-  // Column visibility menu state
-  const [isColumnMenuOpen, setIsColumnMenuOpen] = useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleRowSelect = (claim: FormattedClaim) => {
     setSelectedClaim(claim);

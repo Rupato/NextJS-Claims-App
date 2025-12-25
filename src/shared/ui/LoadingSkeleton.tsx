@@ -1,51 +1,60 @@
 'use client';
 
 import React from 'react';
+import { LoadingSkeletonProps } from './types';
 
-interface LoadingSkeletonProps {
-  viewMode: 'table' | 'cards';
-}
-
-export const LoadingSkeleton: React.FC<LoadingSkeletonProps> = ({
-  viewMode,
-}) => {
+export const LoadingSkeleton = ({ viewMode }: LoadingSkeletonProps) => {
   if (viewMode === 'table') {
     return (
-      <div className="p-6">
-        <div className="animate-pulse">
-          {/* Table Header Skeleton */}
-          <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 mb-4">
-            <div className="grid grid-cols-9 gap-4">
-              {[...Array(9)].map((_, i) => (
-                <div key={i} className="h-4 bg-gray-300 rounded"></div>
-              ))}
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h1 className="text-2xl font-bold text-gray-900">
+                Claims Dashboard
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                View and manage all insurance claims
+              </p>
             </div>
-          </div>
+            <div className="p-6">
+              <div className="animate-pulse">
+                {/* Table Header Skeleton */}
+                <div className="bg-gray-50 border-b border-gray-200 px-6 py-3 mb-4">
+                  <div className="grid grid-cols-9 gap-4">
+                    {[...Array(9)].map((_, i) => (
+                      <div key={i} className="h-4 bg-gray-300 rounded"></div>
+                    ))}
+                  </div>
+                </div>
 
-          {/* Table Rows Skeleton */}
-          <div className="space-y-3">
-            {[...Array(15)].map((_, i) => (
-              <div key={i} className="border-b border-gray-100 pb-3">
-                <div className="grid grid-cols-9 gap-4">
-                  <div className="h-4 bg-gray-200 rounded w-16"></div>
-                  <div className="h-4 bg-gray-200 rounded w-12"></div>
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                  <div className="h-4 bg-gray-200 rounded w-18"></div>
-                  <div className="h-4 bg-gray-200 rounded w-14"></div>
-                  <div className="h-4 bg-gray-200 rounded w-16"></div>
-                  <div className="h-4 bg-gray-200 rounded w-20"></div>
-                  <div className="h-4 bg-gray-200 rounded w-24"></div>
-                  <div className="h-4 bg-gray-200 rounded w-22"></div>
+                {/* Table Rows Skeleton - More rows to fill the screen */}
+                <div className="space-y-3">
+                  {[...Array(25)].map((_, i) => (
+                    <div key={i} className="border-b border-gray-100 pb-3">
+                      <div className="grid grid-cols-9 gap-4">
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                        <div className="h-4 bg-gray-200 rounded w-28"></div>
+                        <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                        <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        <div className="h-4 bg-gray-200 rounded w-36"></div>
+                        <div className="h-4 bg-gray-200 rounded w-28"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer Skeleton */}
+                <div className="border-t border-gray-200 bg-gray-50 px-6 py-4 mt-4">
+                  <div className="flex justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-48"></div>
+                    <div className="h-4 bg-gray-200 rounded w-32"></div>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Footer Skeleton */}
-          <div className="border-t border-gray-200 bg-gray-50 px-6 py-4 mt-4">
-            <div className="flex justify-between">
-              <div className="h-4 bg-gray-200 rounded w-48"></div>
-              <div className="h-4 bg-gray-200 rounded w-32"></div>
             </div>
           </div>
         </div>

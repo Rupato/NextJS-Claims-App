@@ -1,17 +1,12 @@
 'use client';
 
 import React from 'react';
-import { ViewMode } from '@/shared/types';
+import { ViewModeTabsProps } from './types';
 
-interface ViewModeTabsProps {
-  viewMode: ViewMode;
-  onViewModeChange: (mode: ViewMode) => void;
-}
-
-export const ViewModeTabs: React.FC<ViewModeTabsProps> = ({
+export const ViewModeTabs = ({
   viewMode,
   onViewModeChange,
-}) => {
+}: ViewModeTabsProps) => {
   return (
     <nav aria-label="View mode selection" className="flex space-x-1">
       <button
@@ -24,7 +19,7 @@ export const ViewModeTabs: React.FC<ViewModeTabsProps> = ({
         aria-pressed={viewMode === 'table'}
         aria-label="Switch to table view"
       >
-        📊 Table View
+        Table View
       </button>
       <button
         onClick={() => onViewModeChange('cards')}
@@ -36,7 +31,7 @@ export const ViewModeTabs: React.FC<ViewModeTabsProps> = ({
         aria-pressed={viewMode === 'cards'}
         aria-label="Switch to card view"
       >
-        🃏 Card View
+        Card View
       </button>
     </nav>
   );

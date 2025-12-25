@@ -1,21 +1,11 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { FormattedClaim } from '@/entities/claim/types';
 import { ClaimCard } from '@/entities/claim/ui/ClaimCard';
 import { CONTAINER_HEIGHT, CARD_HEIGHT } from '@/shared/virtualization';
+import { CardsViewProps } from './types';
 
-interface CardsViewProps {
-  formattedClaims: FormattedClaim[];
-  cardStartIndex: number;
-  cardEndIndex: number;
-  cardsPerRow: number;
-  onScroll: (event: React.UIEvent<HTMLDivElement>) => void;
-  hasActiveFilters: boolean;
-  onCardClick?: (claim: FormattedClaim) => void;
-}
-
-export const CardsView: React.FC<CardsViewProps> = ({
+export const CardsView = ({
   formattedClaims,
   cardStartIndex,
   cardEndIndex,
@@ -23,7 +13,7 @@ export const CardsView: React.FC<CardsViewProps> = ({
   onScroll,
   hasActiveFilters,
   onCardClick,
-}) => {
+}: CardsViewProps) => {
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   // Use smaller card height when filters are active to show more cards
