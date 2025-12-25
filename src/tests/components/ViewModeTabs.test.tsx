@@ -139,8 +139,8 @@ describe('ViewModeTabs', () => {
       <ViewModeTabs viewMode="table" onViewModeChange={mockOnViewModeChange} />
     );
 
-    expect(screen.getByText('📊 Table View')).toBeInTheDocument();
-    expect(screen.getByText('🃏 Card View')).toBeInTheDocument();
+    expect(screen.getByText('Table View')).toBeInTheDocument();
+    expect(screen.getByText('Card View')).toBeInTheDocument();
   });
 
   it('has flex layout container', () => {
