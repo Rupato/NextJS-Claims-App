@@ -69,66 +69,11 @@ describe('useSearch', () => {
     expect(result.current.isSearching).toBe(false);
   });
 
-  it.skip('filters claims by claim number', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('filters claims by holder name', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('filters claims by policy number', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('performs case-insensitive search', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('shows loading state while debouncing', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('stops loading after debounce delay', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('uses custom debounce delay', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('returns empty array when no claims match', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('handles empty claims array', () => {
+  it('handles empty claims array', () => {
     const { result } = renderHook(() => useSearch([]));
 
     expect(result.current.filteredClaims).toEqual([]);
     expect(result.current.searchTerm).toBe('');
     expect(result.current.isSearching).toBe(false);
-  });
-
-  it.skip('clears search results when search term becomes empty', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('maintains search state correctly through multiple searches', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
-  });
-
-  it.skip('cancels previous debounce timer when new search is initiated', () => {
-    // Skipped due to complex URL state integration in test environment
-    // The functionality works correctly in the actual application
   });
 });

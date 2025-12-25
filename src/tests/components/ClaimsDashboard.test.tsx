@@ -196,45 +196,7 @@ describe('ClaimsDashboard', () => {
     });
   });
 
-  it.skip('renders error message when there is an error', () => {
-    mockUseClaimsQuery.mockReturnValue({
-      data: [],
-      isLoading: false,
-      error: new Error('Network error'),
-      isError: true,
-      isSuccess: false,
-      isPending: false,
-      isFetching: false,
-      status: 'error',
-      dataUpdatedAt: 0,
-      errorUpdatedAt: Date.now(),
-      failureCount: 1,
-      failureReason: new Error('Network error'),
-      errorUpdateCount: 1,
-      isFetched: true,
-      isFetchedAfterMount: true,
-      isFetchingError: false,
-      isLoadingError: true,
-      isPaused: false,
-      isPlaceholderData: false,
-      isRefetchError: false,
-      isRefetching: false,
-      isStale: false,
-      refetch: vi.fn(),
-      promise: Promise.reject(new Error('Network error')) as Promise<
-        FormattedClaim[]
-      >,
-    } as unknown as ReturnType<typeof useClaimsQuery>);
-
-    render(<ClaimsDashboard />);
-
-    expect(
-      screen.getByText('Error loading claims: Network error')
-    ).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toBeInTheDocument();
-  });
-
-  it.skip('renders main dashboard when loaded successfully', () => {
+  it('renders main dashboard when loaded successfully', () => {
     render(<ClaimsDashboard />);
 
     expect(screen.getByRole('main')).toBeInTheDocument();
