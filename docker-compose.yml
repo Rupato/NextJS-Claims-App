@@ -1,0 +1,33 @@
+services:
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./nextjs-claim-app
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:${API_PORT}
+        - NEXT_PUBLIC_FRONTEND_PORT=${FRONTEND_PORT}
+        - API_PORT=${API_PORT}
+    ports:
+      - '${FRONTEND_PORT}:${FRONTEND_PORT}'
+    volumes:
+      - ./nextjs-claim-app:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - PORT=${FRONTEND_PORT}
+    env_file:
+      - .env
+    depends_on:
+      - api-mock
+
+  # Node.js Mock Backend
+  api-mock:
+    build:
+      context: ./mock
+    ports:
+      - '${MOCK_PORT}:${MOCK_PORT}'
+    volumes:
+      - ./mock:/app
+      - /app/node_modules
+    env_file:
+      - .env
