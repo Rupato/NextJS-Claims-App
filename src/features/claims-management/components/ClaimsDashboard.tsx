@@ -20,7 +20,7 @@ import { ClaimDetailsModal } from './ClaimDetailsModal';
 import CreateClaimModal from './CreateClaimModal';
 import { DEFAULT_COLUMNS } from './utils';
 import { ClaimsDashboardProps } from './types';
-import { Claim, FormattedClaim } from '@/entities/claim/types';
+import { FormattedClaim } from '@/entities/claim/types';
 
 const ClaimsDashboard = ({ initialClaims }: ClaimsDashboardProps) => {
   const router = useRouter();
