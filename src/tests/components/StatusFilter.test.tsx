@@ -45,21 +45,6 @@ describe('StatusFilter', () => {
     });
   });
 
-  it.skip('closes dropdown when clicking outside', async () => {
-    // This test is skipped because click-outside functionality works in browser
-    // but has issues in the testing environment due to event propagation differences
-    const { container } = render(<StatusFilter {...defaultProps} />);
-    const button = screen.getByRole('button', { name: /filter by status/i });
-    fireEvent.click(button);
-
-    // Click outside the dropdown (on the wrapper div)
-    fireEvent.click(container);
-
-    await waitFor(() => {
-      expect(screen.queryByText('Approved')).not.toBeInTheDocument();
-    });
-  });
-
   it('toggles checkbox when status is clicked', async () => {
     render(<StatusFilter {...defaultProps} />);
     const button = screen.getByRole('button', { name: /filter by status/i });

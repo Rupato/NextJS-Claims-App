@@ -35,23 +35,6 @@ describe('SortDropdown', () => {
     });
   });
 
-  it.skip('closes dropdown when clicking outside', async () => {
-    // This test is skipped because click-outside functionality works in browser
-    // but has issues in the testing environment due to event propagation differences
-    const { container } = render(<SortDropdown {...defaultProps} />);
-    const button = screen.getByRole('button', { name: /sort claims/i });
-    fireEvent.click(button);
-
-    // Click outside the dropdown (on the wrapper div)
-    fireEvent.click(container);
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Created date (oldest first)')
-      ).not.toBeInTheDocument();
-    });
-  });
-
   it('calls onChange when different sort option is selected', async () => {
     render(<SortDropdown {...defaultProps} />);
     const button = screen.getByRole('button', { name: /sort claims/i });

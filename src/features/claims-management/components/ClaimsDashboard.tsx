@@ -80,7 +80,7 @@ const ClaimsDashboard = ({ initialClaims }: ClaimsDashboardProps) => {
   React.useEffect(() => {
     refetch()
       .then((result) => {
-        console.log(
+        console.info(
           'CLIENT: Refetch complete, new data length:',
           result.data?.length || 0
         );
