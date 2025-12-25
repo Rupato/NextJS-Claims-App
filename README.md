@@ -121,7 +121,7 @@ pnpm test
 - **Total Pipeline Time**: ~3-4 minutes (parallel execution)
 - **Lint Check**: 19 seconds (parallel job)
 - **Type Check**: 23 seconds (parallel job)
-- **Test Suite**: 31-32 seconds (parallel job)
+- **Test Suite**: 31 seconds (parallel job)
 - **Build**: 30 seconds (parallel job)
 - **Coverage**: 33 seconds (parallel job)
 - **Security Scan**: 19 seconds (parallel job)
