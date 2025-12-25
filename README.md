@@ -1,4 +1,3 @@
-
 # Next.js Insurance Claims Dashboard
 
 An insurance claims management application built with Next.js.
