@@ -7,30 +7,68 @@ An insurance claims management application built with Next.js, TypeScript, and m
 ### Prerequisites
 
 - Node.js 18+
-- pnpm package manager
+- pnpm package manager (or npm)
+- Docker (optional, but recommended for easy setup)
 
-### Installation
+### Setup Instructions
 
-1. Install pnpm if you don't have it:
+1. **Extract the Repository:**
+   - Download the project zip file containing the `updated-senior-fe-assignment` folder
+   - Extract the zip file into your desired location
+   - Navigate to the extracted `updated-senior-fe-assignment` folder
+   - Place the `nextjs-claim-app` folder into that folder
+
+2. **Using Docker:**
+   (You'll need to copy the provided Docker files and rename them: `docker-root` → `docker-compose.yml` in root folder, `docker-backend` → `Dockerfile` in `mock/` folder, `docker-frontend` → `Dockerfile` in `nextjs-claim-app/` folder)
 
    ```bash
-   npm install -g pnpm
+   # From the root updated-senior-fe-assignment folder
+   # Ensure Docker is running on your machine
+   docker compose up --build
    ```
 
-2. Install dependencies:
+   This will automatically start both the Next.js frontend (http://localhost:3000) and the mock API backend (http://localhost:8001).
+
+3. **Without Docker (Manual Setup):**
+
+   **Start the Mock API Backend:**
+
    ```bash
+   cd mock
+   npm install
+   npm run mock
+   ```
+
+   The mock API will run on http://localhost:8001
+
+   **Start the Next.js Frontend:**
+
+   ```bash
+   cd nextjs-claim-app
    pnpm install
+   pnpm dev
+   ```
+
+   The frontend will run on http://localhost:3000
+
+### Installation (Alternative using npm)
+
+If you prefer using npm instead of pnpm:
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Start development server:
+   ```bash
+   npm run dev
    ```
 
 ### Development
 
-Start the development server:
-
-```bash
-pnpm dev
-```
-
-Open http://localhost:3000 in your browser.
+Once both services are running, open http://localhost:3000 in your browser to access the claims management dashboard.
 
 ### Building
 

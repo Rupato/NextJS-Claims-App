@@ -1,0 +1,18 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE ${MOCK_PORT:-8001}
+
+# Start the application
+CMD ["sh", "-c", "npx json-server --watch ./db.js --port $MOCK_PORT --host 0.0.0.0 --config ./config.json"]
