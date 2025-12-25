@@ -1,7 +1,7 @@
 
 # Next.js Insurance Claims Dashboard
 
-An insurance claims management application built with Next.js, TypeScript, and modern React patterns.
+An insurance claims management application built with Next.js.
 
 <img width="500" height="300" alt="Screenshot 2025-12-25 at 12 21 06 PM" src="https://github.com/user-attachments/assets/86fe995e-b5b6-468a-835f-daf7b05bf401" />
 <img width="500" height="300" alt="Screenshot 2025-12-25 at 12 21 12 PM" src="https://github.com/user-attachments/assets/5871905a-83fe-4072-92b6-f42242ec6615" />
