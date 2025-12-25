@@ -1,3 +1,8 @@
+
+<img width="500" height="300" alt="Screenshot 2025-12-25 at 12 21 06 PM" src="https://github.com/user-attachments/assets/86fe995e-b5b6-468a-835f-daf7b05bf401" />
+<img width="500" height="300" alt="Screenshot 2025-12-25 at 12 21 12 PM" src="https://github.com/user-attachments/assets/5871905a-83fe-4072-92b6-f42242ec6615" />
+<img width="500" height="400" alt="Screenshot 2025-12-25 at 12 21 52 PM" src="https://github.com/user-attachments/assets/80ac035f-0386-40b0-b4a4-a4d45f24c48b" />
+
 # Next.js Insurance Claims Dashboard
 
 An insurance claims management application built with Next.js, TypeScript, and modern React patterns.
@@ -191,6 +196,7 @@ pnpm test
 - Implement optimistic updates for better perceived performance
 - Add loading skeletons and better empty states
 - Improve accessibility with proper ARIA labels and keyboard navigation
+- Improve the UI even more better in resposive mode
 
 ### Developer Experience
 
