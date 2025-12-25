@@ -10,46 +10,50 @@ An insurance claims management application built with Next.js, TypeScript, and m
 - pnpm package manager (or npm)
 - Docker (optional, but recommended for easy setup)
 
-### Setup Instructions
+### Quick Start
 
-1. **Extract the Repository:**
-   - Download the project zip file containing the `updated-senior-fe-assignment` folder
-   - Extract the zip file into your desired location
-   - Navigate to the extracted `updated-senior-fe-assignment` folder
-   - Place the `nextjs-claim-app` folder into that folder
+Choose your preferred setup method:
 
-2. **Using Docker:**
-   (You'll need to copy the provided Docker files and rename them: `docker-root` → `docker-compose.yml` in root folder, `docker-backend` → `Dockerfile` in `mock/` folder, `docker-frontend` → `Dockerfile` in `nextjs-claim-app/` folder)
+#### Option 1: Docker Setup
 
-   ```bash
-   # From the root updated-senior-fe-assignment folder
-   # Ensure Docker is running on your machine
-   docker compose up --build
-   ```
+1. **Setup Environment:**
+   - After cloning this repository, you'll find `updated-senior-fe-assignment.zip` inside the `nextjs-claim-app` folder
+   - Extract the zip file and navigate to the extracted `updated-senior-fe-assignment` folder
+   - Copy this `nextjs-claim-app` folder into the extracted folder
+   - Create a `.env` file in the root folder with:
+     ```
+     FRONTEND_PORT=3000
+     API_PORT=8001
+     API_BASE_URL=http://api-mock:${API_PORT}
+     NEXT_PUBLIC_API_URL=http://api-mock:${API_PORT}
+     NEXT_PUBLIC_FRONTEND_PORT=${FRONTEND_PORT}
+     MOCK_PORT=${API_PORT}
+     ```
 
-   This will automatically start both the Next.js frontend (http://localhost:3000) and the mock API backend (http://localhost:8001).
+2. **Start Services:**
+   - Copy and rename Docker files: `docker-root` → `docker-compose.yml`, `docker-backend` → `mock/Dockerfile`, `docker-frontend` → `nextjs-claim-app/Dockerfile`
+   - Run: `docker compose up --build` from the main `updated-senior-fe-assignment`
+   - Access at: http://localhost:3000
 
-3. **Without Docker (Manual Setup):**
+#### Option 2: Manual Setup without docker
 
-   **Start the Mock API Backend:**
+1. **Setup Environment:**
+   - After cloning this repository, you'll find `updated-senior-fe-assignment.zip` inside the `nextjs-claim-app` folder
+   - Extract the zip file and navigate to the extracted `updated-senior-fe-assignment` folder
+   - Copy this `nextjs-claim-app` folder into the extracted folder
+   - Create a `.env.local` file in the `nextjs-claim-app` folder with:
+     ```
+     FRONTEND_PORT=3000
+     API_PORT=8001
+     API_BASE_URL=http://localhost:${API_PORT}
+     NEXT_PUBLIC_API_URL=http://localhost:${API_PORT}
+     NEXT_PUBLIC_FRONTEND_PORT=${FRONTEND_PORT}
+     MOCK_PORT=${API_PORT}
+     ```
 
-   ```bash
-   cd mock
-   npm install
-   npm run mock
-   ```
-
-   The mock API will run on http://localhost:8001
-
-   **Start the Next.js Frontend:**
-
-   ```bash
-   cd nextjs-claim-app
-   pnpm install
-   pnpm dev
-   ```
-
-   The frontend will run on http://localhost:3000
+2. **Start Services:**
+   - Mock API: `cd mock && npm install && npm run mock` (runs on http://localhost:8001)
+   - Frontend: `cd nextjs-claim-app && pnpm install && pnpm dev` (runs on http://localhost:3000)
 
 ### Installation (Alternative using npm)
 
